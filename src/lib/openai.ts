@@ -75,9 +75,9 @@ Responda em JSON com esta estrutura:
 
 Você é um especialista em análise de vendas consultivo. Analise ${context} (pode ser conversa de Instagram, WhatsApp, proposta comercial, etc.) e avalie a jornada mental do cliente nos seguintes 15 pilares:
 
-${images.length > 1 ? `
+${imageCount > 1 ? `
 ⚠️ IMPORTANTE - ANÁLISE DE MÚLTIPLAS IMAGENS:
-Você recebeu ${images.length} imagens. Analise TODAS elas de forma integrada:
+Você recebeu ${imageCount} imagens. Analise TODAS elas de forma integrada:
 - Imagem 1 pode ser: primeiro contato (Instagram/WhatsApp)
 - Imagem 2 pode ser: proposta comercial
 - Imagem 3 pode ser: follow-up ou reunião
@@ -86,7 +86,7 @@ Você recebeu ${images.length} imagens. Analise TODAS elas de forma integrada:
 Combine informações de TODAS as imagens para dar notas mais precisas. Quanto mais imagens, mais dados você tem para avaliar cada pilar com alta confiança!
 ` : ''}
 
-${pillarsDescription}
+${pillars}
 
 ESTRUTURA DA ANÁLISE DE CADA PILAR:
 
@@ -287,6 +287,7 @@ Responda APENAS em formato JSON válido, seguindo EXATAMENTE esta estrutura (tod
     "energy-flow": "high"
   }
 }`;
+  }
 
   try {
     // Construir array de conteúdo com texto + todas as imagens
