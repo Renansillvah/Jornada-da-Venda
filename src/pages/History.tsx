@@ -11,7 +11,6 @@ import type { Analysis } from '@/types/analysis';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { CONTEXT_OPTIONS } from '@/types/analysis';
 import { exportToCSV, exportToText, copyToClipboard } from '@/lib/export';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
