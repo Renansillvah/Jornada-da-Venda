@@ -100,10 +100,10 @@ export function useTrialAnalysis(): boolean {
   return true;
 }
 
-// Verificar se pode fazer análise (acesso vitalício OU trial)
+// Verificar se pode fazer análise (acesso vitalício = SEMPRE ILIMITADO, trial com limite)
 export function canAnalyze(): boolean {
   if (hasLifetimeAccess()) {
-    return true; // Acesso vitalício = ilimitado
+    return true; // ✅ ACESSO VITALÍCIO = ANÁLISES COMPLETAMENTE ILIMITADAS
   }
 
   // Sem acesso vitalício, verificar trial

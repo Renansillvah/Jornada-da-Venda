@@ -97,7 +97,7 @@ export default function Analysis() {
       return;
     }
 
-    // Verificar se tem acesso (vitalício ou trial)
+    // ✅ VERIFICAÇÃO SIMPLES: Se tem acesso vitalício, NUNCA bloqueia
     if (!canAnalyze()) {
       toast.error('Trial de 2 análises gratuitas expirado', {
         description: 'Adquira acesso vitalício por apenas R$ 9,99 para análises ilimitadas!',
@@ -178,13 +178,16 @@ export default function Analysis() {
       console.log('✨ Pilares atualizados:', updatedPillars);
       console.log('📈 Scores finais:', updatedPillars.map(p => ({ name: p.name, score: p.score })));
 
-      // Se não tem acesso vitalício, consumir análise do trial
+      // ✅ IMPORTANTE: Só consome trial se NÃO tiver acesso vitalício
+      // Quem pagou R$ 9,99 tem análises ILIMITADAS - nunca consome crédito!
       if (!hasLifetimeAccess()) {
         const trialUsed = useTrialAnalysis();
         if (!trialUsed) {
           toast.error('Trial expirado. Adquira acesso vitalício!');
           return;
         }
+      } else {
+        console.log('🎉 Acesso vitalício: análise ilimitada - nenhum crédito consumido');
       }
 
       setPillars(updatedPillars);
@@ -197,9 +200,10 @@ export default function Analysis() {
       const lowConfidence = updatedPillars.filter(p => p.confidence === 'low').length;
       const notAnalyzed = updatedPillars.filter(p => p.confidence === 'none').length;
 
+      // ✅ Mensagem diferenciada: quem pagou vê "ilimitadas", quem está no trial vê quantas restam
       const remainingTrial = getRemainingTrialAnalyses();
       const statusMessage = hasLifetimeAccess()
-        ? 'Análises ilimitadas com acesso vitalício!'
+        ? '🎉 Você tem análises ILIMITADAS!'
         : `Restam ${remainingTrial} análise${remainingTrial !== 1 ? 's' : ''} gratuita${remainingTrial !== 1 ? 's' : ''}`;
 
       toast.success('Análise automática concluída! Revise os resultados abaixo.', {
