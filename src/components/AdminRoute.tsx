@@ -1,45 +1,139 @@
 import { Navigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Shield, AlertCircle } from 'lucide-react';
 
-// Lista de emails autorizados como administradores
-const ADMIN_EMAILS = ['renan.wow.blizz@gmail.com'];
+// Credenciais do administrador (apenas renan.wow.blizz@gmail.com)
+const ADMIN_EMAIL = 'renan.wow.blizz@gmail.com';
+const ADMIN_PASSWORD = 'Warcraft782r@';
 
 export default function AdminRoute({ children }: { children: React.ReactNode }) {
   const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
-  const [userEmail, setUserEmail] = useState('');
+  const [showLoginForm, setShowLoginForm] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     checkAdminAccess();
   }, []);
 
   const checkAdminAccess = () => {
-    // Verificar se o email está armazenado localmente
-    const storedEmail = localStorage.getItem('user_email');
+    // Verificar se está autenticado (sessão válida)
+    const adminToken = sessionStorage.getItem('admin_token');
+    const adminEmail = sessionStorage.getItem('admin_email');
 
-    if (storedEmail && ADMIN_EMAILS.includes(storedEmail)) {
+    if (adminToken && adminEmail === ADMIN_EMAIL) {
       setIsAuthorized(true);
-      setUserEmail(storedEmail);
       return;
     }
 
-    // Se não tem email armazenado, solicitar
-    const email = prompt('🔐 Acesso Restrito\n\nDigite seu email de administrador:');
+    // Não autenticado - mostrar formulário de login
+    setShowLoginForm(true);
+    setIsAuthorized(false);
+  };
 
-    if (!email) {
-      setIsAuthorized(false);
-      return;
-    }
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
 
-    // Verificar se o email está na lista de admins
-    if (ADMIN_EMAILS.includes(email.toLowerCase().trim())) {
-      localStorage.setItem('user_email', email.toLowerCase().trim());
+    // Validar credenciais
+    if (email.toLowerCase().trim() === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
+      // Login bem-sucedido
+      const token = `admin_${Date.now()}_${Math.random().toString(36).substring(7)}`;
+      sessionStorage.setItem('admin_token', token);
+      sessionStorage.setItem('admin_email', ADMIN_EMAIL);
+
       setIsAuthorized(true);
-      setUserEmail(email);
+      setShowLoginForm(false);
+      setLoading(false);
     } else {
-      alert('❌ Acesso negado!\n\nApenas administradores autorizados podem acessar esta área.');
-      setIsAuthorized(false);
+      // Login falhou
+      setError('Email ou senha incorretos. Acesso negado.');
+      setLoading(false);
     }
   };
+
+  // Mostrar formulário de login
+  if (showLoginForm && !isAuthorized) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <Card className="w-full max-w-md border-primary/30">
+          <CardHeader className="text-center">
+            <div className="flex justify-center mb-4">
+              <div className="h-16 w-16 bg-primary/10 rounded-full flex items-center justify-center">
+                <Shield className="h-8 w-8 text-primary" />
+              </div>
+            </div>
+            <CardTitle className="text-2xl font-bold">Acesso Restrito</CardTitle>
+            <CardDescription>
+              Painel Administrativo - Apenas autorizado
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleLogin} className="space-y-4">
+              {error && (
+                <Alert variant="destructive">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              )}
+
+              <div className="space-y-2">
+                <Label htmlFor="admin-email">Email do Administrador</Label>
+                <Input
+                  id="admin-email"
+                  type="email"
+                  placeholder="admin@exemplo.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  disabled={loading}
+                  autoComplete="username"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="admin-password">Senha</Label>
+                <Input
+                  id="admin-password"
+                  type="password"
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  disabled={loading}
+                  autoComplete="current-password"
+                />
+              </div>
+
+              <Alert className="bg-muted/50">
+                <Shield className="h-4 w-4" />
+                <AlertDescription className="text-xs">
+                  Apenas o administrador autorizado (renan.wow.blizz@gmail.com) pode acessar esta área.
+                </AlertDescription>
+              </Alert>
+
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={loading}
+                size="lg"
+              >
+                {loading ? 'Verificando...' : 'Acessar Painel Admin'}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   // Ainda verificando
   if (isAuthorized === null) {
