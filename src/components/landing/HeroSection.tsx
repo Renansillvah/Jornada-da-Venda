@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { ArrowRight, Sparkles, BarChart3 } from 'lucide-react';
+import { ArrowRight, Sparkles, BarChart3, Brain, TrendingUp, Target, Zap } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export function HeroSection() {
@@ -22,14 +22,15 @@ export function HeroSection() {
 
           {/* Título principal */}
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground leading-tight">
-            Transforme Suas Reuniões de Venda em{' '}
-            <span className="text-primary">Insights Acionáveis</span>
+            Mapeie a{' '}
+            <span className="text-primary">Jornada Mental</span>{' '}
+            do Seu Cliente Antes do Fechamento
           </h1>
 
           {/* Subtítulo */}
           <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl">
-            Analise, acompanhe e melhore sua jornada de vendas com dados concretos.
-            Identifique pontos fracos e fortaleça seu processo comercial.
+            Entenda exatamente onde sua venda perde força. Avalie 10 pilares críticos
+            que influenciam a decisão de compra e transforme conversas em contratos fechados.
           </p>
 
           {/* CTAs */}
@@ -59,50 +60,113 @@ export function HeroSection() {
           </p>
         </div>
 
-        {/* Lado direito: Preview visual */}
+        {/* Lado direito: Preview visual - Jornada Mental */}
         <div className="flex-1 w-full max-w-2xl">
           <div className="relative">
-            {/* Card com visual do dashboard */}
+            {/* Card principal */}
             <Card className="border-2 shadow-2xl overflow-hidden">
               <CardContent className="p-0">
-                <div className="bg-gradient-to-br from-primary/5 via-info/5 to-success/5 p-8">
-                  {/* Simular interface do dashboard */}
-                  <div className="space-y-4">
-                    {/* Header simulado */}
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
-                        <BarChart3 className="w-5 h-5 text-primary" />
-                      </div>
-                      <div>
-                        <div className="h-4 w-32 bg-foreground/10 rounded" />
-                        <div className="h-3 w-24 bg-foreground/5 rounded mt-1" />
-                      </div>
-                    </div>
+                <div className="bg-gradient-to-br from-primary/5 via-info/5 to-success/5 p-6">
 
-                    {/* Cards de métricas simulados */}
-                    <div className="grid grid-cols-2 gap-3">
-                      {[1, 2, 3, 4].map((i) => (
-                        <div key={i} className="bg-background/80 backdrop-blur-sm p-4 rounded-lg border">
-                          <div className="h-3 w-20 bg-foreground/10 rounded mb-2" />
-                          <div className="h-6 w-12 bg-primary/20 rounded" />
-                        </div>
-                      ))}
+                  {/* Título do preview */}
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+                      <Brain className="w-5 h-5 text-primary" />
                     </div>
-
-                    {/* Gráfico simulado */}
-                    <div className="bg-background/80 backdrop-blur-sm p-6 rounded-lg border">
-                      <div className="h-3 w-32 bg-foreground/10 rounded mb-4" />
-                      <div className="flex items-end gap-2 h-32">
-                        {[60, 80, 45, 90, 75, 85, 70, 95].map((height, i) => (
-                          <div
-                            key={i}
-                            className="flex-1 bg-gradient-to-t from-primary/80 to-primary/40 rounded-t"
-                            style={{ height: `${height}%` }}
-                          />
-                        ))}
-                      </div>
+                    <div>
+                      <div className="text-sm font-semibold text-foreground">Análise da Jornada</div>
+                      <div className="text-xs text-muted-foreground">Cliente: Proposta Tech Solutions</div>
                     </div>
                   </div>
+
+                  {/* Jornada Mental Visual */}
+                  <div className="space-y-3">
+
+                    {/* Passo 1: Descoberta */}
+                    <div className="bg-background/90 backdrop-blur-sm p-4 rounded-lg border-l-4 border-info">
+                      <div className="flex items-start gap-3">
+                        <div className="w-8 h-8 rounded-full bg-info/20 flex items-center justify-center flex-shrink-0">
+                          <Target className="w-4 h-4 text-info" />
+                        </div>
+                        <div className="flex-1">
+                          <div className="text-xs font-medium text-foreground mb-1">Descoberta</div>
+                          <div className="flex items-center gap-2">
+                            <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
+                              <div className="h-full bg-info w-[85%]" />
+                            </div>
+                            <span className="text-xs font-semibold text-info">8.5</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Passo 2: Proposta */}
+                    <div className="bg-background/90 backdrop-blur-sm p-4 rounded-lg border-l-4 border-primary">
+                      <div className="flex items-start gap-3">
+                        <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
+                          <BarChart3 className="w-4 h-4 text-primary" />
+                        </div>
+                        <div className="flex-1">
+                          <div className="text-xs font-medium text-foreground mb-1">Proposta</div>
+                          <div className="flex items-center gap-2">
+                            <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
+                              <div className="h-full bg-primary w-[70%]" />
+                            </div>
+                            <span className="text-xs font-semibold text-primary">7.0</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Passo 3: Negociação */}
+                    <div className="bg-background/90 backdrop-blur-sm p-4 rounded-lg border-l-4 border-warning">
+                      <div className="flex items-start gap-3">
+                        <div className="w-8 h-8 rounded-full bg-warning/20 flex items-center justify-center flex-shrink-0">
+                          <TrendingUp className="w-4 h-4 text-warning" />
+                        </div>
+                        <div className="flex-1">
+                          <div className="text-xs font-medium text-foreground mb-1">Negociação</div>
+                          <div className="flex items-center gap-2">
+                            <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
+                              <div className="h-full bg-warning w-[60%]" />
+                            </div>
+                            <span className="text-xs font-semibold text-warning">6.0</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Passo 4: Fechamento */}
+                    <div className="bg-background/90 backdrop-blur-sm p-4 rounded-lg border-l-4 border-success">
+                      <div className="flex items-start gap-3">
+                        <div className="w-8 h-8 rounded-full bg-success/20 flex items-center justify-center flex-shrink-0">
+                          <Zap className="w-4 h-4 text-success" />
+                        </div>
+                        <div className="flex-1">
+                          <div className="text-xs font-medium text-foreground mb-1">Fechamento</div>
+                          <div className="flex items-center gap-2">
+                            <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
+                              <div className="h-full bg-success w-[90%]" />
+                            </div>
+                            <span className="text-xs font-semibold text-success">9.0</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+
+                  {/* Resumo */}
+                  <div className="mt-4 p-3 bg-primary/10 rounded-lg border border-primary/20">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-medium text-foreground">Pontuação Média</span>
+                      <span className="text-lg font-bold text-primary">7.6/10</span>
+                    </div>
+                    <div className="text-xs text-muted-foreground mt-1">
+                      ⚠️ Atenção na Negociação
+                    </div>
+                  </div>
+
                 </div>
               </CardContent>
             </Card>

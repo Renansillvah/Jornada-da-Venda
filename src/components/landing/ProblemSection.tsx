@@ -4,23 +4,23 @@ import { AlertCircle, TrendingDown, Target, LineChart } from 'lucide-react';
 const problems = [
   {
     icon: AlertCircle,
-    title: 'Reuniões Sem Direção Clara',
-    description: 'Você sai da reunião sem saber se foi bem ou mal, sem critérios objetivos de avaliação.'
+    title: 'Não Sabe Onde a Venda Perdeu Força',
+    description: 'Cliente parecia interessado, mas não fechou. Você não consegue identificar o ponto exato onde perdeu a oportunidade.'
   },
   {
     icon: TrendingDown,
-    title: 'Perda de Oportunidades',
-    description: 'Cliente interessado, mas você não explorou todos os pontos importantes da negociação.'
+    title: 'Vendas Caem Sem Explicação Clara',
+    description: 'Sua taxa de conversão diminui, mas você não tem dados concretos para entender o motivo e corrigir.'
   },
   {
     icon: Target,
-    title: 'Dificuldade em Identificar o que Melhorar',
-    description: 'Sabe que precisa melhorar, mas não sabe exatamente onde focar seus esforços.'
+    title: 'Falta de Critérios Objetivos',
+    description: 'Avalia suas vendas apenas pela intuição. Não tem métricas claras para medir cada etapa da jornada.'
   },
   {
     icon: LineChart,
-    title: 'Falta de Visão de Evolução',
-    description: 'Não tem como comparar sua performance ao longo do tempo e medir seu crescimento.'
+    title: 'Sem Visão de Evolução',
+    description: 'Impossível comparar performance ao longo do tempo ou identificar padrões de sucesso e fracasso.'
   }
 ];
 
@@ -29,10 +29,10 @@ export function ProblemSection() {
     <section className="container mx-auto px-6 py-20 bg-muted/30">
       <div className="text-center space-y-4 mb-12">
         <h2 className="text-3xl sm:text-4xl font-bold text-foreground">
-          Reconhece Algum Desses Desafios?
+          Por Que Suas Vendas Não Fecham?
         </h2>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-          Vendedores enfrentam esses problemas todos os dias. E você?
+          A jornada mental do cliente é invisível. Sem mapeá-la, você está vendendo no escuro.
         </p>
       </div>
 
