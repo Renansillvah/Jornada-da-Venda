@@ -4,7 +4,9 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { ArrowLeft, TrendingUp, TrendingDown, Minus, Trash2, Eye, Calendar, FileText } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ArrowLeft, TrendingUp, TrendingDown, Minus, Trash2, Eye, Calendar, FileText, BarChart3 } from 'lucide-react';
+import { BarView } from '@/components/BarView';
 import { getAnalyses, deleteAnalysis } from '@/lib/storage';
 import type { Analysis } from '@/types/analysis';
 import { format } from 'date-fns';
@@ -26,6 +28,7 @@ export default function History() {
   const navigate = useNavigate();
   const [analyses, setAnalyses] = useState<Analysis[]>([]);
   const [selectedAnalysis, setSelectedAnalysis] = useState<Analysis | null>(null);
+  const [detailViewMode, setDetailViewMode] = useState<'detailed' | 'bars'>('detailed');
 
   useEffect(() => {
     setAnalyses(getAnalyses());
@@ -201,7 +204,10 @@ export default function History() {
                       {format(new Date(selectedAnalysis.date), "dd 'de' MMMM 'de' yyyy 'às' HH:mm", { locale: ptBR })}
                     </p>
                   </div>
-                  <Button variant="ghost" onClick={() => setSelectedAnalysis(null)}>
+                  <Button variant="ghost" onClick={() => {
+                    setSelectedAnalysis(null);
+                    setDetailViewMode('detailed');
+                  }}>
                     Fechar
                   </Button>
                 </div>
@@ -221,31 +227,51 @@ export default function History() {
                   </p>
                 </div>
 
-                <div>
-                  <h4 className="font-semibold mb-4">Pilares Avaliados</h4>
-                  <div className="space-y-4">
-                    {selectedAnalysis.pillars.map(pillar => (
-                      <div key={pillar.id} className="p-4 bg-muted rounded-lg space-y-2">
-                        <div className="flex items-center justify-between">
-                          <h5 className="font-semibold">{pillar.name}</h5>
-                          <Badge>{pillar.score}/100</Badge>
-                        </div>
-                        {pillar.observation && (
-                          <div>
-                            <p className="text-xs text-muted-foreground mb-1">Impacto na nota:</p>
-                            <p className="text-sm">{pillar.observation}</p>
+                {/* View Mode Toggle */}
+                <Tabs value={detailViewMode} onValueChange={(v) => setDetailViewMode(v as 'detailed' | 'bars')}>
+                  <TabsList className="grid w-full grid-cols-2">
+                    <TabsTrigger value="detailed" className="flex items-center gap-2">
+                      <FileText className="h-4 w-4" />
+                      Detalhada
+                    </TabsTrigger>
+                    <TabsTrigger value="bars" className="flex items-center gap-2">
+                      <BarChart3 className="h-4 w-4" />
+                      Barras
+                    </TabsTrigger>
+                  </TabsList>
+
+                  <TabsContent value="detailed" className="mt-4">
+                    <div>
+                      <h4 className="font-semibold mb-4">Pilares Avaliados</h4>
+                      <div className="space-y-4">
+                        {selectedAnalysis.pillars.map(pillar => (
+                          <div key={pillar.id} className="p-4 bg-muted rounded-lg space-y-2">
+                            <div className="flex items-center justify-between">
+                              <h5 className="font-semibold">{pillar.name}</h5>
+                              <Badge>{pillar.score}/100</Badge>
+                            </div>
+                            {pillar.observation && (
+                              <div>
+                                <p className="text-xs text-muted-foreground mb-1">Impacto na nota:</p>
+                                <p className="text-sm">{pillar.observation}</p>
+                              </div>
+                            )}
+                            {pillar.action && (
+                              <div>
+                                <p className="text-xs text-muted-foreground mb-1">Ações de melhoria:</p>
+                                <p className="text-sm">{pillar.action}</p>
+                              </div>
+                            )}
                           </div>
-                        )}
-                        {pillar.action && (
-                          <div>
-                            <p className="text-xs text-muted-foreground mb-1">Ações de melhoria:</p>
-                            <p className="text-sm">{pillar.action}</p>
-                          </div>
-                        )}
+                        ))}
                       </div>
-                    ))}
-                  </div>
-                </div>
+                    </div>
+                  </TabsContent>
+
+                  <TabsContent value="bars" className="mt-4">
+                    <BarView pillars={selectedAnalysis.pillars} />
+                  </TabsContent>
+                </Tabs>
 
                 <div className="pt-4 border-t">
                   <div className="grid md:grid-cols-3 gap-4">

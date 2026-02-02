@@ -7,16 +7,19 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { ArrowLeft, AlertCircle, TrendingDown, TrendingUp } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ArrowLeft, AlertCircle, TrendingDown, TrendingUp, BarChart3, FileText } from 'lucide-react';
 import { PILLARS_CONFIG, CONTEXT_OPTIONS, getScoreLevel } from '@/types/analysis';
 import { saveAnalysis } from '@/lib/storage';
 import type { Pillar, Analysis as AnalysisType } from '@/types/analysis';
 import { toast } from 'sonner';
+import { BarView } from '@/components/BarView';
 
 export default function Analysis() {
   const navigate = useNavigate();
   const [context, setContext] = useState<string[]>([]);
   const [description, setDescription] = useState('');
+  const [viewMode, setViewMode] = useState<'detailed' | 'bars'>('detailed');
   const [pillars, setPillars] = useState<Pillar[]>(
     PILLARS_CONFIG.map(p => ({
       id: p.id,
@@ -106,6 +109,20 @@ export default function Analysis() {
 
         <h1 className="text-3xl font-bold mb-8">Nova Análise de Jornada</h1>
 
+        {/* View Mode Toggle */}
+        <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as 'detailed' | 'bars')} className="mb-8">
+          <TabsList className="grid w-full max-w-md mx-auto grid-cols-2">
+            <TabsTrigger value="detailed" className="flex items-center gap-2">
+              <FileText className="h-4 w-4" />
+              Análise Detalhada
+            </TabsTrigger>
+            <TabsTrigger value="bars" className="flex items-center gap-2">
+              <BarChart3 className="h-4 w-4" />
+              Visão por Barras
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
+
         {/* Context Section */}
         <Card className="mb-8">
           <CardHeader>
@@ -148,16 +165,26 @@ export default function Analysis() {
         </Card>
 
         {/* Strategic Note */}
-        <Alert className="mb-8 border-primary/30 bg-primary/5">
-          <AlertCircle className="h-4 w-4 text-primary" />
-          <AlertDescription className="text-sm">
-            <strong>Observação estratégica:</strong> Nem todos os pilares têm o mesmo peso emocional na decisão de compra.
-            Falhas em clareza, confiança e facilidade de fechar tendem a travar vendas mesmo quando outros pontos estão bons.
-          </AlertDescription>
-        </Alert>
+        {viewMode === 'detailed' && (
+          <Alert className="mb-8 border-primary/30 bg-primary/5">
+            <AlertCircle className="h-4 w-4 text-primary" />
+            <AlertDescription className="text-sm">
+              <strong>Observação estratégica:</strong> Nem todos os pilares têm o mesmo peso emocional na decisão de compra.
+              Falhas em clareza, confiança e facilidade de fechar tendem a travar vendas mesmo quando outros pontos estão bons.
+            </AlertDescription>
+          </Alert>
+        )}
+
+        {/* Bar View */}
+        {viewMode === 'bars' && (
+          <div className="mb-8">
+            <BarView pillars={pillars} />
+          </div>
+        )}
 
         {/* Pillars Section */}
-        <div className="space-y-6 mb-8">
+        {viewMode === 'detailed' && (
+          <div className="space-y-6 mb-8">
           {pillars.map((pillar, index) => {
             const scoreLevel = getScoreLevel(pillar.score);
             return (
@@ -214,9 +241,10 @@ export default function Analysis() {
             );
           })}
         </div>
+        )}
 
         {/* Diagnostic */}
-        {pillars.some(p => p.score > 0) && (
+        {viewMode === 'detailed' && pillars.some(p => p.score > 0) && (
           <Card className="mb-8 border-2 border-primary/30">
             <CardHeader>
               <CardTitle>Diagnóstico Preliminar</CardTitle>
@@ -259,7 +287,7 @@ export default function Analysis() {
         )}
 
         {/* Priority Action */}
-        {diagnostic.weakest && (
+        {viewMode === 'detailed' && diagnostic.weakest && (
           <Card className="mb-8 bg-destructive/5 border-destructive/30">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
