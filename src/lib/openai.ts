@@ -3,6 +3,7 @@ import { PILLARS_CONFIG } from '@/types/analysis';
 export interface AIAnalysisResult {
   scores: Record<string, number>;
   observations: Record<string, string>;
+  explanations: Record<string, string>; // Explicação detalhada do que foi visto
   summary: string;
   context: string;
 }
@@ -15,26 +16,30 @@ export async function analyzeImageWithAI(
     throw new Error('ERRO: Variável de ambiente VITE_OPENAI_API_KEY não está definida. Configure o arquivo .env com sua chave da OpenAI.');
   }
 
-  const pillarsDescription = PILLARS_CONFIG.map(p =>
-    `- ${p.name} (${p.id}): Camada ${p.layer === 'foundation' ? '1 - Fundamentos' : p.layer === 'conversion' ? '2 - Conversão' : '3 - Potencialização'}`
-  ).join('\n');
+  const pillarsDescription = PILLARS_CONFIG.map(p => {
+    const layerName = p.layer === 'foundation' ? '1 - Fundamentos' :
+                     p.layer === 'conversion' ? '2 - Conversão' :
+                     '3 - Potencialização';
+    return `- ${p.name} (ID: ${p.id}) - ${layerName}`;
+  }).join('\n');
 
   const prompt = `Você é um especialista em análise de vendas. Analise esta imagem (pode ser uma conversa de Instagram, WhatsApp, proposta comercial, etc.) e avalie a jornada mental do cliente nos seguintes 15 pilares:
 
 ${pillarsDescription}
 
-Para cada pilar, dê uma nota de 0 a 10 e uma observação específica sobre o que foi identificado na imagem.
-
 IMPORTANTE:
-- Se a imagem não mostrar informação relevante para algum pilar, dê nota 5 (neutro) e explique que não há dados suficientes
+- Para cada pilar, dê uma nota de 0 a 10
+- Crie uma EXPLICAÇÃO DETALHADA (2-3 frases) do que você viu na imagem que justifica a nota
+- Crie uma OBSERVAÇÃO CURTA (1 frase) resumindo o ponto principal
+- Se a imagem não mostrar informação relevante para algum pilar, dê nota 5 (neutro)
 - Analise o contexto: é Instagram? WhatsApp? Proposta? Email? Identifique isso
-- Seja específico nas observações: cite trechos ou elementos da imagem
+- Seja específico: cite trechos ou elementos da imagem
 - Foque na PERCEPÇÃO do cliente, não na intenção do vendedor
 
-Responda APENAS em formato JSON válido, seguindo exatamente esta estrutura:
+Responda APENAS em formato JSON válido, seguindo EXATAMENTE esta estrutura (todos os 15 pilares são obrigatórios):
 
 {
-  "context": "Descrição breve do contexto (ex: 'Conversa de Instagram DM', 'Proposta comercial por email', etc.)",
+  "context": "Descrição breve do contexto (ex: 'Conversa de Instagram DM')",
   "summary": "Resumo geral da análise em 2-3 frases",
   "scores": {
     "professionalism": 8,
@@ -53,9 +58,36 @@ Responda APENAS em formato JSON válido, seguindo exatamente esta estrutura:
     "energy-flow": 8
   },
   "observations": {
-    "professionalism": "Observação específica sobre profissionalismo vista na imagem",
-    "technical-clarity": "Observação específica sobre clareza técnica",
-    (... continue para todos os 15 pilares ...)
+    "professionalism": "Resumo curto do profissionalismo",
+    "technical-clarity": "Resumo curto da clareza técnica",
+    "trust-security": "Resumo curto de confiança",
+    "risk-reduction": "Resumo curto de redução de risco",
+    "timing": "Resumo curto do timing",
+    "positioning": "Resumo curto do posicionamento",
+    "expectation-alignment": "Resumo curto do alinhamento",
+    "differentiation": "Resumo curto da diferenciação",
+    "value-perception": "Resumo curto da percepção de valor",
+    "ease-closing": "Resumo curto da facilidade de fechar",
+    "client-control": "Resumo curto do controle do cliente",
+    "charisma": "Resumo curto do carisma",
+    "authority-behavioral": "Resumo curto da autoridade",
+    "energy-flow": "Resumo curto da energia"
+  },
+  "explanations": {
+    "professionalism": "Explicação detalhada de 2-3 frases sobre o que foi visto na imagem relacionado ao profissionalismo",
+    "technical-clarity": "Explicação detalhada sobre clareza técnica",
+    "trust-security": "Explicação detalhada sobre confiança",
+    "risk-reduction": "Explicação detalhada sobre redução de risco",
+    "timing": "Explicação detalhada sobre timing",
+    "positioning": "Explicação detalhada sobre posicionamento",
+    "expectation-alignment": "Explicação detalhada sobre alinhamento",
+    "differentiation": "Explicação detalhada sobre diferenciação",
+    "value-perception": "Explicação detalhada sobre valor",
+    "ease-closing": "Explicação detalhada sobre facilidade de fechar",
+    "client-control": "Explicação detalhada sobre controle do cliente",
+    "charisma": "Explicação detalhada sobre carisma",
+    "authority-behavioral": "Explicação detalhada sobre autoridade",
+    "energy-flow": "Explicação detalhada sobre energia e fluxo"
   }
 }`;
 
@@ -113,7 +145,7 @@ Responda APENAS em formato JSON válido, seguindo exatamente esta estrutura:
 
     // Validar que todos os pilares foram avaliados
     const missingPillars = PILLARS_CONFIG.filter(
-      p => !(p.id in result.scores) || !(p.id in result.observations)
+      p => !(p.id in result.scores) || !(p.id in result.observations) || !(p.id in result.explanations)
     );
 
     if (missingPillars.length > 0) {
@@ -124,9 +156,13 @@ Responda APENAS em formato JSON válido, seguindo exatamente esta estrutura:
         if (!(p.id in result.observations)) {
           result.observations[p.id] = 'Dados insuficientes para avaliação';
         }
+        if (!(p.id in result.explanations)) {
+          result.explanations[p.id] = 'Não foi possível identificar informações relevantes na imagem para avaliar este pilar.';
+        }
       });
     }
 
+    console.log('Resultado da análise da IA:', result);
     return result;
   } catch (error) {
     console.error('Erro ao analisar imagem:', error);

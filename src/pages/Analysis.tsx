@@ -86,22 +86,34 @@ export default function Analysis() {
 
     setIsAnalyzing(true);
     try {
+      console.log('Iniciando análise com IA...');
       const result = await analyzeImageWithAI(selectedImage, apiKey);
+      console.log('Resultado recebido:', result);
 
       // Preencher contexto automaticamente
       setDescription(result.context + ' - ' + result.summary);
 
-      // Preencher pilares com as notas e observações da IA
-      setPillars(prev =>
-        prev.map(p => ({
-          ...p,
-          score: result.scores[p.id] || 5,
-          observation: result.observations[p.id] || '',
-        }))
-      );
+      // Preencher pilares com as notas, observações e explicações da IA
+      const updatedPillars = PILLARS_CONFIG.map(p => ({
+        id: p.id,
+        name: p.name,
+        score: result.scores[p.id] || 5,
+        observation: result.explanations[p.id] || result.observations[p.id] || 'Sem dados',
+        action: '',
+      }));
+
+      console.log('Pilares atualizados:', updatedPillars);
+      setPillars(updatedPillars);
 
       setShowAIUpload(false);
-      toast.success('Análise automática concluída! Revise os resultados abaixo.');
+      toast.success('Análise automática concluída! Revise os resultados abaixo.', {
+        duration: 5000
+      });
+
+      // Scroll suave para a seção de pilares
+      setTimeout(() => {
+        window.scrollTo({ top: 400, behavior: 'smooth' });
+      }, 500);
     } catch (error) {
       console.error('Erro na análise:', error);
       toast.error(
@@ -185,8 +197,13 @@ export default function Analysis() {
               </CardTitle>
               <p className="text-sm text-muted-foreground">
                 Faça upload de uma imagem (print do Instagram, WhatsApp, proposta, etc.) e
-                a IA preencherá automaticamente os 15 pilares para você
+                a IA preencherá automaticamente os 15 pilares para você, incluindo:
               </p>
+              <ul className="text-xs text-muted-foreground mt-2 space-y-1 list-disc list-inside">
+                <li><strong>Notas de 0-10</strong> para cada pilar</li>
+                <li><strong>Explicação detalhada</strong> de 2-3 frases sobre o que foi visto na imagem</li>
+                <li><strong>Insights acionáveis</strong> automáticos para pilares com pontuação baixa</li>
+              </ul>
             </CardHeader>
             <CardContent className="space-y-4">
               <ImageUpload
