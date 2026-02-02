@@ -5,22 +5,46 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { BarChart3, TrendingUp, History, Crown, ShoppingCart, Lock } from 'lucide-react';
 import { hasLifetimeAccess } from '@/lib/access';
+import { checkUserAccess } from '@/lib/access-supabase';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function Home() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [hasAccess, setHasAccess] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Verificar status de acesso (SEM TRIAL - apenas vitalício)
-    setHasAccess(hasLifetimeAccess());
+    async function checkAccess() {
+      // Se está logado, verificar no Supabase
+      if (user?.email) {
+        const status = await checkUserAccess(user.email);
+        if (status) {
+          setHasAccess(status.has_lifetime_access);
 
-    // Atualizar status a cada 5 segundos (caso o usuário pague em outra aba)
+          // Sincronizar com localStorage
+          if (status.has_lifetime_access) {
+            localStorage.setItem('lifetime_access', 'true');
+            localStorage.setItem('user_email', user.email);
+          }
+        }
+      } else {
+        // Fallback para localStorage
+        setHasAccess(hasLifetimeAccess());
+      }
+
+      setLoading(false);
+    }
+
+    checkAccess();
+
+    // Atualizar status a cada 10 segundos
     const interval = setInterval(() => {
-      setHasAccess(hasLifetimeAccess());
-    }, 5000);
+      checkAccess();
+    }, 10000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [user]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -39,7 +63,11 @@ export default function Home() {
 
           {/* Indicador de Acesso */}
           <div className="flex items-center justify-center gap-3 mt-6">
-            {hasAccess ? (
+            {loading ? (
+              <Badge variant="outline" className="text-sm px-4 py-2 gap-2">
+                Verificando acesso...
+              </Badge>
+            ) : hasAccess ? (
               <Badge
                 variant="outline"
                 className="text-sm px-4 py-2 gap-2 bg-success/10 text-success border-success/30"
