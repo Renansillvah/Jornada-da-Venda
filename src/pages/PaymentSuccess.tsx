@@ -4,55 +4,76 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { CheckCircle2, Crown, Sparkles, Mail } from 'lucide-react';
 import { createAccountAfterPayment } from '@/lib/access';
+import { grantLifetimeAccessSupabase } from '@/lib/access-supabase';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function PaymentSuccess() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const { user } = useAuth();
   const [processing, setProcessing] = useState(true);
   const [accountCreated, setAccountCreated] = useState(false);
   const [userEmail, setUserEmail] = useState('');
 
   useEffect(() => {
-    // Capturar parâmetros do Mercado Pago
-    const paymentId = searchParams.get('payment_id') || searchParams.get('preference_id') || `mp_${Date.now()}`;
-    const collectionId = searchParams.get('collection_id');
-    const collectionStatus = searchParams.get('collection_status');
-    const paymentType = searchParams.get('payment_type');
-    const merchantOrderId = searchParams.get('merchant_order_id');
-    const externalReference = searchParams.get('external_reference');
+    async function processPayment() {
+      // Capturar parâmetros do Mercado Pago
+      const paymentId = searchParams.get('payment_id') || searchParams.get('preference_id') || `mp_${Date.now()}`;
+      const collectionId = searchParams.get('collection_id');
+      const collectionStatus = searchParams.get('collection_status');
+      const paymentType = searchParams.get('payment_type');
+      const merchantOrderId = searchParams.get('merchant_order_id');
+      const externalReference = searchParams.get('external_reference');
 
-    // Email pode vir como parâmetro customizado ou precisará ser pedido
-    const email = searchParams.get('email') || '';
+      console.log('Mercado Pago callback:', {
+        paymentId,
+        collectionId,
+        collectionStatus,
+        paymentType,
+        merchantOrderId,
+        externalReference,
+      });
 
-    console.log('Mercado Pago callback:', {
-      paymentId,
-      collectionId,
-      collectionStatus,
-      paymentType,
-      merchantOrderId,
-      externalReference,
-    });
+      // ✅ PRIORIDADE 1: Email do usuário logado
+      let email = user?.email || '';
 
-    setTimeout(() => {
-      // Se tiver email, criar conta automaticamente
+      // ✅ PRIORIDADE 2: Email nos parâmetros da URL
+      if (!email) {
+        email = searchParams.get('email') || '';
+      }
+
+      // ✅ PRIORIDADE 3: Pedir email se não tiver
+      if (!email) {
+        email = localStorage.getItem('user_email') || '';
+      }
+
+      if (!email) {
+        email = prompt('Digite seu email para ativar o acesso:') || 'comprador@jornadadavenda.com';
+      }
+
+      // ✅ CONCEDER ACESSO NO SUPABASE (centralizado)
       if (email) {
-        const result = createAccountAfterPayment(email, paymentId, 9.99);
-
-        if (result.success) {
-          setAccountCreated(true);
-          setUserEmail(result.email);
+        try {
+          await grantLifetimeAccessSupabase(email, paymentId, 'mercadopago');
+          console.log('✅ Acesso vitalício concedido no Supabase para:', email);
+        } catch (error) {
+          console.error('❌ Erro ao conceder acesso no Supabase:', error);
         }
-      } else {
-        // Se não tiver email nos params, ainda assim ativar acesso
-        // O email será pedido ou recuperado depois
-        createAccountAfterPayment('comprador@jornadadavenda.com', paymentId, 9.99);
+      }
+
+      // ✅ TAMBÉM salvar no localStorage (compatibilidade)
+      const result = createAccountAfterPayment(email, paymentId, 9.99);
+
+      if (result.success) {
         setAccountCreated(true);
-        setUserEmail('');
+        setUserEmail(result.email);
       }
 
       setProcessing(false);
-    }, 2000);
-  }, [searchParams]);
+    }
+
+    setTimeout(() => processPayment(), 2000);
+  }, [searchParams, user]);
 
   if (processing) {
     return (

@@ -48,10 +48,34 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return { error: { message: 'Supabase não configurado' } };
     }
 
-    const { error } = await supabase.auth.signInWithPassword({
+    const { error, data } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
+
+    // ✅ INTEGRAÇÃO: Verificar se existe na tabela user_access, senão criar
+    if (!error && data.user) {
+      try {
+        const { data: existingUser } = await supabase
+          .from('user_access')
+          .select('*')
+          .eq('email', email.toLowerCase().trim())
+          .single();
+
+        // Se não existe, criar registro
+        if (!existingUser) {
+          await supabase.from('user_access').insert({
+            email: email.toLowerCase().trim(),
+            has_lifetime_access: false,
+            payment_status: 'pending',
+            granted_by: 'login',
+          });
+          console.log('✅ Registro criado no login para:', email);
+        }
+      } catch (checkError) {
+        console.warn('⚠️ Erro ao verificar/criar registro de acesso:', checkError);
+      }
+    }
 
     return { error };
   };
@@ -61,7 +85,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return { error: { message: 'Supabase não configurado' } };
     }
 
-    const { error } = await supabase.auth.signUp({
+    const { error, data } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -70,6 +94,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         },
       },
     });
+
+    // ✅ INTEGRAÇÃO: Criar registro na tabela user_access automaticamente
+    if (!error && data.user) {
+      try {
+        await supabase.from('user_access').insert({
+          email: email.toLowerCase().trim(),
+          has_lifetime_access: false, // SEM acesso até pagar
+          payment_status: 'pending', // Aguardando pagamento
+          granted_by: 'signup', // Veio do cadastro
+        });
+        console.log('✅ Usuário criado na tabela user_access:', email);
+      } catch (insertError) {
+        console.warn('⚠️ Erro ao criar registro de acesso:', insertError);
+        // Não bloquear o cadastro se der erro aqui
+      }
+    }
 
     return { error };
   };
