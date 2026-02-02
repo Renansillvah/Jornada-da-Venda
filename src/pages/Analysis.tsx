@@ -5,15 +5,17 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { ArrowLeft, Sparkles, Loader2, Lightbulb } from 'lucide-react';
+import { ArrowLeft, Sparkles, Loader2, Lightbulb, Zap, Clock } from 'lucide-react';
 import { PILLARS_CONFIG, CONTEXT_OPTIONS } from '@/types/analysis';
 import { saveAnalysis } from '@/lib/storage';
 import type { Pillar, Analysis as AnalysisType } from '@/types/analysis';
+import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { BarView } from '@/components/BarView';
 import { ImageUpload } from '@/components/ImageUpload';
-import { analyzeImageWithAI, getOpenAIKey } from '@/lib/openai';
+import { analyzeImageWithAI, getOpenAIKey, type AnalysisMode } from '@/lib/openai';
 import { canAnalyze, hasLifetimeAccess, useTrialAnalysis, getRemainingTrialAnalyses } from '@/lib/access';
 
 export default function Analysis() {
@@ -33,6 +35,7 @@ export default function Analysis() {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
   const [aiConclusion, setAiConclusion] = useState<string>('');
+  const [analysisMode, setAnalysisMode] = useState<AnalysisMode>('quick');
 
   const toggleContext = (option: string) => {
     setContext(prev =>
@@ -119,11 +122,20 @@ export default function Analysis() {
     }
 
     setIsAnalyzing(true);
+
+    const modeLabel = analysisMode === 'quick' ? 'Rápida' : 'Detalhada';
+    const estimatedTime = analysisMode === 'quick' ? '15-30 segundos' : '60-90 segundos';
+
+    toast.info(`Análise ${modeLabel} iniciada`, {
+      description: `Analisando ${selectedImages.length} imagem(ns). Tempo estimado: ${estimatedTime}. Aguarde...`,
+      duration: 5000
+    });
+
     try {
-      console.log('🚀 Iniciando análise com IA...');
+      console.log(`🚀 Iniciando análise ${modeLabel} com IA...`);
       console.log(`📸 Analisando ${selectedImages.length} imagem(ns)`);
 
-      const result = await analyzeImageWithAI(selectedImages, apiKey);
+      const result = await analyzeImageWithAI(selectedImages, apiKey, analysisMode);
       console.log('✅ Resultado recebido da IA:', result);
       console.log('📊 Scores recebidos:', result.scores);
       console.log('📝 Explanations recebidas:', result.explanations);
@@ -291,11 +303,70 @@ export default function Analysis() {
                 a IA preencherá automaticamente os 15 pilares para você.
               </p>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <ImageUpload
-                onImagesSelected={(_, base64Images) => setSelectedImages(base64Images)}
-                maxImages={5}
-              />
+            <CardContent className="space-y-6">
+              {/* Modo de Análise */}
+              <div className="space-y-3">
+                <Label className="text-base font-semibold">Escolha o tipo de análise</Label>
+                <RadioGroup value={analysisMode} onValueChange={(value) => setAnalysisMode(value as AnalysisMode)}>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {/* Modo Rápido */}
+                    <label
+                      htmlFor="quick"
+                      className={cn(
+                        "flex items-start gap-3 p-4 rounded-lg border-2 cursor-pointer transition-all",
+                        analysisMode === 'quick'
+                          ? "border-primary bg-primary/5"
+                          : "border-border hover:border-primary/50"
+                      )}
+                    >
+                      <RadioGroupItem value="quick" id="quick" />
+                      <div className="flex-1 space-y-1">
+                        <div className="flex items-center gap-2">
+                          <Zap className="w-4 h-4 text-primary" />
+                          <span className="font-semibold">Análise Rápida</span>
+                          <span className="text-xs text-muted-foreground">(15-30s)</span>
+                        </div>
+                        <p className="text-sm text-muted-foreground">
+                          Notas + observações objetivas + ações principais de melhoria
+                        </p>
+                      </div>
+                    </label>
+
+                    {/* Modo Detalhado */}
+                    <label
+                      htmlFor="detailed"
+                      className={cn(
+                        "flex items-start gap-3 p-4 rounded-lg border-2 cursor-pointer transition-all",
+                        analysisMode === 'detailed'
+                          ? "border-primary bg-primary/5"
+                          : "border-border hover:border-primary/50"
+                      )}
+                    >
+                      <RadioGroupItem value="detailed" id="detailed" />
+                      <div className="flex-1 space-y-1">
+                        <div className="flex items-center gap-2">
+                          <Clock className="w-4 h-4 text-primary" />
+                          <span className="font-semibold">Análise Detalhada</span>
+                          <span className="text-xs text-muted-foreground">(60-90s)</span>
+                        </div>
+                        <p className="text-sm text-muted-foreground">
+                          Análise completa + impactos + 6-10 ações detalhadas + exemplos práticos
+                        </p>
+                      </div>
+                    </label>
+                  </div>
+                </RadioGroup>
+              </div>
+
+              {/* Upload de Imagens */}
+              <div className="space-y-3">
+                <Label className="text-base font-semibold">Faça upload das imagens</Label>
+                <ImageUpload
+                  onImagesSelected={(_, base64Images) => setSelectedImages(base64Images)}
+                  maxImages={5}
+                />
+              </div>
+
               {selectedImages.length > 0 && (
                 <div className="flex justify-end gap-3">
                   <Button
@@ -311,17 +382,17 @@ export default function Analysis() {
                     onClick={handleAIAnalysis}
                     disabled={isAnalyzing}
                     size="lg"
-                    className="gap-2"
+                    className="gap-2 min-w-[200px]"
                   >
                     {isAnalyzing ? (
                       <>
                         <Loader2 className="w-4 h-4 animate-spin" />
-                        Analisando...
+                        {analysisMode === 'quick' ? 'Analisando (15-30s)...' : 'Analisando (60-90s)...'}
                       </>
                     ) : (
                       <>
                         <Sparkles className="w-4 h-4" />
-                        Analisar Imagem
+                        Iniciar Análise
                       </>
                     )}
                   </Button>
@@ -379,7 +450,7 @@ export default function Analysis() {
 
         {/* Conclusão Geral da IA */}
         {aiConclusion && (
-          <Card className="mb-8 border-primary/50 bg-gradient-to-br from-primary/10 to-primary/5">
+          <Card className="mb-8 border-primary/50 bg-primary/10">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-primary">
                 <Lightbulb className="w-5 h-5" />

@@ -11,9 +11,12 @@ export interface AIAnalysisResult {
   conclusion: string; // Conclusão geral da análise
 }
 
+export type AnalysisMode = 'quick' | 'detailed';
+
 export async function analyzeImageWithAI(
   base64Images: string | string[],
-  apiKey: string
+  apiKey: string,
+  mode: AnalysisMode = 'detailed'
 ): Promise<AIAnalysisResult> {
   if (!apiKey) {
     throw new Error('ERRO: Variável de ambiente VITE_OPENAI_API_KEY não está definida. Configure o arquivo .env com sua chave da OpenAI.');
@@ -33,9 +36,44 @@ export async function analyzeImageWithAI(
     ? `estas ${images.length} imagens que mostram diferentes momentos da jornada de vendas`
     : 'esta imagem';
 
-  const prompt = `ATENCAO CRITICA: Voce DEVE responder APENAS com JSON valido. NAO adicione texto antes ou depois do JSON. NAO use blocos markdown. Responda DIRETAMENTE com o objeto JSON puro começando com { e terminando com }.
+  // Escolher prompt baseado no modo
+  const prompt = mode === 'quick' ? getQuickPrompt(imagesContext, images.length, pillarsDescription) : getDetailedPrompt(imagesContext, images.length, pillarsDescription);
 
-Você é um especialista em análise de vendas consultivo. Analise ${imagesContext} (pode ser conversa de Instagram, WhatsApp, proposta comercial, etc.) e avalie a jornada mental do cliente nos seguintes 15 pilares:
+  // Função para gerar prompt rápido (15-30 segundos)
+  function getQuickPrompt(context: string, imageCount: number, pillars: string): string {
+    return `ATENCAO CRITICA: Voce DEVE responder APENAS com JSON valido. NAO adicione texto antes ou depois do JSON. Responda DIRETAMENTE com o objeto JSON puro começando com { e terminando com }.
+
+Você é um especialista em análise de vendas consultivo. Analise ${context} (conversa de Instagram, WhatsApp, proposta, etc.) e avalie RAPIDAMENTE a jornada do cliente nos 15 pilares:
+
+${imageCount > 1 ? `⚠️ Você recebeu ${imageCount} imagens - analise todas de forma integrada.` : ''}
+
+${pillars}
+
+MODO RÁPIDO - Para cada pilar:
+1. Dê nota de 0 a 10 baseada no que VIU
+2. Escreva observação CURTA (2-3 frases diretas)
+3. Escreva explicação OBJETIVA (4-6 frases sobre: O que viu + Principal impacto + 2-3 ações de melhoria)
+4. Indique confiança: "high", "medium", "low" ou "none"
+5. Se confidence = "none", dê nota 0 e escreva: "Não foi possível avaliar com base na imagem."
+
+Responda em JSON com esta estrutura:
+{
+  "context": "Descrição breve do contexto",
+  "summary": "Resumo geral em 2 frases",
+  "conclusion": "Conclusão estratégica objetiva (80-100 palavras): padrão geral identificado + principal foco de melhoria para impactar vendas",
+  "scores": { "professionalism": 8, "technical-clarity": 7, ... },
+  "observations": { "professionalism": "Resumo curto", ... },
+  "explanations": { "professionalism": "O que vi + impacto + ações", ... },
+  "examples": { "professionalism": "Exemplo prático breve se relevante", ... },
+  "confidence": { "professionalism": "high", ... }
+}`;
+  }
+
+  // Função para gerar prompt detalhado (60-90 segundos)
+  function getDetailedPrompt(context: string, imageCount: number, pillars: string): string {
+    return `ATENCAO CRITICA: Voce DEVE responder APENAS com JSON valido. NAO adicione texto antes ou depois do JSON. NAO use blocos markdown. Responda DIRETAMENTE com o objeto JSON puro começando com { e terminando com }.
+
+Você é um especialista em análise de vendas consultivo. Analise ${context} (pode ser conversa de Instagram, WhatsApp, proposta comercial, etc.) e avalie a jornada mental do cliente nos seguintes 15 pilares:
 
 ${images.length > 1 ? `
 ⚠️ IMPORTANTE - ANÁLISE DE MÚLTIPLAS IMAGENS:
@@ -284,8 +322,8 @@ Responda APENAS em formato JSON válido, seguindo EXATAMENTE esta estrutura (tod
             content: messageContent
           }
         ],
-        max_tokens: 16000,
-        temperature: 0.7,
+        max_tokens: mode === 'quick' ? 6000 : 16000,
+        temperature: mode === 'quick' ? 0.5 : 0.7,
         response_format: { type: 'json_object' }
       })
     });
