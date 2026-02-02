@@ -33,7 +33,9 @@ export async function analyzeImageWithAI(
     ? `estas ${images.length} imagens que mostram diferentes momentos da jornada de vendas`
     : 'esta imagem';
 
-  const prompt = `Você é um especialista em análise de vendas consultivo. Analise ${imagesContext} (pode ser conversa de Instagram, WhatsApp, proposta comercial, etc.) e avalie a jornada mental do cliente nos seguintes 15 pilares:
+  const prompt = `⚠️ ATENÇÃO CRÍTICA: Você DEVE responder APENAS com JSON válido. NÃO adicione texto antes ou depois do JSON. NÃO use markdown (```json). Responda DIRETAMENTE com o objeto JSON puro começando com { e terminando com }.
+
+Você é um especialista em análise de vendas consultivo. Analise ${imagesContext} (pode ser conversa de Instagram, WhatsApp, proposta comercial, etc.) e avalie a jornada mental do cliente nos seguintes 15 pilares:
 
 ${images.length > 1 ? `
 ⚠️ IMPORTANTE - ANÁLISE DE MÚLTIPLAS IMAGENS:
@@ -283,7 +285,8 @@ Responda APENAS em formato JSON válido, seguindo EXATAMENTE esta estrutura (tod
           }
         ],
         max_tokens: 16000,
-        temperature: 0.7
+        temperature: 0.7,
+        response_format: { type: 'json_object' }
       })
     });
 
@@ -299,16 +302,43 @@ Responda APENAS em formato JSON válido, seguindo EXATAMENTE esta estrutura (tod
     const content = data.choices[0].message.content;
     console.log('📄 Resposta bruta da OpenAI (primeiros 500 chars):', content.substring(0, 500));
 
+    // Verificar se a resposta é uma recusa/erro da IA
+    if (!content.includes('{') || content.toLowerCase().includes("i'm sorry") || content.toLowerCase().includes("i cannot")) {
+      throw new Error('A IA não conseguiu analisar a imagem. Isso pode acontecer se a imagem contém conteúdo sensível, está muito pequena/ilegível, ou não contém informações de vendas. Tente com outra imagem ou faça a análise manual.');
+    }
+
     // Extrair JSON da resposta (pode vir com ```json ou texto antes/depois)
     let jsonContent = content;
-    const jsonMatch = content.match(/```json\n([\s\S]*?)\n```/) || content.match(/\{[\s\S]*\}/);
-    if (jsonMatch) {
-      jsonContent = jsonMatch[1] || jsonMatch[0];
-      console.log('✂️ JSON extraído (primeiros 500 chars):', jsonContent.substring(0, 500));
+
+    // Tentar extrair JSON de várias formas
+    const jsonBlockMatch = content.match(/```json\s*([\s\S]*?)\s*```/);
+    const jsonObjectMatch = content.match(/\{[\s\S]*\}/);
+
+    if (jsonBlockMatch) {
+      jsonContent = jsonBlockMatch[1];
+      console.log('✂️ JSON extraído de bloco markdown');
+    } else if (jsonObjectMatch) {
+      jsonContent = jsonObjectMatch[0];
+      console.log('✂️ JSON extraído do texto');
+    } else {
+      // Último recurso: tentar limpar texto antes/depois de { e }
+      const startIndex = content.indexOf('{');
+      const endIndex = content.lastIndexOf('}');
+      if (startIndex !== -1 && endIndex !== -1 && endIndex > startIndex) {
+        jsonContent = content.substring(startIndex, endIndex + 1);
+        console.log('✂️ JSON extraído por índices de chaves');
+      }
     }
 
     console.log('🔄 Tentando fazer parse do JSON...');
-    const result: AIAnalysisResult = JSON.parse(jsonContent);
+    let result: AIAnalysisResult;
+    try {
+      result = JSON.parse(jsonContent);
+    } catch (parseError) {
+      console.error('❌ Erro ao fazer parse do JSON:', parseError);
+      console.error('📄 Conteúdo que tentou parsear:', jsonContent.substring(0, 1000));
+      throw new Error('A resposta da IA não está no formato esperado. Isso pode ser um problema temporário da API. Tente novamente em alguns segundos.');
+    }
     console.log('✅ Parse bem sucedido! Estrutura:', {
       hasScores: !!result.scores,
       hasObservations: !!result.observations,
