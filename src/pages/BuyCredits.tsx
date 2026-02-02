@@ -49,6 +49,19 @@ export default function BuyCredits() {
       return;
     }
 
+    // Verificar se a variável está carregada ANTES de tentar criar o pagamento
+    if (!import.meta.env.VITE_MERCADO_PAGO_ACCESS_TOKEN) {
+      toast.error('Configuração não carregada', {
+        description: 'Recarregue a página (Ctrl+Shift+R) para ativar o Mercado Pago',
+        duration: 10000,
+        action: {
+          label: 'Recarregar Agora',
+          onClick: () => window.location.reload()
+        }
+      });
+      return;
+    }
+
     setLoading(true);
 
     try {

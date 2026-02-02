@@ -16,4 +16,6 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  // Forçar reload de variáveis de ambiente
+  envPrefix: 'VITE_',
 })
