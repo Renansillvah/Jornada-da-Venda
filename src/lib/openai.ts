@@ -10,12 +10,15 @@ export interface AIAnalysisResult {
 }
 
 export async function analyzeImageWithAI(
-  base64Image: string,
+  base64Images: string | string[],
   apiKey: string
 ): Promise<AIAnalysisResult> {
   if (!apiKey) {
     throw new Error('ERRO: Variável de ambiente VITE_OPENAI_API_KEY não está definida. Configure o arquivo .env com sua chave da OpenAI.');
   }
+
+  // Suporta uma ou múltiplas imagens
+  const images = Array.isArray(base64Images) ? base64Images : [base64Images];
 
   const pillarsDescription = PILLARS_CONFIG.map(p => {
     const layerName = p.layer === 'foundation' ? '1 - Fundamentos' :
@@ -24,7 +27,22 @@ export async function analyzeImageWithAI(
     return `- ${p.name} (ID: ${p.id}) - ${layerName}`;
   }).join('\n');
 
-  const prompt = `Você é um especialista em análise de vendas consultivo. Analise esta imagem (pode ser uma conversa de Instagram, WhatsApp, proposta comercial, etc.) e avalie a jornada mental do cliente nos seguintes 15 pilares:
+  const imagesContext = images.length > 1
+    ? `estas ${images.length} imagens que mostram diferentes momentos da jornada de vendas`
+    : 'esta imagem';
+
+  const prompt = `Você é um especialista em análise de vendas consultivo. Analise ${imagesContext} (pode ser conversa de Instagram, WhatsApp, proposta comercial, etc.) e avalie a jornada mental do cliente nos seguintes 15 pilares:
+
+${images.length > 1 ? `
+⚠️ IMPORTANTE - ANÁLISE DE MÚLTIPLAS IMAGENS:
+Você recebeu ${images.length} imagens. Analise TODAS elas de forma integrada:
+- Imagem 1 pode ser: primeiro contato (Instagram/WhatsApp)
+- Imagem 2 pode ser: proposta comercial
+- Imagem 3 pode ser: follow-up ou reunião
+- Etc.
+
+Combine informações de TODAS as imagens para dar notas mais precisas. Quanto mais imagens, mais dados você tem para avaliar cada pilar com alta confiança!
+` : ''}
 
 ${pillarsDescription}
 
@@ -186,6 +204,25 @@ Responda APENAS em formato JSON válido, seguindo EXATAMENTE esta estrutura (tod
 }`;
 
   try {
+    // Construir array de conteúdo com texto + todas as imagens
+    const content: Array<{type: string; text?: string; image_url?: {url: string; detail: string}}> = [
+      {
+        type: 'text',
+        text: prompt
+      }
+    ];
+
+    // Adicionar todas as imagens
+    images.forEach(base64Image => {
+      content.push({
+        type: 'image_url',
+        image_url: {
+          url: base64Image,
+          detail: 'high'
+        }
+      });
+    });
+
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -197,19 +234,7 @@ Responda APENAS em formato JSON válido, seguindo EXATAMENTE esta estrutura (tod
         messages: [
           {
             role: 'user',
-            content: [
-              {
-                type: 'text',
-                text: prompt
-              },
-              {
-                type: 'image_url',
-                image_url: {
-                  url: base64Image,
-                  detail: 'high'
-                }
-              }
-            ]
+            content: content
           }
         ],
         max_tokens: 16000,

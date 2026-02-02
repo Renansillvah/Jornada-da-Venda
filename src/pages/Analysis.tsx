@@ -29,7 +29,7 @@ export default function Analysis() {
   );
   const [showAIUpload, setShowAIUpload] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [selectedImages, setSelectedImages] = useState<string[]>([]);
 
   const toggleContext = (option: string) => {
     setContext(prev =>
@@ -68,8 +68,8 @@ export default function Analysis() {
   };
 
   const handleAIAnalysis = async () => {
-    if (!selectedImage) {
-      toast.error('Selecione uma imagem para analisar');
+    if (selectedImages.length === 0) {
+      toast.error('Selecione pelo menos uma imagem para analisar');
       return;
     }
 
@@ -87,9 +87,9 @@ export default function Analysis() {
     setIsAnalyzing(true);
     try {
       console.log('🚀 Iniciando análise com IA...');
-      console.log('📸 Tamanho da imagem (base64):', selectedImage.length, 'caracteres');
+      console.log(`📸 Analisando ${selectedImages.length} imagem(ns)`);
 
-      const result = await analyzeImageWithAI(selectedImage, apiKey);
+      const result = await analyzeImageWithAI(selectedImages, apiKey);
       console.log('✅ Resultado recebido da IA:', result);
       console.log('📊 Scores recebidos:', result.scores);
       console.log('📝 Explanations recebidas:', result.explanations);
@@ -229,25 +229,21 @@ export default function Analysis() {
                 Análise Automática com IA
               </CardTitle>
               <p className="text-sm text-muted-foreground">
-                Faça upload de uma imagem (print do Instagram, WhatsApp, proposta, etc.) e
-                a IA preencherá automaticamente os 15 pilares para você, incluindo:
+                Faça upload de imagens (prints do Instagram, WhatsApp, proposta, etc.) e
+                a IA preencherá automaticamente os 15 pilares para você.
               </p>
-              <ul className="text-xs text-muted-foreground mt-2 space-y-1 list-disc list-inside">
-                <li><strong>Notas de 0-10</strong> para cada pilar</li>
-                <li><strong>Explicação detalhada</strong> de 2-3 frases sobre o que foi visto na imagem</li>
-                <li><strong>Insights acionáveis</strong> automáticos para pilares com pontuação baixa</li>
-              </ul>
             </CardHeader>
             <CardContent className="space-y-4">
               <ImageUpload
-                onImageSelected={(_, base64) => setSelectedImage(base64)}
+                onImagesSelected={(_, base64Images) => setSelectedImages(base64Images)}
+                maxImages={5}
               />
-              {selectedImage && (
+              {selectedImages.length > 0 && (
                 <div className="flex justify-end gap-3">
                   <Button
                     variant="outline"
                     onClick={() => {
-                      setSelectedImage(null);
+                      setSelectedImages([]);
                       setShowAIUpload(false);
                     }}
                   >
