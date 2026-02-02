@@ -1,6 +1,6 @@
 import { ThemeToggle } from '@/components/theme-toggle';
 import { Button } from '@/components/ui/button';
-import { BarChart3 } from 'lucide-react';
+import { JDVLogo } from '@/components/JDVLogo';
 import { useNavigate } from 'react-router-dom';
 import { HeroSection } from '@/components/landing/HeroSection';
 import { ProblemSection } from '@/components/landing/ProblemSection';
@@ -23,9 +23,7 @@ export default function LandingPage() {
             className="flex items-center gap-2 cursor-pointer"
             onClick={() => navigate('/')}
           >
-            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-              <BarChart3 className="w-5 h-5 text-primary-foreground" />
-            </div>
+            <JDVLogo className="w-8 h-8 text-primary" />
             <span className="text-xl font-bold text-foreground">
               Jornada da Venda
             </span>
