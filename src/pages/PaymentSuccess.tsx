@@ -13,17 +13,41 @@ export default function PaymentSuccess() {
   const [userEmail, setUserEmail] = useState('');
 
   useEffect(() => {
-    // Simular processamento do pagamento
-    const paymentId = searchParams.get('payment_id') || `mp_${Date.now()}`;
-    const email = searchParams.get('email') || searchParams.get('payer_email') || '';
+    // Capturar parâmetros do Mercado Pago
+    const paymentId = searchParams.get('payment_id') || searchParams.get('preference_id') || `mp_${Date.now()}`;
+    const collectionId = searchParams.get('collection_id');
+    const collectionStatus = searchParams.get('collection_status');
+    const paymentType = searchParams.get('payment_type');
+    const merchantOrderId = searchParams.get('merchant_order_id');
+    const externalReference = searchParams.get('external_reference');
+
+    // Email pode vir como parâmetro customizado ou precisará ser pedido
+    const email = searchParams.get('email') || '';
+
+    console.log('Mercado Pago callback:', {
+      paymentId,
+      collectionId,
+      collectionStatus,
+      paymentType,
+      merchantOrderId,
+      externalReference,
+    });
 
     setTimeout(() => {
-      // Criar conta automaticamente após pagamento
-      const result = createAccountAfterPayment(email, paymentId, 9.99);
+      // Se tiver email, criar conta automaticamente
+      if (email) {
+        const result = createAccountAfterPayment(email, paymentId, 9.99);
 
-      if (result.success) {
+        if (result.success) {
+          setAccountCreated(true);
+          setUserEmail(result.email);
+        }
+      } else {
+        // Se não tiver email nos params, ainda assim ativar acesso
+        // O email será pedido ou recuperado depois
+        const result = createAccountAfterPayment('comprador@jornadadavenda.com', paymentId, 9.99);
         setAccountCreated(true);
-        setUserEmail(result.email);
+        setUserEmail('');
       }
 
       setProcessing(false);

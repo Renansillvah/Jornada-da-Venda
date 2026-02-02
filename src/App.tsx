@@ -14,6 +14,8 @@ import Login from '@/pages/Login';
 import Signup from '@/pages/Signup';
 import ForgotPassword from '@/pages/ForgotPassword';
 import PaymentSuccess from '@/pages/PaymentSuccess';
+import PaymentPending from '@/pages/PaymentPending';
+import PaymentFailure from '@/pages/PaymentFailure';
 
 export function App() {
   return (
@@ -28,8 +30,10 @@ export function App() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
 
-        {/* Rota de sucesso do pagamento (pública) */}
+        {/* Rotas de pagamento (públicas) */}
         <Route path="/payment/success" element={<PaymentSuccess />} />
+        <Route path="/payment/pending" element={<PaymentPending />} />
+        <Route path="/payment/failure" element={<PaymentFailure />} />
 
         {/* Rotas do app (protegidas) */}
         <Route

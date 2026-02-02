@@ -3,14 +3,19 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Sparkles, Check, Zap, TrendingUp, Crown, Shield } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { ArrowLeft, Sparkles, Check, Zap, TrendingUp, Crown, Shield, Mail, User } from 'lucide-react';
 import { hasLifetimeAccess } from '@/lib/access';
+import { createPaymentPreference } from '@/lib/mercadopago';
 import { toast } from 'sonner';
 
 export default function BuyCredits() {
   const navigate = useNavigate();
   const hasAccess = hasLifetimeAccess();
   const [loading, setLoading] = useState(false);
+  const [email, setEmail] = useState('');
+  const [name, setName] = useState('');
 
   // Se já tem acesso vitalício, redirecionar
   if (hasAccess) {
@@ -34,25 +39,45 @@ export default function BuyCredits() {
     );
   }
 
-  const handlePurchase = () => {
+  const handlePurchase = async () => {
+    // Validar email
+    if (!email || !email.includes('@')) {
+      toast.error('Email inválido', {
+        description: 'Por favor, insira um email válido'
+      });
+      return;
+    }
+
     setLoading(true);
 
-    // Aqui você vai integrar com Mercado Pago
-    toast.info('Redirecionando para pagamento...', {
-      description: 'Você será redirecionado para o Mercado Pago'
-    });
+    try {
+      toast.info('Criando pagamento...', {
+        description: 'Aguarde enquanto preparamos seu checkout'
+      });
 
-    // Simular redirect para Mercado Pago
-    setTimeout(() => {
-      toast.error('Integração com Mercado Pago ainda não configurada', {
-        description: 'Configure suas credenciais do Mercado Pago nas Settings',
-        action: {
-          label: 'Ir para Settings',
-          onClick: () => navigate('/settings')
-        }
+      // Criar preferência de pagamento no Mercado Pago
+      const preference = await createPaymentPreference({
+        email,
+        name: name || undefined,
+      });
+
+      // Redirecionar para o checkout do Mercado Pago
+      toast.success('Redirecionando para o Mercado Pago...', {
+        description: 'Você será levado para a página de pagamento'
+      });
+
+      // Aguardar 1 segundo antes de redirecionar
+      setTimeout(() => {
+        window.location.href = preference.init_point;
+      }, 1000);
+
+    } catch (error) {
+      console.error('Erro ao criar pagamento:', error);
+      toast.error('Erro ao processar pagamento', {
+        description: error instanceof Error ? error.message : 'Tente novamente em alguns instantes'
       });
       setLoading(false);
-    }, 1500);
+    }
   };
 
   return (
@@ -223,6 +248,49 @@ export default function BuyCredits() {
               <p className="text-xs text-center text-muted-foreground mt-2">
                 Identifique e corrija os erros que te fazem perder vendas
               </p>
+            </div>
+
+            {/* Formulário */}
+            <div className="space-y-4 bg-muted/20 p-4 rounded-lg">
+              <h3 className="font-semibold text-center text-sm">Complete para continuar:</h3>
+
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-sm">
+                  Email *
+                </Label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="seu@email.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="pl-10"
+                    required
+                  />
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Usaremos este email para criar sua conta automaticamente
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="name" className="text-sm">
+                  Nome (opcional)
+                </Label>
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Input
+                    id="name"
+                    type="text"
+                    placeholder="Seu nome"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+              </div>
             </div>
 
             {/* CTA */}
