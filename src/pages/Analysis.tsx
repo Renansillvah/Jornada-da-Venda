@@ -97,24 +97,27 @@ export default function Analysis() {
       // Preencher contexto automaticamente
       setDescription(result.context + ' - ' + result.summary);
 
-      // Preencher pilares com as notas, observações e explicações da IA
+      // Preencher pilares com as notas, observações, explicações e confiança da IA
       const updatedPillars = PILLARS_CONFIG.map(p => {
         const score = result.scores[p.id];
         const explanation = result.explanations[p.id];
+        const confidence = result.confidence?.[p.id] || 'none';
 
         console.log(`Processando pilar ${p.name}:`, {
           id: p.id,
           scoreRecebido: score,
-          scoreUsado: score || 5,
+          scoreUsado: score || 0,
+          confidence: confidence,
           hasExplanation: !!explanation
         });
 
         return {
           id: p.id,
           name: p.name,
-          score: typeof score === 'number' ? score : 5,
-          observation: explanation || result.observations[p.id] || 'Sem dados',
+          score: typeof score === 'number' ? score : 0,
+          observation: explanation || result.observations[p.id] || 'Não avaliado',
           action: '',
+          confidence: confidence,
         };
       });
 
@@ -124,9 +127,16 @@ export default function Analysis() {
       setPillars(updatedPillars);
 
       setShowAIUpload(false);
+
+      // Contar pilares por nível de confiança
+      const highConfidence = updatedPillars.filter(p => p.confidence === 'high').length;
+      const mediumConfidence = updatedPillars.filter(p => p.confidence === 'medium').length;
+      const lowConfidence = updatedPillars.filter(p => p.confidence === 'low').length;
+      const notAnalyzed = updatedPillars.filter(p => p.confidence === 'none').length;
+
       toast.success('Análise automática concluída! Revise os resultados abaixo.', {
-        duration: 5000,
-        description: `${updatedPillars.filter(p => p.score > 0).length} pilares avaliados`
+        duration: 7000,
+        description: `${highConfidence} alta confiança • ${mediumConfidence} média • ${lowConfidence} baixa • ${notAnalyzed} não analisados`
       });
 
       // Scroll suave para a seção de pilares

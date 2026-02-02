@@ -2,7 +2,8 @@ import { useState, useMemo, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Plus, RotateCcw, AlertCircle } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Plus, RotateCcw, AlertCircle, ShieldCheck, ShieldAlert, ShieldQuestion, ShieldX } from 'lucide-react';
 import type { Pillar } from '@/types/analysis';
 import { PILLARS_CONFIG, getLayerInfo, getScoreLevel, getActionableInsight } from '@/types/analysis';
 import { cn } from '@/lib/utils';
@@ -115,17 +116,64 @@ export function BarView({ pillars, onScoreChange }: BarViewProps) {
           const currentScore = pillar.score;
           const hasChanged = currentScore !== (pillars.find(p => p.id === pillar.id)?.score || 0);
           const scoreInfo = getScoreLevel(currentScore);
+          const confidence = pillar.confidence;
+
+          // Definir badge de confiança
+          const getConfidenceBadge = (conf?: string) => {
+            if (!conf || conf === 'none') {
+              return {
+                icon: ShieldX,
+                label: 'Não analisado',
+                color: 'bg-muted text-muted-foreground',
+                description: 'Imagem não contém dados para este pilar'
+              };
+            }
+            if (conf === 'low') {
+              return {
+                icon: ShieldQuestion,
+                label: 'Baixa confiança',
+                color: 'bg-warning/10 text-warning border-warning/30',
+                description: 'Análise baseada em poucos elementos'
+              };
+            }
+            if (conf === 'medium') {
+              return {
+                icon: ShieldAlert,
+                label: 'Média confiança',
+                color: 'bg-info/10 text-info border-info/30',
+                description: 'Análise baseada em elementos parciais'
+              };
+            }
+            return {
+              icon: ShieldCheck,
+              label: 'Alta confiança',
+              color: 'bg-success/10 text-success border-success/30',
+              description: 'Análise baseada em elementos claros'
+            };
+          };
+
+          const confidenceBadge = getConfidenceBadge(confidence);
+          const ConfidenceIcon = confidenceBadge.icon;
 
           return (
             <Card key={pillar.id} className={cn(
               "transition-all",
-              hasChanged && "border-primary/50 shadow-sm"
+              hasChanged && "border-primary/50 shadow-sm",
+              confidence === 'none' && "opacity-60"
             )}>
               <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-sm font-semibold">
-                    {pillar.name}
-                  </CardTitle>
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2 flex-1">
+                    <CardTitle className="text-sm font-semibold">
+                      {pillar.name}
+                    </CardTitle>
+                    {confidence && (
+                      <Badge variant="outline" className={cn("text-[10px] px-1.5 py-0 h-5 gap-1", confidenceBadge.color)} title={confidenceBadge.description}>
+                        <ConfidenceIcon className="w-3 h-3" />
+                        <span className="hidden sm:inline">{confidenceBadge.label}</span>
+                      </Badge>
+                    )}
+                  </div>
                   <div className="flex items-center gap-2">
                     <span className={cn("text-xs font-semibold", scoreInfo.color)}>
                       {scoreInfo.level}

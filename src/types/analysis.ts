@@ -4,6 +4,7 @@ export interface Pillar {
   score: number;
   observation: string;
   action: string;
+  confidence?: 'high' | 'medium' | 'low' | 'none'; // Nível de confiança da análise
 }
 
 export interface Analysis {

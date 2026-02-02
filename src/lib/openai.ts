@@ -4,6 +4,7 @@ export interface AIAnalysisResult {
   scores: Record<string, number>;
   observations: Record<string, string>;
   explanations: Record<string, string>; // Explicação detalhada do que foi visto
+  confidence: Record<string, 'high' | 'medium' | 'low' | 'none'>; // Nível de confiança da análise
   summary: string;
   context: string;
 }
@@ -50,12 +51,23 @@ Para cada pilar, você DEVE criar uma explicação COMPLETA e ACIONÁVEL seguind
   3. Responda em até 5min (manter rapidez) mas com texto formatado e sem abreviações
 
 INSTRUÇÕES CRÍTICAS:
-- Para cada pilar, dê uma nota de 0 a 10 baseada no que VIU na imagem
+- Para cada pilar, dê uma nota de 0 a 10 baseada APENAS no que VIU na imagem
 - A explicação DEVE ter as 3 partes: O QUE VIU + IMPACTO + O QUE FAZER
 - Use quebras de linha e formatação clara (mas mantenha como string, não markdown)
-- Se a imagem não mostrar informação relevante para algum pilar, dê nota 5 e explique que não há dados
 - Analise o contexto: é Instagram? WhatsApp? Proposta? Email?
 - Foque na PERCEPÇÃO do cliente, não na intenção do vendedor
+
+IMPORTANTE - NÍVEL DE CONFIANÇA:
+Para cada pilar, você DEVE indicar o nível de confiança da análise:
+- "high": A imagem mostra CLARAMENTE informações sobre este pilar (ex: conversa tem timing claro, tom de voz explícito)
+- "medium": A imagem mostra informações PARCIAIS sobre este pilar (ex: é possível inferir algumas coisas)
+- "low": A imagem mostra informações MÍNIMAS sobre este pilar (ex: consegue deduzir algo, mas com incerteza)
+- "none": A imagem NÃO mostra informações relevantes sobre este pilar
+
+REGRAS PARA PILARES SEM DADOS (confidence: "none"):
+- Dê nota 0 (não inventar nota se não há dados)
+- Na explicação, escreva apenas: "Não foi possível avaliar este pilar com base na imagem fornecida. Este contexto não apresenta elementos suficientes para análise."
+- Não invente análises para pilares que não podem ser avaliados na imagem
 
 Responda APENAS em formato JSON válido, seguindo EXATAMENTE esta estrutura (todos os 15 pilares são obrigatórios):
 
@@ -96,7 +108,7 @@ Responda APENAS em formato JSON válido, seguindo EXATAMENTE esta estrutura (tod
   },
   "explanations": {
     "professionalism": "O QUE FOI VISTO: Na conversa do WhatsApp, o vendedor usou foto de perfil pessoal (não corporativa), respondeu 'blz' e 'tmj', e não assinou as mensagens com nome/cargo. IMPACTO: Cliente pode questionar se está falando com empresa estruturada ou apenas um freelancer informal, gerando dúvida sobre suporte pós-venda. O QUE FAZER: 1) Use foto profissional/logo da empresa no WhatsApp Business, 2) Evite gírias - escreva 'certo' ao invés de 'blz', 3) Adicione assinatura automática: 'João Silva - Consultor Comercial | Nome da Empresa'",
-    "technical-clarity": "[Mesmo formato: O QUE FOI VISTO + IMPACTO + O QUE FAZER com ações práticas numeradas]",
+    "technical-clarity": "[Mesmo formato se houver dados, ou 'Não foi possível avaliar...' se confidence: none]",
     "trust-security": "[Mesmo formato]",
     "risk-reduction": "[Mesmo formato]",
     "timing": "[Mesmo formato]",
@@ -109,6 +121,22 @@ Responda APENAS em formato JSON válido, seguindo EXATAMENTE esta estrutura (tod
     "charisma": "[Mesmo formato]",
     "authority-behavioral": "[Mesmo formato]",
     "energy-flow": "[Mesmo formato]"
+  },
+  "confidence": {
+    "professionalism": "high",
+    "technical-clarity": "medium",
+    "trust-security": "low",
+    "risk-reduction": "none",
+    "timing": "high",
+    "positioning": "medium",
+    "expectation-alignment": "low",
+    "differentiation": "none",
+    "value-perception": "medium",
+    "ease-closing": "high",
+    "client-control": "low",
+    "charisma": "medium",
+    "authority-behavioral": "low",
+    "energy-flow": "high"
   }
 }`;
 
@@ -176,24 +204,33 @@ Responda APENAS em formato JSON válido, seguindo EXATAMENTE esta estrutura (tod
 
     // Validar que todos os pilares foram avaliados
     const missingPillars = PILLARS_CONFIG.filter(
-      p => !(p.id in result.scores) || !(p.id in result.observations) || !(p.id in result.explanations)
+      p => !(p.id in result.scores) || !(p.id in result.observations) || !(p.id in result.explanations) || !(p.id in result.confidence)
     );
 
     if (missingPillars.length > 0) {
       console.warn('Pilares faltando na resposta da IA:', missingPillars);
       // Preencher pilares faltantes com valores neutros
       missingPillars.forEach(p => {
-        if (!(p.id in result.scores)) result.scores[p.id] = 5;
+        if (!(p.id in result.scores)) result.scores[p.id] = 0;
         if (!(p.id in result.observations)) {
-          result.observations[p.id] = 'Dados insuficientes para avaliação';
+          result.observations[p.id] = 'Não avaliado';
         }
         if (!(p.id in result.explanations)) {
-          result.explanations[p.id] = 'Não foi possível identificar informações relevantes na imagem para avaliar este pilar.';
+          result.explanations[p.id] = 'Não foi possível avaliar este pilar com base na imagem fornecida.';
+        }
+        if (!(p.id in result.confidence)) {
+          result.confidence[p.id] = 'none';
         }
       });
     }
 
     console.log('Resultado da análise da IA:', result);
+    console.log('📊 Pilares por confiança:', {
+      high: Object.entries(result.confidence).filter(([, c]) => c === 'high').length,
+      medium: Object.entries(result.confidence).filter(([, c]) => c === 'medium').length,
+      low: Object.entries(result.confidence).filter(([, c]) => c === 'low').length,
+      none: Object.entries(result.confidence).filter(([, c]) => c === 'none').length,
+    });
     return result;
   } catch (error) {
     console.error('Erro ao analisar imagem:', error);
