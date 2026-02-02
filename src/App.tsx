@@ -12,7 +12,6 @@ import History from '@/pages/History';
 import Settings from '@/pages/Settings';
 import BuyCredits from '@/pages/BuyCredits';
 import Login from '@/pages/Login';
-import Signup from '@/pages/Signup';
 import ForgotPassword from '@/pages/ForgotPassword';
 import PaymentSuccess from '@/pages/PaymentSuccess';
 import PaymentPending from '@/pages/PaymentPending';

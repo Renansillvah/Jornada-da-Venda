@@ -16,7 +16,7 @@ import { toast } from 'sonner';
 import { BarView } from '@/components/BarView';
 import { ImageUpload } from '@/components/ImageUpload';
 import { analyzeImageWithAI, getOpenAIKey, type AnalysisMode } from '@/lib/openai';
-import { canAnalyze, hasLifetimeAccess } from '@/lib/access';
+import { canAnalyze } from '@/lib/access';
 
 export default function Analysis() {
   const navigate = useNavigate();

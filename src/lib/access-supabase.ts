@@ -28,6 +28,11 @@ export interface AccessStatus {
 
 // ✅ Verificar acesso do usuário
 export async function checkUserAccess(email: string): Promise<AccessStatus | null> {
+  if (!supabase) {
+    console.error('❌ Supabase não está configurado');
+    return null;
+  }
+
   try {
     const { data, error } = await supabase.rpc('check_user_access', {
       user_email: email,
@@ -51,6 +56,10 @@ export async function grantLifetimeAccessSupabase(
   paymentId?: string,
   grantedBy: string = 'admin'
 ): Promise<{ success: boolean; message?: string; error?: string }> {
+  if (!supabase) {
+    return { success: false, error: 'Supabase não está configurado' };
+  }
+
   try {
     const { data, error } = await supabase.rpc('grant_lifetime_access', {
       user_email: email,
@@ -81,6 +90,10 @@ export async function grantLifetimeAccessSupabase(
 export async function useTrialAnalysisSupabase(
   email: string
 ): Promise<{ success: boolean; trial_remaining?: number; error?: string }> {
+  if (!supabase) {
+    return { success: false, error: 'Supabase não está configurado' };
+  }
+
   try {
     const { data, error } = await supabase.rpc('use_trial_analysis', {
       user_email: email,
@@ -103,6 +116,11 @@ export async function useTrialAnalysisSupabase(
 
 // 📋 Listar todos os usuários (ADMIN)
 export async function listAllUsers(): Promise<UserAccess[]> {
+  if (!supabase) {
+    console.error('❌ Supabase não está configurado');
+    return [];
+  }
+
   try {
     const { data, error } = await supabase
       .from('user_access')
@@ -123,6 +141,11 @@ export async function listAllUsers(): Promise<UserAccess[]> {
 
 // 🔍 Buscar usuário por email (ADMIN)
 export async function getUserByEmail(email: string): Promise<UserAccess | null> {
+  if (!supabase) {
+    console.error('❌ Supabase não está configurado');
+    return null;
+  }
+
   try {
     const { data, error } = await supabase
       .from('user_access')
