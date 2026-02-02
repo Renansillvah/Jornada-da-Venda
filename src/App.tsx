@@ -8,6 +8,7 @@ import Home from '@/pages/Home';
 import Analysis from '@/pages/Analysis';
 import History from '@/pages/History';
 import CompanyHealth from '@/pages/CompanyHealth';
+import Settings from '@/pages/Settings';
 import Login from '@/pages/Login';
 import Signup from '@/pages/Signup';
 import ForgotPassword from '@/pages/ForgotPassword';
@@ -61,6 +62,16 @@ export function App() {
             <ProtectedRoute>
               <AppLayout>
                 <CompanyHealth />
+              </AppLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/settings"
+          element={
+            <ProtectedRoute>
+              <AppLayout>
+                <Settings />
               </AppLayout>
             </ProtectedRoute>
           }

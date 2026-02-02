@@ -5,12 +5,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Sparkles, Loader2 } from 'lucide-react';
 import { PILLARS_CONFIG, CONTEXT_OPTIONS } from '@/types/analysis';
 import { saveAnalysis } from '@/lib/storage';
 import type { Pillar, Analysis as AnalysisType } from '@/types/analysis';
 import { toast } from 'sonner';
 import { BarView } from '@/components/BarView';
+import { ImageUpload } from '@/components/ImageUpload';
+import { analyzeImageWithAI, getOpenAIKey } from '@/lib/openai';
 
 export default function Analysis() {
   const navigate = useNavigate();
@@ -25,6 +27,9 @@ export default function Analysis() {
       action: '',
     }))
   );
+  const [showAIUpload, setShowAIUpload] = useState(false);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   const toggleContext = (option: string) => {
     setContext(prev =>
@@ -60,6 +65,53 @@ export default function Analysis() {
       strongest: strongest?.name || '',
       weakest: weakest?.name || '',
     };
+  };
+
+  const handleAIAnalysis = async () => {
+    if (!selectedImage) {
+      toast.error('Selecione uma imagem para analisar');
+      return;
+    }
+
+    const apiKey = getOpenAIKey();
+    if (!apiKey) {
+      toast.error('Configure sua chave da OpenAI nas configurações', {
+        action: {
+          label: 'Configurar',
+          onClick: () => navigate('/settings')
+        }
+      });
+      return;
+    }
+
+    setIsAnalyzing(true);
+    try {
+      const result = await analyzeImageWithAI(selectedImage, apiKey);
+
+      // Preencher contexto automaticamente
+      setDescription(result.context + ' - ' + result.summary);
+
+      // Preencher pilares com as notas e observações da IA
+      setPillars(prev =>
+        prev.map(p => ({
+          ...p,
+          score: result.scores[p.id] || 5,
+          observation: result.observations[p.id] || '',
+        }))
+      );
+
+      setShowAIUpload(false);
+      toast.success('Análise automática concluída! Revise os resultados abaixo.');
+    } catch (error) {
+      console.error('Erro na análise:', error);
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : 'Erro ao analisar imagem. Verifique sua chave da OpenAI.'
+      );
+    } finally {
+      setIsAnalyzing(false);
+    }
   };
 
   const handleSave = () => {
@@ -110,7 +162,70 @@ export default function Analysis() {
           Voltar
         </Button>
 
-        <h1 className="text-3xl font-bold mb-8">Nova Análise de Jornada</h1>
+        <div className="flex items-center justify-between mb-8">
+          <h1 className="text-3xl font-bold">Nova Análise de Jornada</h1>
+          <Button
+            onClick={() => setShowAIUpload(!showAIUpload)}
+            variant={showAIUpload ? 'outline' : 'default'}
+            size="lg"
+            className="gap-2"
+          >
+            <Sparkles className="w-5 h-5" />
+            {showAIUpload ? 'Análise Manual' : 'Analisar com IA'}
+          </Button>
+        </div>
+
+        {/* AI Upload Section */}
+        {showAIUpload && (
+          <Card className="mb-8 border-primary/50 bg-primary/5">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-primary" />
+                Análise Automática com IA
+              </CardTitle>
+              <p className="text-sm text-muted-foreground">
+                Faça upload de uma imagem (print do Instagram, WhatsApp, proposta, etc.) e
+                a IA preencherá automaticamente os 15 pilares para você
+              </p>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <ImageUpload
+                onImageSelected={(_, base64) => setSelectedImage(base64)}
+              />
+              {selectedImage && (
+                <div className="flex justify-end gap-3">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setSelectedImage(null);
+                      setShowAIUpload(false);
+                    }}
+                  >
+                    Cancelar
+                  </Button>
+                  <Button
+                    onClick={handleAIAnalysis}
+                    disabled={isAnalyzing}
+                    size="lg"
+                    className="gap-2"
+                  >
+                    {isAnalyzing ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Analisando...
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="w-4 h-4" />
+                        Analisar Imagem
+                      </>
+                    )}
+                  </Button>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
 
         {/* Context Section */}
         <Card className="mb-8">
