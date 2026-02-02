@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { ArrowLeft, Trash2, Eye, Calendar, FileText, Search, Filter, X, Download, Copy, FileDown } from 'lucide-react';
 import { BarView } from '@/components/BarView';
-import { getAnalyses, deleteAnalysis } from '@/lib/storage';
+import { deleteAnalysis } from '@/lib/storage';
 import type { Analysis } from '@/types/analysis';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -27,19 +27,16 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { toast } from 'sonner';
+import { useAnalyses } from '@/hooks/useAnalyses';
 
 export default function History() {
   const navigate = useNavigate();
-  const [analyses, setAnalyses] = useState<Analysis[]>([]);
+  const { analyses, loading, reload } = useAnalyses();
   const [selectedAnalysis, setSelectedAnalysis] = useState<Analysis | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterContext, setFilterContext] = useState<string>('all');
   const [filterScore, setFilterScore] = useState<string>('all');
   const [showFilters, setShowFilters] = useState(false);
-
-  useEffect(() => {
-    setAnalyses(getAnalyses());
-  }, []);
 
   const filteredAnalyses = useMemo(() => {
     return analyses.filter(analysis => {
@@ -71,9 +68,9 @@ export default function History() {
     setFilterScore('all');
   };
 
-  const handleDelete = (id: string) => {
-    deleteAnalysis(id);
-    setAnalyses(getAnalyses());
+  const handleDelete = async (id: string) => {
+    await deleteAnalysis(id);
+    await reload();
     toast.success('Análise excluída');
   };
 

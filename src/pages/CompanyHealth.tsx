@@ -5,26 +5,32 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { ArrowLeft, TrendingUp, TrendingDown, Minus, AlertCircle, Info, BarChart3 } from 'lucide-react';
-import { getAnalyses } from '@/lib/storage';
 import { calculateCompanyHealth } from '@/lib/companyHealth';
 import { PILLARS_CONFIG, getLayerInfo, getScoreLevel } from '@/types/analysis';
 import type { CompanyHealth as CompanyHealthType } from '@/types/analysis';
 import EvolutionChart from '@/components/EvolutionChart';
 import PillarComparisonChart from '@/components/PillarComparisonChart';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useAnalyses } from '@/hooks/useAnalyses';
 
 export default function CompanyHealth() {
   const navigate = useNavigate();
+  const { analyses: allAnalyses, loading } = useAnalyses();
   const [health, setHealth] = useState<CompanyHealthType | null>(null);
-  const [analyses, setAnalyses] = useState<any[]>([]);
 
   useEffect(() => {
-    const allAnalyses = getAnalyses();
-    const activeAnalyses = allAnalyses.filter(a => a.isActive);
-    const companyHealth = calculateCompanyHealth(allAnalyses);
-    setHealth(companyHealth);
-    setAnalyses(activeAnalyses);
-  }, []);
+    if (!loading && allAnalyses.length > 0) {
+      const companyHealth = calculateCompanyHealth(allAnalyses);
+      setHealth(companyHealth);
+    } else if (!loading && allAnalyses.length === 0) {
+      setHealth({
+        pillarScores: {},
+        overallScore: 0,
+        totalAnalyses: 0,
+        lastAnalysisDate: '',
+      });
+    }
+  }, [allAnalyses, loading]);
 
   if (!health) {
     return (
@@ -229,9 +235,9 @@ export default function CompanyHealth() {
             />
 
             {/* Gráfico de Evolução Geral */}
-            {analyses.length > 1 && (
+            {allAnalyses.filter(a => a.isActive).length > 1 && (
               <EvolutionChart
-                data={analyses.slice(0, 10).reverse().map(a => ({
+                data={allAnalyses.filter(a => a.isActive).slice(0, 10).reverse().map(a => ({
                   date: a.date,
                   score: a.averageScore,
                   context: a.context.join(', ')

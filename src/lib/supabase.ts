@@ -2,14 +2,19 @@ import { createClient } from '@supabase/supabase-js';
 import type { Analysis } from '@/types/analysis';
 
 // Cliente Supabase
-const supabaseUrl = import.meta.env.SUPABASE_URL || '';
-const supabaseAnonKey = import.meta.env.SUPABASE_ANON_KEY || '';
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 
 // Verificar se as variáveis de ambiente estão configuradas
 const isSupabaseConfigured = supabaseUrl && supabaseAnonKey;
 
 export const supabase = isSupabaseConfigured
-  ? createClient(supabaseUrl, supabaseAnonKey)
+  ? createClient(supabaseUrl, supabaseAnonKey, {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+      }
+    })
   : null;
 
 /**
