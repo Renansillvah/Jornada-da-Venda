@@ -56,15 +56,29 @@ export function BarView({ pillars, onScoreChange }: BarViewProps) {
   };
 
   const diagnostic = useMemo(() => {
-    const pillarScores = PILLARS_CONFIG.map(config => {
+    // Filtrar apenas pilares avaliados (score > 0)
+    const evaluatedConfigs = PILLARS_CONFIG.filter(config => (scores[config.id] || 0) > 0);
+
+    // Se nenhum pilar foi avaliado, retornar média 0
+    if (evaluatedConfigs.length === 0) {
+      return {
+        average: 0,
+        strongest: '',
+        weakest: '',
+      };
+    }
+
+    // Calcular média ponderada apenas dos pilares avaliados
+    const pillarScores = evaluatedConfigs.map(config => {
       const score = scores[config.id] || 0;
       const weight = config.weight || 1;
       return score * weight;
     });
-    const totalWeight = PILLARS_CONFIG.reduce((sum, config) => sum + (config.weight || 1), 0);
+    const totalWeight = evaluatedConfigs.reduce((sum, config) => sum + (config.weight || 1), 0);
     const weightedAverage = pillarScores.reduce((a, b) => a + b, 0) / totalWeight;
 
-    const scoredPillars = pillars.map(p => ({ ...p, score: scores[p.id] }));
+    // Pegar apenas pilares avaliados para strongest/weakest
+    const scoredPillars = pillars.map(p => ({ ...p, score: scores[p.id] })).filter(p => p.score > 0);
     const maxScore = Math.max(...scoredPillars.map(p => p.score));
     const minScore = Math.min(...scoredPillars.map(p => p.score));
     const strongest = scoredPillars.find(p => p.score === maxScore)?.name || '';

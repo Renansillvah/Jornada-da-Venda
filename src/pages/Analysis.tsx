@@ -48,19 +48,37 @@ export default function Analysis() {
   };
 
   const calculateDiagnostic = () => {
-    const pillarScores = PILLARS_CONFIG.map(config => {
+    // Filtrar apenas pilares avaliados (score > 0)
+    const evaluatedPillars = PILLARS_CONFIG.filter(config => {
+      const pillar = pillars.find(p => p.id === config.id);
+      return (pillar?.score || 0) > 0;
+    });
+
+    // Se nenhum pilar foi avaliado, retornar média 0
+    if (evaluatedPillars.length === 0) {
+      return {
+        average: 0,
+        strongest: '',
+        weakest: '',
+      };
+    }
+
+    // Calcular média ponderada apenas dos pilares avaliados
+    const pillarScores = evaluatedPillars.map(config => {
       const pillar = pillars.find(p => p.id === config.id);
       const score = pillar?.score || 0;
       const weight = config.weight || 1;
       return score * weight;
     });
-    const totalWeight = PILLARS_CONFIG.reduce((sum, config) => sum + (config.weight || 1), 0);
+    const totalWeight = evaluatedPillars.reduce((sum, config) => sum + (config.weight || 1), 0);
     const weightedAverage = pillarScores.reduce((a, b) => a + b, 0) / totalWeight;
 
-    const maxScore = Math.max(...pillars.map(p => p.score));
-    const minScore = Math.min(...pillars.map(p => p.score));
-    const strongest = pillars.find(p => p.score === maxScore);
-    const weakest = pillars.find(p => p.score === minScore);
+    // Pegar apenas pilares avaliados para strongest/weakest
+    const evaluatedPillarsList = pillars.filter(p => p.score > 0);
+    const maxScore = Math.max(...evaluatedPillarsList.map(p => p.score));
+    const minScore = Math.min(...evaluatedPillarsList.map(p => p.score));
+    const strongest = evaluatedPillarsList.find(p => p.score === maxScore);
+    const weakest = evaluatedPillarsList.find(p => p.score === minScore);
 
     return {
       average: Math.round(weightedAverage * 10) / 10,

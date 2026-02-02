@@ -20,9 +20,34 @@ export function StrategicSummary({ pillars, averageScore }: StrategicSummaryProp
   const goodCount = pillars.filter(p => p.score >= 6 && p.score < 8).length;
   const evaluatedCount = pillars.filter(p => p.score > 0).length;
 
+  // Determinar cor baseada na média
+  const getScoreColor = () => {
+    if (averageScore >= 7) return {
+      border: 'border-success/30',
+      bg: 'bg-success/5',
+      text: 'text-success',
+      icon: 'text-success'
+    };
+    if (averageScore >= 4) return {
+      border: 'border-warning/30',
+      bg: 'bg-warning/5',
+      text: 'text-warning-foreground',
+      icon: 'text-warning'
+    };
+    return {
+      border: 'border-destructive/30',
+      bg: 'bg-destructive/5',
+      text: 'text-destructive',
+      icon: 'text-destructive'
+    };
+  };
+
+  const scoreColor = getScoreColor();
+
   // Mensagem positiva baseada na média
   const getPositiveMessage = () => {
     if (averageScore >= 8) return 'Excelente! Jornada muito bem estruturada';
+    if (averageScore >= 7) return 'Ótimo! Continue mantendo este nível';
     if (averageScore >= 6) return 'Boa base construída! Continue evoluindo';
     if (averageScore >= 4) return 'Caminho iniciado. Vamos fortalecer os pilares';
     return 'Análise concluída. Identificados os pontos de melhoria';
@@ -31,17 +56,17 @@ export function StrategicSummary({ pillars, averageScore }: StrategicSummaryProp
   return (
     <div className="space-y-4">
       {/* Resumo Positivo */}
-      <Card className="border-2 border-success/30 bg-success/5">
+      <Card className={`border-2 ${scoreColor.border} ${scoreColor.bg}`}>
         <CardContent className="pt-4 pb-4">
           <div className="flex items-center gap-4 mb-3">
             <div className="text-center min-w-16">
-              <div className="text-3xl font-bold text-success">{averageScore}</div>
+              <div className={`text-3xl font-bold ${scoreColor.text}`}>{averageScore}</div>
               <div className="text-xs text-muted-foreground">de 10</div>
             </div>
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-2">
-                <CheckCircle2 className="h-4 w-4 text-success" />
-                <p className="text-sm font-medium text-success">
+                <CheckCircle2 className={`h-4 w-4 ${scoreColor.icon}`} />
+                <p className={`text-sm font-medium ${scoreColor.text}`}>
                   {getPositiveMessage()}
                 </p>
               </div>
