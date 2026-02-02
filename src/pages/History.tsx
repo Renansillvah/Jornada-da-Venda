@@ -89,7 +89,7 @@ export default function History() {
       <div className="container mx-auto px-4 py-8 max-w-6xl">
         <Button
           variant="ghost"
-          onClick={() => navigate('/home')}
+          onClick={() => navigate('/dashboard')}
           className="mb-6"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />

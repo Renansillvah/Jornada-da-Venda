@@ -212,7 +212,7 @@ export default function Analysis() {
       <div className="container mx-auto px-4 py-8 max-w-6xl">
         <Button
           variant="ghost"
-          onClick={() => navigate('/home')}
+          onClick={() => navigate('/dashboard')}
           className="mb-6"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
@@ -362,7 +362,7 @@ export default function Analysis() {
                 </p>
               </div>
               <div className="flex gap-3">
-                <Button onClick={() => navigate('/home')} variant="outline">
+                <Button onClick={() => navigate('/dashboard')} variant="outline">
                   Cancelar
                 </Button>
                 <Button onClick={handleSave} size="lg" className="min-w-48">
