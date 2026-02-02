@@ -70,13 +70,7 @@ export function App() {
         />
         <Route
           path="/buy-credits"
-          element={
-            <ProtectedRoute>
-              <AppLayout>
-                <BuyCredits />
-              </AppLayout>
-            </ProtectedRoute>
-          }
+          element={<BuyCredits />}
         />
       </Routes>
       <Toaster />

@@ -8,6 +8,7 @@ import { SolutionSection } from '@/components/landing/SolutionSection';
 import { FeaturesSection } from '@/components/landing/FeaturesSection';
 import { CTASection } from '@/components/landing/CTASection';
 import { Footer } from '@/components/landing/Footer';
+import { SocialProof } from '@/components/landing/SocialProof';
 
 export default function LandingPage() {
   const navigate = useNavigate();
@@ -60,6 +61,9 @@ export default function LandingPage() {
 
       {/* Footer */}
       <Footer />
+
+      {/* Social Proof (Notificações de compras) */}
+      <SocialProof />
     </div>
   );
 }

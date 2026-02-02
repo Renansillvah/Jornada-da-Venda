@@ -14,6 +14,7 @@ import {
   Users,
   Infinity
 } from 'lucide-react';
+import { SocialProof } from '@/components/landing/SocialProof';
 
 export default function SalesLanding() {
   const navigate = useNavigate();
@@ -345,6 +346,9 @@ export default function SalesLanding() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Social Proof (Notificações de compras) */}
+      <SocialProof />
     </div>
   );
 }
