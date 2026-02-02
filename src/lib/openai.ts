@@ -118,7 +118,7 @@ Responda APENAS em formato JSON válido, seguindo EXATAMENTE esta estrutura (tod
             ]
           }
         ],
-        max_tokens: 2000,
+        max_tokens: 4000,
         temperature: 0.7
       })
     });
@@ -133,15 +133,25 @@ Responda APENAS em formato JSON válido, seguindo EXATAMENTE esta estrutura (tod
 
     const data = await response.json();
     const content = data.choices[0].message.content;
+    console.log('📄 Resposta bruta da OpenAI (primeiros 500 chars):', content.substring(0, 500));
 
     // Extrair JSON da resposta (pode vir com ```json ou texto antes/depois)
     let jsonContent = content;
     const jsonMatch = content.match(/```json\n([\s\S]*?)\n```/) || content.match(/\{[\s\S]*\}/);
     if (jsonMatch) {
       jsonContent = jsonMatch[1] || jsonMatch[0];
+      console.log('✂️ JSON extraído (primeiros 500 chars):', jsonContent.substring(0, 500));
     }
 
+    console.log('🔄 Tentando fazer parse do JSON...');
     const result: AIAnalysisResult = JSON.parse(jsonContent);
+    console.log('✅ Parse bem sucedido! Estrutura:', {
+      hasScores: !!result.scores,
+      hasObservations: !!result.observations,
+      hasExplanations: !!result.explanations,
+      numScores: Object.keys(result.scores || {}).length,
+      numExplanations: Object.keys(result.explanations || {}).length
+    });
 
     // Validar que todos os pilares foram avaliados
     const missingPillars = PILLARS_CONFIG.filter(

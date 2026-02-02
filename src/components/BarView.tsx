@@ -7,6 +7,7 @@ import type { Pillar } from '@/types/analysis';
 import { PILLARS_CONFIG, getLayerInfo, getScoreLevel, getActionableInsight } from '@/types/analysis';
 import { cn } from '@/lib/utils';
 import { StrategicSummary } from './StrategicSummary';
+import { PillarExplanation } from './PillarExplanation';
 
 interface BarViewProps {
   pillars: Pillar[];
@@ -167,10 +168,13 @@ export function BarView({ pillars, onScoreChange }: BarViewProps) {
                   </div>
                 </div>
 
-                {pillar.observation && (
-                  <p className="text-xs text-muted-foreground italic pt-1">
-                    {pillar.observation}
-                  </p>
+                {pillar.observation && pillar.observation !== 'Sem dados' && (
+                  <>
+                    <PillarExplanation
+                      explanation={pillar.observation}
+                      pillarName={pillar.name}
+                    />
+                  </>
                 )}
 
                 {currentScore < 7 && currentScore > 0 && onScoreChange && (

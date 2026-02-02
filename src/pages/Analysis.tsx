@@ -86,28 +86,47 @@ export default function Analysis() {
 
     setIsAnalyzing(true);
     try {
-      console.log('Iniciando análise com IA...');
+      console.log('🚀 Iniciando análise com IA...');
+      console.log('📸 Tamanho da imagem (base64):', selectedImage.length, 'caracteres');
+
       const result = await analyzeImageWithAI(selectedImage, apiKey);
-      console.log('Resultado recebido:', result);
+      console.log('✅ Resultado recebido da IA:', result);
+      console.log('📊 Scores recebidos:', result.scores);
+      console.log('📝 Explanations recebidas:', result.explanations);
 
       // Preencher contexto automaticamente
       setDescription(result.context + ' - ' + result.summary);
 
       // Preencher pilares com as notas, observações e explicações da IA
-      const updatedPillars = PILLARS_CONFIG.map(p => ({
-        id: p.id,
-        name: p.name,
-        score: result.scores[p.id] || 5,
-        observation: result.explanations[p.id] || result.observations[p.id] || 'Sem dados',
-        action: '',
-      }));
+      const updatedPillars = PILLARS_CONFIG.map(p => {
+        const score = result.scores[p.id];
+        const explanation = result.explanations[p.id];
 
-      console.log('Pilares atualizados:', updatedPillars);
+        console.log(`Processando pilar ${p.name}:`, {
+          id: p.id,
+          scoreRecebido: score,
+          scoreUsado: score || 5,
+          hasExplanation: !!explanation
+        });
+
+        return {
+          id: p.id,
+          name: p.name,
+          score: typeof score === 'number' ? score : 5,
+          observation: explanation || result.observations[p.id] || 'Sem dados',
+          action: '',
+        };
+      });
+
+      console.log('✨ Pilares atualizados:', updatedPillars);
+      console.log('📈 Scores finais:', updatedPillars.map(p => ({ name: p.name, score: p.score })));
+
       setPillars(updatedPillars);
 
       setShowAIUpload(false);
       toast.success('Análise automática concluída! Revise os resultados abaixo.', {
-        duration: 5000
+        duration: 5000,
+        description: `${updatedPillars.filter(p => p.score > 0).length} pilares avaliados`
       });
 
       // Scroll suave para a seção de pilares
@@ -115,7 +134,11 @@ export default function Analysis() {
         window.scrollTo({ top: 400, behavior: 'smooth' });
       }, 500);
     } catch (error) {
-      console.error('Erro na análise:', error);
+      console.error('❌ Erro na análise:', error);
+      if (error instanceof Error) {
+        console.error('Mensagem de erro:', error.message);
+        console.error('Stack:', error.stack);
+      }
       toast.error(
         error instanceof Error
           ? error.message
