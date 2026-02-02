@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useAuth } from '@/contexts/AuthContext';
-import { AlertCircle, LogIn } from 'lucide-react';
+import { AlertCircle, LogIn, ArrowLeft } from 'lucide-react';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -33,18 +33,30 @@ export default function Login() {
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1 text-center">
-          <div className="flex justify-center mb-4">
-            <div className="h-16 w-16 bg-primary/10 rounded-full flex items-center justify-center">
-              <LogIn className="h-8 w-8 text-primary" />
+      <div className="w-full max-w-md space-y-4">
+        {/* Botão voltar */}
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => navigate('/')}
+          className="gap-2"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Voltar para início
+        </Button>
+
+        <Card className="w-full">
+          <CardHeader className="space-y-1 text-center">
+            <div className="flex justify-center mb-4">
+              <div className="h-16 w-16 bg-primary/10 rounded-full flex items-center justify-center">
+                <LogIn className="h-8 w-8 text-primary" />
+              </div>
             </div>
-          </div>
-          <CardTitle className="text-2xl font-bold">Bem-vindo de volta</CardTitle>
-          <CardDescription>
-            Entre com sua conta para acessar suas análises
-          </CardDescription>
-        </CardHeader>
+            <CardTitle className="text-2xl font-bold">Bem-vindo de volta</CardTitle>
+            <CardDescription>
+              Entre com sua conta para acessar suas análises
+            </CardDescription>
+          </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             {error && (
@@ -107,7 +119,8 @@ export default function Login() {
             </div>
           </form>
         </CardContent>
-      </Card>
+        </Card>
+      </div>
     </div>
   );
 }

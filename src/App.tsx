@@ -1,9 +1,8 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
-import { ThemeToggle } from '@/components/theme-toggle';
+import { Routes, Route } from 'react-router-dom';
 import { Toaster } from '@/components/ui/sonner';
 import { AuthProvider } from '@/contexts/AuthContext';
 import ProtectedRoute from '@/components/ProtectedRoute';
-import UserMenu from '@/components/UserMenu';
+import AppLayout from '@/components/AppLayout';
 import LandingPage from '@/pages/landing/LandingPage';
 import Home from '@/pages/Home';
 import Analysis from '@/pages/Analysis';
@@ -30,13 +29,9 @@ export function App() {
           path="/dashboard"
           element={
             <ProtectedRoute>
-              <div className="relative min-h-screen">
-                <div className="absolute top-4 right-4 z-50 flex gap-2">
-                  <UserMenu />
-                  <ThemeToggle />
-                </div>
+              <AppLayout>
                 <Home />
-              </div>
+              </AppLayout>
             </ProtectedRoute>
           }
         />
@@ -44,13 +39,9 @@ export function App() {
           path="/analysis"
           element={
             <ProtectedRoute>
-              <div className="relative min-h-screen">
-                <div className="absolute top-4 right-4 z-50 flex gap-2">
-                  <UserMenu />
-                  <ThemeToggle />
-                </div>
+              <AppLayout>
                 <Analysis />
-              </div>
+              </AppLayout>
             </ProtectedRoute>
           }
         />
@@ -58,13 +49,9 @@ export function App() {
           path="/history"
           element={
             <ProtectedRoute>
-              <div className="relative min-h-screen">
-                <div className="absolute top-4 right-4 z-50 flex gap-2">
-                  <UserMenu />
-                  <ThemeToggle />
-                </div>
+              <AppLayout>
                 <History />
-              </div>
+              </AppLayout>
             </ProtectedRoute>
           }
         />
@@ -72,13 +59,9 @@ export function App() {
           path="/company-health"
           element={
             <ProtectedRoute>
-              <div className="relative min-h-screen">
-                <div className="absolute top-4 right-4 z-50 flex gap-2">
-                  <UserMenu />
-                  <ThemeToggle />
-                </div>
+              <AppLayout>
                 <CompanyHealth />
-              </div>
+              </AppLayout>
             </ProtectedRoute>
           }
         />
