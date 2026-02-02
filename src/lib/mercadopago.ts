@@ -73,6 +73,9 @@ export async function createPaymentPreference(
   };
 
   try {
+    console.log('🔍 Criando preferência no Mercado Pago...');
+    console.log('📧 Email do pagador:', userData.email);
+
     const response = await fetch('https://api.mercadopago.com/checkout/preferences', {
       method: 'POST',
       headers: {
@@ -83,11 +86,30 @@ export async function createPaymentPreference(
     });
 
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'Erro ao criar preferência de pagamento');
+      const errorData = await response.json().catch(() => null);
+
+      console.error('❌ Erro da API Mercado Pago:', {
+        status: response.status,
+        statusText: response.statusText,
+        error: errorData,
+      });
+
+      // Mensagens de erro específicas
+      if (response.status === 403) {
+        throw new Error(
+          'Token do Mercado Pago sem permissão. Verifique se o token tem permissão para criar preferências de pagamento (scope: write). Acesse https://www.mercadopago.com.br/developers/panel/app para verificar as permissões.'
+        );
+      }
+
+      if (response.status === 401) {
+        throw new Error('Token do Mercado Pago inválido ou expirado. Gere um novo token em https://www.mercadopago.com.br/developers/panel/app');
+      }
+
+      throw new Error(errorData?.message || `Erro ${response.status}: ${response.statusText}`);
     }
 
     const data = await response.json();
+    console.log('✅ Preferência criada com sucesso:', data.id);
     return data;
   } catch (error) {
     console.error('Erro ao criar preferência no Mercado Pago:', error);
