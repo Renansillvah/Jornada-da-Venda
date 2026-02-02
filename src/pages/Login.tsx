@@ -27,7 +27,7 @@ export default function Login() {
       setError(error.message || 'Erro ao fazer login');
       setLoading(false);
     } else {
-      navigate('/');
+      navigate('/dashboard');
     }
   };
 
