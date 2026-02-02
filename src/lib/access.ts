@@ -100,14 +100,11 @@ export function useTrialAnalysis(): boolean {
   return true;
 }
 
-// Verificar se pode fazer análise (acesso vitalício = SEMPRE ILIMITADO, trial com limite)
+// Verificar se pode fazer análise (APENAS COM ACESSO VITALÍCIO - SEM TRIAL GRATUITO)
 export function canAnalyze(): boolean {
-  if (hasLifetimeAccess()) {
-    return true; // ✅ ACESSO VITALÍCIO = ANÁLISES COMPLETAMENTE ILIMITADAS
-  }
-
-  // Sem acesso vitalício, verificar trial
-  return getRemainingTrialAnalyses() > 0;
+  // ✅ APENAS quem tem acesso vitalício pode analisar
+  // ❌ SEM TRIAL GRATUITO - É necessário comprar para usar
+  return hasLifetimeAccess();
 }
 
 // Criar conta automaticamente após pagamento bem-sucedido

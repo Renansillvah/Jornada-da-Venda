@@ -16,7 +16,7 @@ import { toast } from 'sonner';
 import { BarView } from '@/components/BarView';
 import { ImageUpload } from '@/components/ImageUpload';
 import { analyzeImageWithAI, getOpenAIKey, type AnalysisMode } from '@/lib/openai';
-import { canAnalyze, hasLifetimeAccess, useTrialAnalysis, getRemainingTrialAnalyses } from '@/lib/access';
+import { canAnalyze, hasLifetimeAccess } from '@/lib/access';
 
 export default function Analysis() {
   const navigate = useNavigate();
@@ -97,10 +97,10 @@ export default function Analysis() {
       return;
     }
 
-    // ✅ VERIFICAÇÃO SIMPLES: Se tem acesso vitalício, NUNCA bloqueia
+    // ✅ VERIFICAÇÃO: Apenas quem pagou pode usar (SEM TRIAL GRATUITO)
     if (!canAnalyze()) {
-      toast.error('Trial de 2 análises gratuitas expirado', {
-        description: 'Adquira acesso vitalício por apenas R$ 9,99 para análises ilimitadas!',
+      toast.error('Acesso Vitalício Necessário', {
+        description: 'Adquira acesso vitalício por apenas R$ 9,99 para usar análises com IA!',
         duration: 8000,
         action: {
           label: 'Comprar Agora (R$ 9,99)',
@@ -178,17 +178,9 @@ export default function Analysis() {
       console.log('✨ Pilares atualizados:', updatedPillars);
       console.log('📈 Scores finais:', updatedPillars.map(p => ({ name: p.name, score: p.score })));
 
-      // ✅ IMPORTANTE: Só consome trial se NÃO tiver acesso vitalício
-      // Quem pagou R$ 9,99 tem análises ILIMITADAS - nunca consome crédito!
-      if (!hasLifetimeAccess()) {
-        const trialUsed = useTrialAnalysis();
-        if (!trialUsed) {
-          toast.error('Trial expirado. Adquira acesso vitalício!');
-          return;
-        }
-      } else {
-        console.log('🎉 Acesso vitalício: análise ilimitada - nenhum crédito consumido');
-      }
+      // ✅ SEM SISTEMA DE TRIAL - Apenas acesso vitalício ilimitado
+      // Quem pagou R$ 9,99 tem análises ILIMITADAS - nenhum limite ou contador
+      console.log('🎉 Acesso vitalício confirmado: análise ilimitada');
 
       setPillars(updatedPillars);
 
@@ -200,11 +192,8 @@ export default function Analysis() {
       const lowConfidence = updatedPillars.filter(p => p.confidence === 'low').length;
       const notAnalyzed = updatedPillars.filter(p => p.confidence === 'none').length;
 
-      // ✅ Mensagem diferenciada: quem pagou vê "ilimitadas", quem está no trial vê quantas restam
-      const remainingTrial = getRemainingTrialAnalyses();
-      const statusMessage = hasLifetimeAccess()
-        ? '🎉 Você tem análises ILIMITADAS!'
-        : `Restam ${remainingTrial} análise${remainingTrial !== 1 ? 's' : ''} gratuita${remainingTrial !== 1 ? 's' : ''}`;
+      // ✅ Mensagem de sucesso (sem referência a trial)
+      const statusMessage = '🎉 Acesso Vitalício - Análises ILIMITADAS!';
 
       toast.success('Análise automática concluída! Revise os resultados abaixo.', {
         duration: 7000,

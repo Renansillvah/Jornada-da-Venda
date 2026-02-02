@@ -3,26 +3,20 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { BarChart3, TrendingUp, History, Crown, ShoppingCart, Zap } from 'lucide-react';
-import { hasLifetimeAccess, getRemainingTrialAnalyses, giveFreeTrial } from '@/lib/access';
+import { BarChart3, TrendingUp, History, Crown, ShoppingCart, Lock } from 'lucide-react';
+import { hasLifetimeAccess } from '@/lib/access';
 
 export default function Home() {
   const navigate = useNavigate();
   const [hasAccess, setHasAccess] = useState(false);
-  const [trialRemaining, setTrialRemaining] = useState(0);
 
   useEffect(() => {
-    // Dar trial de 2 análises grátis no primeiro acesso
-    giveFreeTrial();
-
-    // Verificar status de acesso
+    // Verificar status de acesso (SEM TRIAL - apenas vitalício)
     setHasAccess(hasLifetimeAccess());
-    setTrialRemaining(getRemainingTrialAnalyses());
 
     // Atualizar status a cada 5 segundos (caso o usuário pague em outra aba)
     const interval = setInterval(() => {
       setHasAccess(hasLifetimeAccess());
-      setTrialRemaining(getRemainingTrialAnalyses());
     }, 5000);
 
     return () => clearInterval(interval);
@@ -57,23 +51,19 @@ export default function Home() {
               <>
                 <Badge
                   variant="outline"
-                  className={`text-sm px-4 py-2 gap-2 ${
-                    trialRemaining === 0
-                      ? 'bg-destructive/10 text-destructive border-destructive/30'
-                      : 'bg-warning/10 text-warning border-warning/30'
-                  }`}
+                  className="text-sm px-4 py-2 gap-2 bg-destructive/10 text-destructive border-destructive/30"
                 >
-                  <Zap className="w-4 h-4" />
-                  Trial: {trialRemaining} análise{trialRemaining !== 1 ? 's' : ''} gratuita{trialRemaining !== 1 ? 's' : ''}
+                  <Lock className="w-4 h-4" />
+                  Acesso Bloqueado - Compra Necessária
                 </Badge>
                 <Button
                   onClick={() => navigate('/buy-credits')}
                   size="sm"
-                  variant={trialRemaining === 0 ? 'default' : 'outline'}
+                  variant="default"
                   className="gap-2"
                 >
                   <ShoppingCart className="w-4 h-4" />
-                  {trialRemaining === 0 ? 'Desbloquear Agora (R$ 9,99)' : 'Garantir Vitalício'}
+                  Comprar Acesso Vitalício (R$ 9,99)
                 </Button>
               </>
             )}

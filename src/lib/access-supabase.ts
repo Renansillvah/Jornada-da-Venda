@@ -165,7 +165,7 @@ export async function syncAccessWithSupabase(email: string): Promise<boolean> {
   return true;
 }
 
-// 🎯 Hook de análise - verificar e consumir
+// 🎯 Hook de análise - verificar acesso (SEM TRIAL - apenas vitalício)
 export async function performAnalysisWithAccessCheck(
   email: string
 ): Promise<{ canAnalyze: boolean; message?: string; error?: string }> {
@@ -179,34 +179,17 @@ export async function performAnalysisWithAccessCheck(
     };
   }
 
-  // Se não pode analisar, retornar erro
-  if (!status.can_analyze) {
+  // ✅ APENAS acesso vitalício permite análise (SEM TRIAL GRATUITO)
+  if (!status.has_lifetime_access) {
     return {
       canAnalyze: false,
-      error: 'Seu trial de 2 análises expirou. Adquira acesso vitalício por R$ 9,99!',
+      error: 'Acesso vitalício necessário. Adquira por apenas R$ 9,99!',
     };
   }
 
-  // Se tem acesso vitalício, permitir sem consumir
-  if (status.has_lifetime_access) {
-    return {
-      canAnalyze: true,
-      message: '🎉 Acesso vitalício - análises ilimitadas!',
-    };
-  }
-
-  // Se está no trial, consumir análise
-  const result = await useTrialAnalysisSupabase(email);
-
-  if (!result.success) {
-    return {
-      canAnalyze: false,
-      error: result.error || 'Trial expirado',
-    };
-  }
-
+  // Acesso vitalício confirmado
   return {
     canAnalyze: true,
-    message: `Trial: restam ${result.trial_remaining} análise(s) gratuita(s)`,
+    message: '🎉 Acesso vitalício - análises ilimitadas!',
   };
 }
