@@ -14,6 +14,7 @@ import { toast } from 'sonner';
 import { BarView } from '@/components/BarView';
 import { ImageUpload } from '@/components/ImageUpload';
 import { analyzeImageWithAI, getOpenAIKey } from '@/lib/openai';
+import { getCredits, useCredit, hasCredits } from '@/lib/credits';
 
 export default function Analysis() {
   const navigate = useNavigate();
@@ -93,6 +94,19 @@ export default function Analysis() {
       return;
     }
 
+    // Verificar se tem créditos disponíveis
+    if (!hasCredits()) {
+      toast.error('Você não tem créditos suficientes', {
+        description: `Você tem ${getCredits()} créditos. Compre mais para continuar analisando!`,
+        duration: 6000,
+        action: {
+          label: 'Comprar Créditos',
+          onClick: () => navigate('/buy-credits')
+        }
+      });
+      return;
+    }
+
     const apiKey = getOpenAIKey();
     if (!apiKey) {
       toast.error('Configure sua chave da OpenAI nas configurações', {
@@ -152,6 +166,15 @@ export default function Analysis() {
       console.log('✨ Pilares atualizados:', updatedPillars);
       console.log('📈 Scores finais:', updatedPillars.map(p => ({ name: p.name, score: p.score })));
 
+      // Consumir 1 crédito pela análise bem-sucedida
+      const creditUsed = useCredit();
+      if (!creditUsed) {
+        toast.error('Erro ao consumir crédito. Tente novamente.');
+        return;
+      }
+
+      const remainingCredits = getCredits();
+
       setPillars(updatedPillars);
 
       setShowAIUpload(false);
@@ -164,7 +187,7 @@ export default function Analysis() {
 
       toast.success('Análise automática concluída! Revise os resultados abaixo.', {
         duration: 7000,
-        description: `${highConfidence} alta confiança • ${mediumConfidence} média • ${lowConfidence} baixa • ${notAnalyzed} não analisados`
+        description: `${highConfidence} alta confiança • ${mediumConfidence} média • ${lowConfidence} baixa • ${notAnalyzed} não analisados | Você tem ${remainingCredits} crédito${remainingCredits !== 1 ? 's' : ''} restante${remainingCredits !== 1 ? 's' : ''}`
       });
 
       // Scroll suave para a seção de pilares

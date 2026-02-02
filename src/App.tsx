@@ -4,10 +4,12 @@ import { AuthProvider } from '@/contexts/AuthContext';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import AppLayout from '@/components/AppLayout';
 import LandingPage from '@/pages/landing/LandingPage';
+import SalesLanding from '@/pages/SalesLanding';
 import Home from '@/pages/Home';
 import Analysis from '@/pages/Analysis';
 import History from '@/pages/History';
 import Settings from '@/pages/Settings';
+import BuyCredits from '@/pages/BuyCredits';
 import Login from '@/pages/Login';
 import Signup from '@/pages/Signup';
 import ForgotPassword from '@/pages/ForgotPassword';
@@ -18,6 +20,7 @@ export function App() {
       <Routes>
         {/* Landing Page (rota pública) */}
         <Route path="/" element={<LandingPage />} />
+        <Route path="/venda" element={<SalesLanding />} />
 
         {/* Rotas de autenticação (públicas) */}
         <Route path="/login" element={<Login />} />
@@ -61,6 +64,16 @@ export function App() {
             <ProtectedRoute>
               <AppLayout>
                 <Settings />
+              </AppLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/buy-credits"
+          element={
+            <ProtectedRoute>
+              <AppLayout>
+                <BuyCredits />
               </AppLayout>
             </ProtectedRoute>
           }
