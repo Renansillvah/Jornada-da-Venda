@@ -6,18 +6,31 @@ const layers = [
   {
     icon: Shield,
     title: 'Camada 1: Fundamentos',
-    subtitle: 'Base sólida para qualquer venda',
-    pillars: ['Clareza Técnica', 'Profissionalismo', 'Confiança/Segurança', 'Timing'],
-    description: 'Os 4 pilares essenciais que sustentam toda conversação comercial. Sem eles, é impossível avançar.',
+    subtitle: 'Base essencial para qualquer venda',
+    pillars: [
+      'Profissionalismo',
+      'Clareza Técnica',
+      'Confiança e Segurança',
+      'Redução de Risco Percebido',
+      'Timing da Conversa'
+    ],
+    description: 'Os 5 pilares fundamentais que sustentam toda conversação comercial. Sem essa base sólida, é impossível avançar para conversão.',
     color: 'text-destructive',
     bgColor: 'bg-destructive/10'
   },
   {
     icon: TrendingUp,
     title: 'Camada 2: Conversão',
-    subtitle: 'Transforme interesse em decisão',
-    pillars: ['Facilidade de Fechar', 'Sensação de Valor', 'Diferenciação'],
-    description: 'Os 3 pilares que convertem um cliente interessado em um cliente comprometido.',
+    subtitle: 'Transforme interesse em decisão de compra',
+    pillars: [
+      'Posicionamento Percebido',
+      'Alinhamento de Expectativa',
+      'Diferenciação',
+      'Sensação de Valor',
+      'Facilidade de Fechar',
+      'Sensação de Controle do Cliente'
+    ],
+    description: 'Os 6 pilares estratégicos que convertem um cliente interessado em um cliente comprometido e pronto para fechar.',
     color: 'text-warning',
     bgColor: 'bg-warning/10'
   },
@@ -25,8 +38,12 @@ const layers = [
     icon: Zap,
     title: 'Camada 3: Potencialização',
     subtitle: 'Multiplique seus resultados',
-    pillars: ['Carisma/Comunicação', 'Autoridade', 'Energia/Fluxo'],
-    description: 'Os 3 pilares que amplificam sua performance e criam experiências memoráveis.',
+    pillars: [
+      'Carisma',
+      'Autoridade (Comportamental)',
+      'Energia e Fluxo da Conversa'
+    ],
+    description: 'Os 3 pilares amplificadores que elevam sua performance e criam experiências de venda memoráveis e impactantes.',
     color: 'text-success',
     bgColor: 'bg-success/10'
   }
@@ -40,11 +57,11 @@ export function SolutionSection() {
           A Solução
         </Badge>
         <h2 className="text-3xl sm:text-4xl font-bold text-foreground">
-          Metodologia de 10 Pilares em 3 Camadas
+          Metodologia de 15 Pilares em 3 Camadas
         </h2>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-          Sistema completo de análise que avalia todos os aspectos críticos da sua jornada de venda,
-          desde fundamentos até diferenciação competitiva.
+          Sistema completo e científico de análise que avalia todos os aspectos críticos da jornada mental do cliente,
+          desde fundamentos até amplificadores de performance.
         </p>
       </div>
 
@@ -98,7 +115,7 @@ export function SolutionSection() {
         <div className="inline-flex items-center gap-2 px-6 py-3 bg-primary/5 rounded-full border">
           <Layers className="w-5 h-5 text-primary" />
           <span className="text-sm font-medium">
-            <strong>10 pilares</strong> organizados em <strong>3 camadas estratégicas</strong> para análise completa
+            <strong>15 pilares</strong> organizados em <strong>3 camadas estratégicas</strong> para análise completa e detalhada
           </span>
         </div>
       </div>

@@ -29,8 +29,8 @@ export function HeroSection() {
 
           {/* Subtítulo */}
           <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl">
-            Entenda exatamente onde sua venda perde força. Avalie 10 pilares críticos
-            que influenciam a decisão de compra e transforme conversas em contratos fechados.
+            Entenda exatamente onde sua venda perde força. Avalie 15 pilares críticos
+            organizados em 3 camadas que influenciam a decisão de compra e transforme conversas em contratos fechados.
           </p>
 
           {/* CTAs */}
