@@ -1,5 +1,6 @@
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { PILLARS_CONFIG } from '@/types/analysis';
 
 interface PillarScore {
@@ -52,42 +53,98 @@ export default function PillarComparisonChart({ pillarScores, title = 'Comparaç
   }));
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-lg">{title}</CardTitle>
+    <Card className="border-2">
+      <CardHeader className="bg-primary/5">
+        <CardTitle className="text-lg flex items-center gap-2">
+          📊 {title}
+        </CardTitle>
+        <div className="flex gap-2 mt-2 flex-wrap">
+          <Badge variant="outline" className="bg-success/10 text-success-foreground border-success/30">
+            8-10: Excelente
+          </Badge>
+          <Badge variant="outline" className="bg-info/10 text-info-foreground border-info/30">
+            6-8: Adequado
+          </Badge>
+          <Badge variant="outline" className="bg-warning/10 text-warning-foreground border-warning/30">
+            4-6: Atenção
+          </Badge>
+          <Badge variant="outline" className="bg-destructive/10 text-destructive border-destructive/30">
+            0-4: Crítico
+          </Badge>
+        </div>
       </CardHeader>
-      <CardContent>
-        <ResponsiveContainer width="100%" height={400}>
-          <BarChart data={chartData} margin={{ top: 5, right: 20, left: 0, bottom: 80 }}>
-            <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+      <CardContent className="pt-6">
+        <ResponsiveContainer width="100%" height={450}>
+          <BarChart data={chartData} margin={{ top: 20, right: 30, left: 0, bottom: 90 }}>
+            <CartesianGrid
+              strokeDasharray="3 3"
+              stroke="hsl(var(--border))"
+              opacity={0.5}
+            />
             <XAxis
               dataKey="name"
               angle={-45}
               textAnchor="end"
               height={100}
-              className="text-xs"
-              tick={{ fill: 'hsl(var(--muted-foreground))' }}
+              interval={0}
+              tick={{
+                fill: 'hsl(var(--foreground))',
+                fontSize: 11,
+                fontWeight: 500
+              }}
+              stroke="hsl(var(--border))"
             />
             <YAxis
               domain={[0, 10]}
-              className="text-xs"
-              tick={{ fill: 'hsl(var(--muted-foreground))' }}
+              tick={{
+                fill: 'hsl(var(--foreground))',
+                fontSize: 12,
+                fontWeight: 500
+              }}
+              stroke="hsl(var(--border))"
+              label={{
+                value: 'Nota',
+                angle: -90,
+                position: 'insideLeft',
+                style: {
+                  fill: 'hsl(var(--foreground))',
+                  fontWeight: 600
+                }
+              }}
             />
             <Tooltip
               contentStyle={{
-                backgroundColor: 'hsl(var(--card))',
-                border: '1px solid hsl(var(--border))',
-                borderRadius: '8px',
-                color: 'hsl(var(--card-foreground))',
+                backgroundColor: 'hsl(var(--popover))',
+                border: '2px solid hsl(var(--primary))',
+                borderRadius: '12px',
+                color: 'hsl(var(--popover-foreground))',
+                fontWeight: 600,
+                padding: '12px',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
               }}
               formatter={(value: number, _name: string, props: any) => [
-                `Nota: ${value}`,
+                `${value}/10`,
                 props.payload.fullName
               ]}
+              labelStyle={{
+                fontWeight: 700,
+                color: 'hsl(var(--primary))',
+                marginBottom: '4px'
+              }}
             />
-            <Bar dataKey="score" radius={[8, 8, 0, 0]}>
+            <Bar
+              dataKey="score"
+              radius={[8, 8, 0, 0]}
+              maxBarSize={60}
+            >
               {chartData.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={getBarColor(entry.score)} />
+                <Cell
+                  key={`cell-${index}`}
+                  fill={getBarColor(entry.score)}
+                  stroke={getBarColor(entry.score)}
+                  strokeWidth={2}
+                  opacity={0.9}
+                />
               ))}
             </Bar>
           </BarChart>
