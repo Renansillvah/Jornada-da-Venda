@@ -26,9 +26,10 @@ export const saveAnalysisToSupabase = async (analysis: Analysis): Promise<void> 
   }
 
   // Obter user_id da sessão atual
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { user }, error: authError } = await supabase.auth.getUser();
 
-  if (!user) {
+  if (authError || !user) {
+    console.warn('Usuário não autenticado, salvando no localStorage');
     throw new Error('Usuário não autenticado');
   }
 

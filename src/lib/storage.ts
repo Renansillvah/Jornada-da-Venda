@@ -16,47 +16,53 @@ export const saveAnalysis = async (analysis: Analysis): Promise<void> => {
   const usingSupabase = await isUsingSupabase();
 
   if (usingSupabase) {
-    // Salvar no Supabase
-    const analyses = await getAnalyses();
+    // Tentar salvar no Supabase
+    try {
+      const analyses = await getAnalyses();
 
-    // Se é uma atualização, desativar a análise anterior
-    if (analysis.type === 'update' && analysis.parentId) {
-      const parentIndex = analyses.findIndex(a => a.id === analysis.parentId);
-      if (parentIndex !== -1) {
-        analyses[parentIndex].isActive = false;
+      // Se é uma atualização, desativar a análise anterior
+      if (analysis.type === 'update' && analysis.parentId) {
+        const parentIndex = analyses.findIndex(a => a.id === analysis.parentId);
+        if (parentIndex !== -1) {
+          analyses[parentIndex].isActive = false;
+        }
       }
-    }
 
-    // Calculate trend if there's a previous ACTIVE analysis
-    const activeAnalyses = analyses.filter(a => a.isActive);
-    if (activeAnalyses.length > 0) {
-      const previousAnalysis = activeAnalyses[0];
-      analysis.trend = calculateTrend(analysis.averageScore, previousAnalysis.averageScore);
-    }
-
-    await saveAnalysisToSupabase(analysis);
-  } else {
-    // Salvar no localStorage (fallback)
-    const analyses = getAnalysesSync();
-
-    // Se é uma atualização, desativar a análise anterior
-    if (analysis.type === 'update' && analysis.parentId) {
-      const parentIndex = analyses.findIndex(a => a.id === analysis.parentId);
-      if (parentIndex !== -1) {
-        analyses[parentIndex].isActive = false;
+      // Calculate trend if there's a previous ACTIVE analysis
+      const activeAnalyses = analyses.filter(a => a.isActive);
+      if (activeAnalyses.length > 0) {
+        const previousAnalysis = activeAnalyses[0];
+        analysis.trend = calculateTrend(analysis.averageScore, previousAnalysis.averageScore);
       }
-    }
 
-    // Calculate trend if there's a previous ACTIVE analysis
-    const activeAnalyses = analyses.filter(a => a.isActive);
-    if (activeAnalyses.length > 0) {
-      const previousAnalysis = activeAnalyses[0];
-      analysis.trend = calculateTrend(analysis.averageScore, previousAnalysis.averageScore);
+      await saveAnalysisToSupabase(analysis);
+      return; // Sucesso, sair da função
+    } catch (error) {
+      console.warn('Erro ao salvar no Supabase, usando localStorage:', error);
+      // Continuar para salvar no localStorage
     }
-
-    analyses.unshift(analysis);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(analyses));
   }
+
+  // Salvar no localStorage (fallback ou se não estiver usando Supabase)
+  const analyses = getAnalysesSync();
+
+  // Se é uma atualização, desativar a análise anterior
+  if (analysis.type === 'update' && analysis.parentId) {
+    const parentIndex = analyses.findIndex(a => a.id === analysis.parentId);
+    if (parentIndex !== -1) {
+      analyses[parentIndex].isActive = false;
+    }
+  }
+
+  // Calculate trend if there's a previous ACTIVE analysis
+  const activeAnalyses = analyses.filter(a => a.isActive);
+  if (activeAnalyses.length > 0) {
+    const previousAnalysis = activeAnalyses[0];
+    analysis.trend = calculateTrend(analysis.averageScore, previousAnalysis.averageScore);
+  }
+
+  analyses.unshift(analysis);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(analyses));
 };
 
 export const updateAnalysis = async (originalId: string, newAnalysis: Omit<Analysis, 'id' | 'type' | 'parentId' | 'isActive'>): Promise<void> => {
