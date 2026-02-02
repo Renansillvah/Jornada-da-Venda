@@ -150,3 +150,38 @@ export function getAutoCreatedAccount(): {
   const data = localStorage.getItem(AUTO_ACCOUNT_KEY);
   return data ? JSON.parse(data) : null;
 }
+
+// 🔓 FUNÇÃO DE ADMINISTRADOR: Conceder acesso vitalício manualmente
+// Use esta função para liberar usuários que compraram mas estão bloqueados
+export function grantLifetimeAccessAdmin(email: string, reason: string = 'Pagamento confirmado manualmente'): void {
+  const adminPaymentId = `admin_unlock_${Date.now()}`;
+
+  // Criar conta e conceder acesso
+  createAccountAfterPayment(email, adminPaymentId, 9.99);
+
+  // Resetar contador de trial (garantir que não interfira)
+  localStorage.removeItem('trial_analyses_count');
+
+  console.log(`✅ [ADMIN] Acesso vitalício concedido para: ${email}`);
+  console.log(`📝 Motivo: ${reason}`);
+  console.log(`🎫 Payment ID: ${adminPaymentId}`);
+  console.log(`🎉 Status: ILIMITADO`);
+}
+
+// 🔍 FUNÇÃO DE DEBUG: Verificar status de acesso atual
+export function debugAccessStatus(): {
+  hasLifetimeAccess: boolean;
+  trialRemaining: number;
+  paymentInfo: PaymentInfo | null;
+  accountInfo: ReturnType<typeof getAutoCreatedAccount>;
+} {
+  const status = {
+    hasLifetimeAccess: hasLifetimeAccess(),
+    trialRemaining: getRemainingTrialAnalyses(),
+    paymentInfo: getPaymentInfo(),
+    accountInfo: getAutoCreatedAccount(),
+  };
+
+  console.log('🔍 [DEBUG] Status de Acesso:', status);
+  return status;
+}

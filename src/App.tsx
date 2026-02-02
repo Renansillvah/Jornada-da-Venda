@@ -16,6 +16,7 @@ import ForgotPassword from '@/pages/ForgotPassword';
 import PaymentSuccess from '@/pages/PaymentSuccess';
 import PaymentPending from '@/pages/PaymentPending';
 import PaymentFailure from '@/pages/PaymentFailure';
+import AdminUnlock from '@/pages/AdminUnlock';
 
 export function App() {
   return (
@@ -34,6 +35,9 @@ export function App() {
         <Route path="/payment/success" element={<PaymentSuccess />} />
         <Route path="/payment/pending" element={<PaymentPending />} />
         <Route path="/payment/failure" element={<PaymentFailure />} />
+
+        {/* Rota de administração (acesso direto via URL) */}
+        <Route path="/admin/unlock" element={<AdminUnlock />} />
 
         {/* Rotas do app (protegidas) */}
         <Route
