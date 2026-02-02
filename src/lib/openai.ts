@@ -33,7 +33,7 @@ export async function analyzeImageWithAI(
     ? `estas ${images.length} imagens que mostram diferentes momentos da jornada de vendas`
     : 'esta imagem';
 
-  const prompt = `⚠️ ATENÇÃO CRÍTICA: Você DEVE responder APENAS com JSON válido. NÃO adicione texto antes ou depois do JSON. NÃO use markdown (```json). Responda DIRETAMENTE com o objeto JSON puro começando com { e terminando com }.
+  const prompt = `ATENCAO CRITICA: Voce DEVE responder APENAS com JSON valido. NAO adicione texto antes ou depois do JSON. NAO use blocos markdown. Responda DIRETAMENTE com o objeto JSON puro começando com { e terminando com }.
 
 Você é um especialista em análise de vendas consultivo. Analise ${imagesContext} (pode ser conversa de Instagram, WhatsApp, proposta comercial, etc.) e avalie a jornada mental do cliente nos seguintes 15 pilares:
 
@@ -304,7 +304,7 @@ Responda APENAS em formato JSON válido, seguindo EXATAMENTE esta estrutura (tod
 
     // Verificar se a resposta é uma recusa/erro da IA
     if (!content.includes('{') || content.toLowerCase().includes("i'm sorry") || content.toLowerCase().includes("i cannot")) {
-      throw new Error('A IA não conseguiu analisar a imagem. Isso pode acontecer se a imagem contém conteúdo sensível, está muito pequena/ilegível, ou não contém informações de vendas. Tente com outra imagem ou faça a análise manual.');
+      throw new Error('A IA nao conseguiu analisar a imagem. Isso pode acontecer se a imagem contem conteudo sensivel, esta muito pequena/ilegivel, ou nao contem informacoes de vendas. Tente com outra imagem ou faca a analise manual.');
     }
 
     // Extrair JSON da resposta (pode vir com ```json ou texto antes/depois)
@@ -335,9 +335,9 @@ Responda APENAS em formato JSON válido, seguindo EXATAMENTE esta estrutura (tod
     try {
       result = JSON.parse(jsonContent);
     } catch (parseError) {
-      console.error('❌ Erro ao fazer parse do JSON:', parseError);
-      console.error('📄 Conteúdo que tentou parsear:', jsonContent.substring(0, 1000));
-      throw new Error('A resposta da IA não está no formato esperado. Isso pode ser um problema temporário da API. Tente novamente em alguns segundos.');
+      console.error('Erro ao fazer parse do JSON:', parseError);
+      console.error('Conteudo que tentou parsear:', jsonContent.substring(0, 1000));
+      throw new Error('A resposta da IA nao esta no formato esperado. Isso pode ser um problema temporario da API. Tente novamente em alguns segundos.');
     }
     console.log('✅ Parse bem sucedido! Estrutura:', {
       hasScores: !!result.scores,
