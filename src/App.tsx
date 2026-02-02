@@ -13,6 +13,7 @@ import BuyCredits from '@/pages/BuyCredits';
 import Login from '@/pages/Login';
 import Signup from '@/pages/Signup';
 import ForgotPassword from '@/pages/ForgotPassword';
+import PaymentSuccess from '@/pages/PaymentSuccess';
 
 export function App() {
   return (
@@ -26,6 +27,9 @@ export function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
+
+        {/* Rota de sucesso do pagamento (pública) */}
+        <Route path="/payment/success" element={<PaymentSuccess />} />
 
         {/* Rotas do app (protegidas) */}
         <Route

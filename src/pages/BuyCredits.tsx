@@ -242,9 +242,14 @@ export default function BuyCredits() {
               )}
             </Button>
 
-            <p className="text-xs text-center text-muted-foreground">
-              Pagamento 100% seguro via Mercado Pago
-            </p>
+            <div className="text-center space-y-1">
+              <p className="text-xs text-muted-foreground">
+                Pagamento 100% seguro via Mercado Pago
+              </p>
+              <p className="text-xs text-muted-foreground">
+                ✓ Sua conta será criada automaticamente após o pagamento
+              </p>
+            </div>
 
             <div className="text-center text-sm text-warning">
               <Sparkles className="w-4 h-4 inline mr-1" />

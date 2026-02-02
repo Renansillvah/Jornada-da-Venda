@@ -45,31 +45,31 @@ export function SocialProof() {
   }, []);
 
   return (
-    <div className="fixed bottom-6 left-6 z-50 space-y-3 max-w-sm">
+    <div className="fixed bottom-6 right-6 z-40 space-y-3 max-w-xs">
       {/* Notificação de compra em tempo real */}
       <Card
-        className={`border-success/30 bg-background/95 backdrop-blur-sm shadow-xl transition-all duration-500 ${
-          isVisible ? 'translate-x-0 opacity-100' : '-translate-x-full opacity-0'
+        className={`border-success/30 bg-background/90 backdrop-blur-md shadow-lg transition-all duration-500 ${
+          isVisible ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0'
         }`}
       >
-        <div className="p-4">
-          <div className="flex items-start gap-3">
-            <div className="w-10 h-10 rounded-full bg-success/20 flex items-center justify-center flex-shrink-0">
-              <CheckCircle2 className="w-5 h-5 text-success" />
+        <div className="p-3">
+          <div className="flex items-start gap-2">
+            <div className="w-8 h-8 rounded-full bg-success/20 flex items-center justify-center flex-shrink-0">
+              <CheckCircle2 className="w-4 h-4 text-success" />
             </div>
             <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 mb-1">
-                <p className="font-semibold text-sm text-foreground">
+              <div className="flex items-center gap-2 mb-0.5">
+                <p className="font-semibold text-xs text-foreground">
                   {currentPurchase.name}
                 </p>
-                <Badge className="bg-success/10 text-success border-success/30 text-xs px-2 py-0">
+                <Badge className="bg-success/10 text-success border-success/30 text-[10px] px-1.5 py-0">
                   Comprou
                 </Badge>
               </div>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-[10px] text-muted-foreground">
                 {currentPurchase.city}
               </p>
-              <p className="text-xs text-muted-foreground mt-1">
+              <p className="text-[10px] text-muted-foreground">
                 {currentPurchase.time}
               </p>
             </div>
@@ -78,14 +78,14 @@ export function SocialProof() {
       </Card>
 
       {/* Contador de vendas */}
-      <Card className="border-primary/30 bg-background/95 backdrop-blur-sm shadow-lg">
-        <div className="p-3">
+      <Card className="border-primary/30 bg-background/90 backdrop-blur-md shadow-lg">
+        <div className="p-2.5">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
-              <Users className="w-4 h-4 text-primary" />
+            <div className="w-7 h-7 rounded-full bg-primary/20 flex items-center justify-center">
+              <Users className="w-3.5 h-3.5 text-primary" />
             </div>
             <div className="flex-1">
-              <p className="text-xs text-muted-foreground">
+              <p className="text-[10px] text-muted-foreground">
                 <span className="font-bold text-primary">{totalSales}</span> pessoas compraram hoje
               </p>
             </div>

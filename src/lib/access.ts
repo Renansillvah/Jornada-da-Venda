@@ -2,6 +2,7 @@
 
 const ACCESS_KEY = 'lifetime_access';
 const PAYMENT_KEY = 'payment_info';
+const AUTO_ACCOUNT_KEY = 'auto_created_account';
 
 export interface PaymentInfo {
   paymentId: string;
@@ -107,4 +108,45 @@ export function canAnalyze(): boolean {
 
   // Sem acesso vitalício, verificar trial
   return getRemainingTrialAnalyses() > 0;
+}
+
+// Criar conta automaticamente após pagamento bem-sucedido
+export function createAccountAfterPayment(email: string, paymentId: string, amount: number = 9.99): {
+  success: boolean;
+  userId: string;
+  email: string;
+} {
+  // Gerar ID único para o usuário
+  const userId = `user_${Date.now()}_${Math.random().toString(36).substring(7)}`;
+
+  // Salvar dados da conta criada automaticamente
+  const accountData = {
+    userId,
+    email,
+    createdAt: new Date().toISOString(),
+    source: 'auto_created_after_payment',
+    paymentId,
+  };
+
+  localStorage.setItem(AUTO_ACCOUNT_KEY, JSON.stringify(accountData));
+
+  // Conceder acesso vitalício
+  grantLifetimeAccess(paymentId, amount);
+
+  return {
+    success: true,
+    userId,
+    email,
+  };
+}
+
+// Obter dados da conta criada automaticamente
+export function getAutoCreatedAccount(): {
+  userId: string;
+  email: string;
+  createdAt: string;
+  paymentId: string;
+} | null {
+  const data = localStorage.getItem(AUTO_ACCOUNT_KEY);
+  return data ? JSON.parse(data) : null;
 }
