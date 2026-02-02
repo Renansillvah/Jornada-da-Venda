@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { ArrowLeft, Trash2, Eye, Calendar, FileText, Search, Filter, X, Download, Copy, FileDown } from 'lucide-react';
+import { ArrowLeft, Trash2, Eye, Calendar, FileText, Search, X, Download, Copy, FileDown } from 'lucide-react';
 import { BarView } from '@/components/BarView';
 import { deleteAnalysis } from '@/lib/storage';
 import type { Analysis } from '@/types/analysis';
@@ -28,6 +28,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { toast } from 'sonner';
 import { useAnalyses } from '@/hooks/useAnalyses';
+import { cn } from '@/lib/utils';
 
 export default function History() {
   const navigate = useNavigate();
@@ -36,7 +37,6 @@ export default function History() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterContext, setFilterContext] = useState<string>('all');
   const [filterScore, setFilterScore] = useState<string>('all');
-  const [showFilters, setShowFilters] = useState(false);
 
   const filteredAnalyses = useMemo(() => {
     return analyses.filter(analysis => {
@@ -67,6 +67,15 @@ export default function History() {
     setFilterContext('all');
     setFilterScore('all');
   };
+
+  // Contar análises por contexto
+  const contextCounts = useMemo(() => {
+    const counts: Record<string, number> = { all: analyses.length };
+    CONTEXT_OPTIONS.forEach(option => {
+      counts[option] = analyses.filter(a => a.context.includes(option)).length;
+    });
+    return counts;
+  }, [analyses]);
 
   const handleDelete = async (id: string) => {
     await deleteAnalysis(id);
@@ -130,78 +139,131 @@ export default function History() {
           </Card>
         ) : (
           <div className="space-y-6">
-            {/* Barra de Busca e Filtros */}
+            {/* Barra de Busca */}
+            <Card>
+              <CardContent className="pt-6">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Buscar por descrição..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-9"
+                  />
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Abas de Contexto */}
             <Card>
               <CardContent className="pt-6">
                 <div className="space-y-4">
-                  {/* Busca */}
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      placeholder="Buscar por descrição ou contexto..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-9"
-                    />
+                  <div>
+                    <h3 className="text-sm font-semibold mb-3">Filtrar por canal</h3>
+                    <div className="flex flex-wrap gap-2">
+                      <button
+                        onClick={() => setFilterContext('all')}
+                        className={cn(
+                          "px-4 py-2 rounded-lg text-sm font-medium transition-all",
+                          filterContext === 'all'
+                            ? "bg-primary text-primary-foreground shadow-md"
+                            : "bg-muted hover:bg-muted/80 text-muted-foreground"
+                        )}
+                      >
+                        Todos
+                        <span className="ml-2 text-xs opacity-75">({contextCounts.all})</span>
+                      </button>
+                      {CONTEXT_OPTIONS.map(option => (
+                        <button
+                          key={option}
+                          onClick={() => setFilterContext(option)}
+                          className={cn(
+                            "px-4 py-2 rounded-lg text-sm font-medium transition-all",
+                            filterContext === option
+                              ? "bg-primary text-primary-foreground shadow-md"
+                              : "bg-muted hover:bg-muted/80 text-muted-foreground"
+                          )}
+                        >
+                          {option}
+                          <span className="ml-2 text-xs opacity-75">({contextCounts[option] || 0})</span>
+                        </button>
+                      ))}
+                    </div>
                   </div>
 
-                  {/* Toggle Filtros */}
-                  <div className="flex items-center justify-between">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setShowFilters(!showFilters)}
-                    >
-                      <Filter className="h-4 w-4 mr-2" />
-                      {showFilters ? 'Ocultar' : 'Mostrar'} filtros
-                      {hasActiveFilters && <Badge variant="secondary" className="ml-2">Ativos</Badge>}
-                    </Button>
+                  {/* Filtro de Nota */}
+                  <div className="pt-4 border-t">
+                    <h3 className="text-sm font-semibold mb-3">Filtrar por nota</h3>
+                    <div className="flex flex-wrap gap-2">
+                      <button
+                        onClick={() => setFilterScore('all')}
+                        className={cn(
+                          "px-4 py-2 rounded-lg text-sm font-medium transition-all",
+                          filterScore === 'all'
+                            ? "bg-primary text-primary-foreground shadow-md"
+                            : "bg-muted hover:bg-muted/80 text-muted-foreground"
+                        )}
+                      >
+                        Todas
+                      </button>
+                      <button
+                        onClick={() => setFilterScore('excellent')}
+                        className={cn(
+                          "px-4 py-2 rounded-lg text-sm font-medium transition-all",
+                          filterScore === 'excellent'
+                            ? "bg-success text-success-foreground shadow-md"
+                            : "bg-success/10 hover:bg-success/20 text-success-foreground"
+                        )}
+                      >
+                        Excelente (8-10)
+                      </button>
+                      <button
+                        onClick={() => setFilterScore('good')}
+                        className={cn(
+                          "px-4 py-2 rounded-lg text-sm font-medium transition-all",
+                          filterScore === 'good'
+                            ? "bg-info text-info-foreground shadow-md"
+                            : "bg-info/10 hover:bg-info/20 text-info-foreground"
+                        )}
+                      >
+                        Adequado (6-8)
+                      </button>
+                      <button
+                        onClick={() => setFilterScore('attention')}
+                        className={cn(
+                          "px-4 py-2 rounded-lg text-sm font-medium transition-all",
+                          filterScore === 'attention'
+                            ? "bg-warning text-warning-foreground shadow-md"
+                            : "bg-warning/10 hover:bg-warning/20 text-warning-foreground"
+                        )}
+                      >
+                        Atenção (4-6)
+                      </button>
+                      <button
+                        onClick={() => setFilterScore('critical')}
+                        className={cn(
+                          "px-4 py-2 rounded-lg text-sm font-medium transition-all",
+                          filterScore === 'critical'
+                            ? "bg-destructive text-destructive-foreground shadow-md"
+                            : "bg-destructive/10 hover:bg-destructive/20 text-destructive-foreground"
+                        )}
+                      >
+                        Crítico (&lt;4)
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Botão Limpar e Contador */}
+                  <div className="flex items-center justify-between pt-4 border-t">
+                    <div className="text-sm text-muted-foreground">
+                      Mostrando {filteredAnalyses.length} de {analyses.length} análise{analyses.length > 1 ? 's' : ''}
+                    </div>
                     {hasActiveFilters && (
-                      <Button variant="ghost" size="sm" onClick={clearFilters}>
+                      <Button variant="outline" size="sm" onClick={clearFilters}>
                         <X className="h-4 w-4 mr-2" />
                         Limpar filtros
                       </Button>
                     )}
-                  </div>
-
-                  {/* Filtros Expandidos */}
-                  {showFilters && (
-                    <div className="grid md:grid-cols-2 gap-4 pt-4 border-t">
-                      <div>
-                        <label className="text-sm font-medium mb-2 block">Contexto</label>
-                        <Select value={filterContext} onValueChange={setFilterContext}>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Todos os contextos" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="all">Todos os contextos</SelectItem>
-                            {CONTEXT_OPTIONS.map(option => (
-                              <SelectItem key={option} value={option}>{option}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div>
-                        <label className="text-sm font-medium mb-2 block">Nota</label>
-                        <Select value={filterScore} onValueChange={setFilterScore}>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Todas as notas" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="all">Todas as notas</SelectItem>
-                            <SelectItem value="excellent">Excelente (8-10)</SelectItem>
-                            <SelectItem value="good">Adequado (6-8)</SelectItem>
-                            <SelectItem value="attention">Atenção (4-6)</SelectItem>
-                            <SelectItem value="critical">Crítico (&lt;4)</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Contador de Resultados */}
-                  <div className="text-sm text-muted-foreground">
-                    Mostrando {filteredAnalyses.length} de {analyses.length} análise{analyses.length > 1 ? 's' : ''}
                   </div>
                 </div>
               </CardContent>

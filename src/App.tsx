@@ -7,7 +7,6 @@ import LandingPage from '@/pages/landing/LandingPage';
 import Home from '@/pages/Home';
 import Analysis from '@/pages/Analysis';
 import History from '@/pages/History';
-import CompanyHealth from '@/pages/CompanyHealth';
 import Settings from '@/pages/Settings';
 import Login from '@/pages/Login';
 import Signup from '@/pages/Signup';
@@ -52,16 +51,6 @@ export function App() {
             <ProtectedRoute>
               <AppLayout>
                 <History />
-              </AppLayout>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/company-health"
-          element={
-            <ProtectedRoute>
-              <AppLayout>
-                <CompanyHealth />
               </AppLayout>
             </ProtectedRoute>
           }

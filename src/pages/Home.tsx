@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { BarChart3, TrendingUp, History, Activity } from 'lucide-react';
+import { BarChart3, TrendingUp, History } from 'lucide-react';
 
 export default function Home() {
   const navigate = useNavigate();
@@ -22,26 +22,14 @@ export default function Home() {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-4 mb-12">
-          <Card className="border hover:border-primary/50 transition-colors cursor-pointer" onClick={() => navigate('/analysis')}>
+        <div className="grid md:grid-cols-2 gap-6 mb-12 max-w-2xl mx-auto">
+          <Card className="border-2 border-primary/30 hover:border-primary/50 transition-colors cursor-pointer" onClick={() => navigate('/analysis')}>
             <CardContent className="pt-6">
               <div className="flex flex-col items-center text-center">
-                <TrendingUp className="h-8 w-8 text-primary mb-3" />
-                <h3 className="text-base font-semibold mb-1">Análise Avulsa</h3>
-                <p className="text-muted-foreground text-xs">
-                  Avalie um ponto específico da jornada
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border-2 border-primary/30 hover:border-primary/50 transition-colors cursor-pointer" onClick={() => navigate('/company-health')}>
-            <CardContent className="pt-6">
-              <div className="flex flex-col items-center text-center">
-                <Activity className="h-8 w-8 text-primary mb-3" />
-                <h3 className="text-base font-semibold mb-1">Saúde Comercial</h3>
-                <p className="text-muted-foreground text-xs">
-                  Visão geral da empresa
+                <TrendingUp className="h-10 w-10 text-primary mb-3" />
+                <h3 className="text-lg font-semibold mb-2">Nova Análise</h3>
+                <p className="text-muted-foreground text-sm">
+                  Avalie uma jornada de venda específica
                 </p>
               </div>
             </CardContent>
@@ -50,9 +38,9 @@ export default function Home() {
           <Card className="border hover:border-primary/50 transition-colors cursor-pointer" onClick={() => navigate('/history')}>
             <CardContent className="pt-6">
               <div className="flex flex-col items-center text-center">
-                <History className="h-8 w-8 text-primary mb-3" />
-                <h3 className="text-base font-semibold mb-1">Histórico</h3>
-                <p className="text-muted-foreground text-xs">
+                <History className="h-10 w-10 text-primary mb-3" />
+                <h3 className="text-lg font-semibold mb-2">Histórico</h3>
+                <p className="text-muted-foreground text-sm">
                   Todas as análises realizadas
                 </p>
               </div>
@@ -60,21 +48,14 @@ export default function Home() {
           </Card>
         </div>
 
-        <div className="flex flex-col gap-3">
+        <div className="flex justify-center">
           <Button
             size="lg"
-            className="text-lg px-8"
+            className="text-lg px-12 py-6"
             onClick={() => navigate('/analysis')}
           >
-            Nova análise avulsa
-          </Button>
-          <Button
-            size="lg"
-            variant="outline"
-            className="text-base"
-            onClick={() => navigate('/company-health')}
-          >
-            Ver saúde comercial da empresa
+            <TrendingUp className="mr-2 h-5 w-5" />
+            Começar Nova Análise
           </Button>
         </div>
 
