@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { ArrowRight, Sparkles, BarChart3, Brain, TrendingUp, Target, Zap } from 'lucide-react';
+import { ArrowRight, Sparkles, Brain, Instagram, MessageCircle, FileText, Handshake, CheckCircle2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export function HeroSection() {
@@ -82,14 +82,14 @@ export function HeroSection() {
                   {/* Jornada Mental Visual */}
                   <div className="space-y-3">
 
-                    {/* Passo 1: Descoberta */}
+                    {/* Passo 1: Instagram */}
                     <div className="bg-background/90 backdrop-blur-sm p-4 rounded-lg border-l-4 border-info">
                       <div className="flex items-start gap-3">
                         <div className="w-8 h-8 rounded-full bg-info/20 flex items-center justify-center flex-shrink-0">
-                          <Target className="w-4 h-4 text-info" />
+                          <Instagram className="w-4 h-4 text-info" />
                         </div>
                         <div className="flex-1">
-                          <div className="text-xs font-medium text-foreground mb-1">Descoberta</div>
+                          <div className="text-xs font-medium text-foreground mb-1">Instagram</div>
                           <div className="flex items-center gap-2">
                             <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
                               <div className="h-full bg-info w-[85%]" />
@@ -100,14 +100,14 @@ export function HeroSection() {
                       </div>
                     </div>
 
-                    {/* Passo 2: Proposta */}
+                    {/* Passo 2: Atendimento WhatsApp */}
                     <div className="bg-background/90 backdrop-blur-sm p-4 rounded-lg border-l-4 border-primary">
                       <div className="flex items-start gap-3">
                         <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
-                          <BarChart3 className="w-4 h-4 text-primary" />
+                          <MessageCircle className="w-4 h-4 text-primary" />
                         </div>
                         <div className="flex-1">
-                          <div className="text-xs font-medium text-foreground mb-1">Proposta</div>
+                          <div className="text-xs font-medium text-foreground mb-1">Atendimento</div>
                           <div className="flex items-center gap-2">
                             <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
                               <div className="h-full bg-primary w-[70%]" />
@@ -118,14 +118,14 @@ export function HeroSection() {
                       </div>
                     </div>
 
-                    {/* Passo 3: Negociação */}
+                    {/* Passo 3: Proposta */}
                     <div className="bg-background/90 backdrop-blur-sm p-4 rounded-lg border-l-4 border-warning">
                       <div className="flex items-start gap-3">
                         <div className="w-8 h-8 rounded-full bg-warning/20 flex items-center justify-center flex-shrink-0">
-                          <TrendingUp className="w-4 h-4 text-warning" />
+                          <FileText className="w-4 h-4 text-warning" />
                         </div>
                         <div className="flex-1">
-                          <div className="text-xs font-medium text-foreground mb-1">Negociação</div>
+                          <div className="text-xs font-medium text-foreground mb-1">Proposta</div>
                           <div className="flex items-center gap-2">
                             <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
                               <div className="h-full bg-warning w-[60%]" />
@@ -140,7 +140,7 @@ export function HeroSection() {
                     <div className="bg-background/90 backdrop-blur-sm p-4 rounded-lg border-l-4 border-success">
                       <div className="flex items-start gap-3">
                         <div className="w-8 h-8 rounded-full bg-success/20 flex items-center justify-center flex-shrink-0">
-                          <Zap className="w-4 h-4 text-success" />
+                          <CheckCircle2 className="w-4 h-4 text-success" />
                         </div>
                         <div className="flex-1">
                           <div className="text-xs font-medium text-foreground mb-1">Fechamento</div>
@@ -163,7 +163,7 @@ export function HeroSection() {
                       <span className="text-lg font-bold text-primary">7.6/10</span>
                     </div>
                     <div className="text-xs text-muted-foreground mt-1">
-                      ⚠️ Atenção na Negociação
+                      ⚠️ Atenção na Proposta Comercial
                     </div>
                   </div>
 
