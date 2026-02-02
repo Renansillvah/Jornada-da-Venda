@@ -8,9 +8,10 @@ import { cn } from '@/lib/utils';
 
 interface BarViewProps {
   pillars: Pillar[];
+  onScoreChange?: (id: string, score: number) => void;
 }
 
-export function BarView({ pillars }: BarViewProps) {
+export function BarView({ pillars, onScoreChange }: BarViewProps) {
   const [simulatedScores, setSimulatedScores] = useState<Record<string, number>>(() => {
     const initial: Record<string, number> = {};
     pillars.forEach(p => {
@@ -20,16 +21,25 @@ export function BarView({ pillars }: BarViewProps) {
   });
 
   const increaseScore = (id: string, amount: number) => {
+    const newScore = Math.min(100, simulatedScores[id] + amount);
     setSimulatedScores(prev => ({
       ...prev,
-      [id]: Math.min(100, prev[id] + amount),
+      [id]: newScore,
     }));
+    // Se há callback, atualiza o estado pai (modo edição)
+    if (onScoreChange) {
+      onScoreChange(id, newScore);
+    }
   };
 
   const resetSimulation = () => {
     const reset: Record<string, number> = {};
     pillars.forEach(p => {
       reset[p.id] = p.score;
+      // Se há callback, reseta os valores no pai
+      if (onScoreChange) {
+        onScoreChange(p.id, p.score);
+      }
     });
     setSimulatedScores(reset);
   };
@@ -68,12 +78,14 @@ export function BarView({ pillars }: BarViewProps) {
 
   return (
     <div className="space-y-6">
-      {/* Alert */}
-      <Alert className="border-primary/30 bg-primary/5">
-        <AlertDescription className="text-sm">
-          Os ajustes nesta visualização representam <strong>simulação de melhoria</strong> e não alteram a análise original.
-        </AlertDescription>
-      </Alert>
+      {/* Alert - only show in read-only mode */}
+      {!onScoreChange && (
+        <Alert className="border-primary/30 bg-primary/5">
+          <AlertDescription className="text-sm">
+            Os ajustes nesta visualização representam <strong>simulação de melhoria</strong> e não alteram a análise original.
+          </AlertDescription>
+        </Alert>
+      )}
 
       {/* Diagnostic Cards */}
       <div className="grid md:grid-cols-3 gap-4">
@@ -199,7 +211,7 @@ export function BarView({ pillars }: BarViewProps) {
       </div>
 
       {/* Bottom Summary */}
-      {hasSimulationChanges && (
+      {!onScoreChange && hasSimulationChanges && (
         <Alert className="bg-primary/10 border-primary/50">
           <AlertDescription className="text-sm">
             <strong>Simulação ativa:</strong> Você aumentou pontos em um ou mais pilares.

@@ -2,14 +2,11 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowLeft, AlertCircle, TrendingDown, TrendingUp, BarChart3, FileText } from 'lucide-react';
-import { PILLARS_CONFIG, CONTEXT_OPTIONS, getScoreLevel } from '@/types/analysis';
+import { ArrowLeft } from 'lucide-react';
+import { PILLARS_CONFIG, CONTEXT_OPTIONS } from '@/types/analysis';
 import { saveAnalysis } from '@/lib/storage';
 import type { Pillar, Analysis as AnalysisType } from '@/types/analysis';
 import { toast } from 'sonner';
@@ -19,7 +16,6 @@ export default function Analysis() {
   const navigate = useNavigate();
   const [context, setContext] = useState<string[]>([]);
   const [description, setDescription] = useState('');
-  const [viewMode, setViewMode] = useState<'detailed' | 'bars'>('detailed');
   const [pillars, setPillars] = useState<Pillar[]>(
     PILLARS_CONFIG.map(p => ({
       id: p.id,
@@ -38,9 +34,9 @@ export default function Analysis() {
     );
   };
 
-  const updatePillar = (id: string, field: keyof Pillar, value: string | number) => {
+  const updatePillarScore = (id: string, score: number) => {
     setPillars(prev =>
-      prev.map(p => (p.id === id ? { ...p, [field]: value } : p))
+      prev.map(p => (p.id === id ? { ...p, score } : p))
     );
   };
 
@@ -109,20 +105,6 @@ export default function Analysis() {
 
         <h1 className="text-3xl font-bold mb-8">Nova Análise de Jornada</h1>
 
-        {/* View Mode Toggle */}
-        <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as 'detailed' | 'bars')} className="mb-8">
-          <TabsList className="grid w-full max-w-md mx-auto grid-cols-2">
-            <TabsTrigger value="detailed" className="flex items-center gap-2">
-              <FileText className="h-4 w-4" />
-              Análise Detalhada
-            </TabsTrigger>
-            <TabsTrigger value="bars" className="flex items-center gap-2">
-              <BarChart3 className="h-4 w-4" />
-              Visão por Barras
-            </TabsTrigger>
-          </TabsList>
-        </Tabs>
-
         {/* Context Section */}
         <Card className="mb-8">
           <CardHeader>
@@ -164,150 +146,10 @@ export default function Analysis() {
           </CardContent>
         </Card>
 
-        {/* Strategic Note */}
-        {viewMode === 'detailed' && (
-          <Alert className="mb-8 border-primary/30 bg-primary/5">
-            <AlertCircle className="h-4 w-4 text-primary" />
-            <AlertDescription className="text-sm">
-              <strong>Observação estratégica:</strong> Nem todos os pilares têm o mesmo peso emocional na decisão de compra.
-              Falhas em clareza, confiança e facilidade de fechar tendem a travar vendas mesmo quando outros pontos estão bons.
-            </AlertDescription>
-          </Alert>
-        )}
-
         {/* Bar View */}
-        {viewMode === 'bars' && (
-          <div className="mb-8">
-            <BarView pillars={pillars} />
-          </div>
-        )}
-
-        {/* Pillars Section */}
-        {viewMode === 'detailed' && (
-          <div className="space-y-6 mb-8">
-          {pillars.map((pillar, index) => {
-            const scoreLevel = getScoreLevel(pillar.score);
-            return (
-              <Card key={pillar.id}>
-                <CardHeader>
-                  <CardTitle className="flex items-center justify-between">
-                    <span className="text-lg">
-                      {index + 1}. {pillar.name}
-                    </span>
-                    <span className={`text-sm font-semibold ${scoreLevel.color}`}>
-                      {pillar.score > 0 ? `${pillar.score}/100 - ${scoreLevel.level}` : 'Não avaliado'}
-                    </span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div>
-                    <Label htmlFor={`score-${pillar.id}`}>Pontuação (0-100)</Label>
-                    <Input
-                      id={`score-${pillar.id}`}
-                      type="number"
-                      min="0"
-                      max="100"
-                      value={pillar.score || ''}
-                      onChange={e => updatePillar(pillar.id, 'score', parseInt(e.target.value) || 0)}
-                      className="mt-2"
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor={`observation-${pillar.id}`}>O que impactou essa nota</Label>
-                    <Textarea
-                      id={`observation-${pillar.id}`}
-                      placeholder="Descreva os pontos observados..."
-                      value={pillar.observation}
-                      onChange={e => updatePillar(pillar.id, 'observation', e.target.value)}
-                      rows={2}
-                      className="mt-2"
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor={`action-${pillar.id}`}>O que melhorar para subir pontos</Label>
-                    <Textarea
-                      id={`action-${pillar.id}`}
-                      placeholder="Liste ações práticas de melhoria..."
-                      value={pillar.action}
-                      onChange={e => updatePillar(pillar.id, 'action', e.target.value)}
-                      rows={2}
-                      className="mt-2"
-                    />
-                  </div>
-                </CardContent>
-              </Card>
-            );
-          })}
+        <div className="mb-8">
+          <BarView pillars={pillars} onScoreChange={updatePillarScore} />
         </div>
-        )}
-
-        {/* Diagnostic */}
-        {viewMode === 'detailed' && pillars.some(p => p.score > 0) && (
-          <Card className="mb-8 border-2 border-primary/30">
-            <CardHeader>
-              <CardTitle>Diagnóstico Preliminar</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid md:grid-cols-3 gap-4">
-                <div className="p-4 bg-muted rounded-lg">
-                  <p className="text-sm text-muted-foreground mb-1">Média geral</p>
-                  <p className="text-3xl font-bold">{diagnostic.average}/100</p>
-                </div>
-                <div className="p-4 bg-muted rounded-lg">
-                  <p className="text-sm text-muted-foreground mb-1">Pilar mais forte</p>
-                  <p className="font-semibold flex items-center gap-2">
-                    <TrendingUp className="h-4 w-4 text-green-600" />
-                    {diagnostic.strongest}
-                  </p>
-                </div>
-                <div className="p-4 bg-muted rounded-lg">
-                  <p className="text-sm text-muted-foreground mb-1">Pilar mais fraco</p>
-                  <p className="font-semibold flex items-center gap-2">
-                    <TrendingDown className="h-4 w-4 text-destructive" />
-                    {diagnostic.weakest}
-                  </p>
-                </div>
-              </div>
-
-              <Alert>
-                <AlertDescription className="text-sm">
-                  <strong>A venda tende a travar no pilar mais fraco.</strong> Priorize melhorar este ponto antes de otimizar os demais.
-                </AlertDescription>
-              </Alert>
-
-              <Alert className="border-primary/30 bg-primary/5">
-                <AlertDescription className="text-sm">
-                  Pilares ligados à <strong>confiança, clareza e facilidade de fechar</strong> costumam ter maior impacto na conversão do que pilares estéticos ou emocionais.
-                </AlertDescription>
-              </Alert>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Priority Action */}
-        {viewMode === 'detailed' && diagnostic.weakest && (
-          <Card className="mb-8 bg-destructive/5 border-destructive/30">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <AlertCircle className="h-5 w-5 text-destructive" />
-                Prioridade de Ação
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm mb-4">
-                <strong>Pilar crítico:</strong> {diagnostic.weakest}
-              </p>
-              <Alert>
-                <AlertDescription className="text-sm">
-                  Se apenas um ponto puder ser corrigido agora, comece por este pilar.
-                  Ele representa o maior gargalo da jornada de venda no momento.
-                </AlertDescription>
-              </Alert>
-            </CardContent>
-          </Card>
-        )}
 
         {/* Actions */}
         <div className="flex gap-4">
