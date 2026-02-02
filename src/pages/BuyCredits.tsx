@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { ArrowLeft, Sparkles, Check, Zap, TrendingUp, Crown, Shield, Mail, User } from 'lucide-react';
 import { hasLifetimeAccess } from '@/lib/access';
 import { createPaymentPreference } from '@/lib/mercadopago';
+import { MercadoPagoWarning } from '@/components/MercadoPagoWarning';
 import { toast } from 'sonner';
 
 export default function BuyCredits() {
@@ -94,6 +95,7 @@ export default function BuyCredits() {
 
   return (
     <div className="min-h-screen bg-background">
+      <MercadoPagoWarning />
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         <Button
           variant="ghost"

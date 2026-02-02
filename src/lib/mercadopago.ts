@@ -1,10 +1,31 @@
 // Integração com Mercado Pago para pagamento único de R$ 9,99
 
-const MERCADO_PAGO_ACCESS_TOKEN = import.meta.env.VITE_MERCADO_PAGO_ACCESS_TOKEN;
+// Pegar token do env ou de uma configuração de fallback
+function getMercadoPagoToken(): string | undefined {
+  // Primeiro: tentar pegar do env (método correto)
+  const envToken = import.meta.env.VITE_MERCADO_PAGO_ACCESS_TOKEN;
+
+  if (envToken) {
+    return envToken;
+  }
+
+  // Fallback: pegar de localStorage (caso o servidor não tenha reiniciado ainda)
+  const fallbackToken = localStorage.getItem('mp_access_token_temp');
+
+  if (fallbackToken && import.meta.env.DEV) {
+    console.warn('⚠️ Usando token do localStorage. Reinicie o servidor para usar o .env');
+  }
+
+  return fallbackToken || undefined;
+}
+
+const MERCADO_PAGO_ACCESS_TOKEN = getMercadoPagoToken();
 
 // Log para debug (apenas em desenvolvimento)
 if (!MERCADO_PAGO_ACCESS_TOKEN && import.meta.env.DEV) {
-  console.warn('⚠️ VITE_MERCADO_PAGO_ACCESS_TOKEN não encontrado no .env');
+  console.error('❌ VITE_MERCADO_PAGO_ACCESS_TOKEN não encontrado');
+  console.info('💡 Solução temporária: Execute no console:');
+  console.info('localStorage.setItem("mp_access_token_temp", "SEU_TOKEN_AQUI")');
 }
 
 export interface PaymentPreference {
