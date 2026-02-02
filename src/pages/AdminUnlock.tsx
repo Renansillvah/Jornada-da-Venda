@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -7,70 +7,120 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import {
-  grantLifetimeAccessAdmin,
-  debugAccessStatus,
-  hasLifetimeAccess,
-  getRemainingTrialAnalyses
-} from '@/lib/access';
+  grantLifetimeAccessSupabase,
+  checkUserAccess,
+  listAllUsers,
+  type UserAccess,
+} from '@/lib/access-supabase';
 import { toast } from 'sonner';
-import { Shield, Unlock, Search, Crown, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Shield, Unlock, Search, Crown, AlertCircle, CheckCircle2, Users, Loader2 } from 'lucide-react';
 
 export default function AdminUnlock() {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [reason, setReason] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [checkingStatus, setCheckingStatus] = useState(false);
   const [currentStatus, setCurrentStatus] = useState<{
     hasLifetime: boolean;
     trialRemaining: number;
   } | null>(null);
+  const [allUsers, setAllUsers] = useState<UserAccess[]>([]);
+  const [showAllUsers, setShowAllUsers] = useState(false);
 
-  const handleCheckStatus = () => {
-    const status = debugAccessStatus();
-    setCurrentStatus({
-      hasLifetime: status.hasLifetimeAccess,
-      trialRemaining: status.trialRemaining,
-    });
+  const handleCheckStatus = async () => {
+    if (!email.trim()) {
+      toast.error('Digite o email para verificar');
+      return;
+    }
 
-    toast.info('Status verificado', {
-      description: `Acesso vitalício: ${status.hasLifetimeAccess ? 'SIM ✅' : 'NÃO ❌'} | Trial restante: ${status.trialRemaining}`,
-    });
+    setCheckingStatus(true);
+    try {
+      const status = await checkUserAccess(email);
+
+      if (!status) {
+        toast.error('Não foi possível verificar o acesso');
+        return;
+      }
+
+      setCurrentStatus({
+        hasLifetime: status.has_lifetime_access,
+        trialRemaining: status.trial_remaining,
+      });
+
+      toast.info('Status verificado', {
+        description: `Acesso vitalício: ${status.has_lifetime_access ? 'SIM ✅' : 'NÃO ❌'} | Trial restante: ${status.trial_remaining}`,
+      });
+    } catch (error) {
+      console.error('Erro ao verificar status:', error);
+      toast.error('Erro ao verificar status');
+    } finally {
+      setCheckingStatus(false);
+    }
   };
 
-  const handleUnlock = () => {
+  const handleUnlock = async () => {
     if (!email.trim()) {
       toast.error('Digite o email do usuário');
       return;
     }
 
-    if (!reason.trim()) {
-      setReason('Desbloqueio manual via admin');
-    }
-
+    setLoading(true);
     try {
-      // Conceder acesso vitalício
-      grantLifetimeAccessAdmin(email, reason);
+      const result = await grantLifetimeAccessSupabase(email, `admin_${Date.now()}`, 'admin');
 
-      toast.success('✅ Acesso vitalício concedido!', {
-        description: `Usuário ${email} agora tem análises ILIMITADAS`,
-        duration: 6000,
+      if (!result.success) {
+        toast.error('Erro ao conceder acesso', {
+          description: result.error || 'Erro desconhecido',
+        });
+        return;
+      }
+
+      toast.success('✅ Acesso vitalício concedido no Supabase!', {
+        description: `Usuário ${email} agora tem análises ILIMITADAS em todos os dispositivos`,
+        duration: 8000,
       });
 
       // Atualizar status
-      setCurrentStatus({
-        hasLifetime: true,
-        trialRemaining: 0,
-      });
+      await handleCheckStatus();
 
       // Limpar campos
       setEmail('');
       setReason('');
+
+      // Recarregar lista de usuários
+      if (showAllUsers) {
+        loadAllUsers();
+      }
     } catch (error) {
       console.error('Erro ao desbloquear:', error);
       toast.error('Erro ao conceder acesso', {
         description: error instanceof Error ? error.message : 'Erro desconhecido',
       });
+    } finally {
+      setLoading(false);
     }
   };
+
+  const loadAllUsers = async () => {
+    setLoading(true);
+    try {
+      const users = await listAllUsers();
+      setAllUsers(users);
+      toast.success(`${users.length} usuários carregados`);
+    } catch (error) {
+      console.error('Erro ao carregar usuários:', error);
+      toast.error('Erro ao carregar usuários');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (showAllUsers) {
+      loadAllUsers();
+    }
+  }, [showAllUsers]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -100,10 +150,25 @@ export default function AdminUnlock() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <Button onClick={handleCheckStatus} variant="outline" className="w-full">
-              <Search className="w-4 h-4 mr-2" />
-              Verificar Status do Sistema
-            </Button>
+            <div className="flex gap-2">
+              <Input
+                type="email"
+                placeholder="Digite o email para verificar"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+              <Button
+                onClick={handleCheckStatus}
+                variant="outline"
+                disabled={checkingStatus || !email.trim()}
+              >
+                {checkingStatus ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Search className="w-4 h-4" />
+                )}
+              </Button>
+            </div>
 
             {currentStatus && (
               <div className="bg-muted/50 rounded-lg p-4 space-y-3">
@@ -176,10 +241,19 @@ export default function AdminUnlock() {
               onClick={handleUnlock}
               size="lg"
               className="w-full gap-2"
-              disabled={!email.trim()}
+              disabled={!email.trim() || loading}
             >
-              <Crown className="w-5 h-5" />
-              Conceder Acesso Vitalício ILIMITADO
+              {loading ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  Concedendo acesso...
+                </>
+              ) : (
+                <>
+                  <Crown className="w-5 h-5" />
+                  Conceder Acesso Vitalício ILIMITADO (Supabase)
+                </>
+              )}
             </Button>
 
             {/* Aviso */}
@@ -219,6 +293,81 @@ export default function AdminUnlock() {
               renan.wow.blizz@gmail.com (Cliente que pagou)
             </Button>
           </CardContent>
+        </Card>
+
+        {/* Lista de Todos os Usuários */}
+        <Card className="mt-6">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <CardTitle className="flex items-center gap-2">
+                <Users className="w-5 h-5" />
+                Todos os Usuários
+              </CardTitle>
+              <Button
+                onClick={() => setShowAllUsers(!showAllUsers)}
+                variant="outline"
+                size="sm"
+              >
+                {showAllUsers ? 'Ocultar' : 'Mostrar'}
+              </Button>
+            </div>
+          </CardHeader>
+          {showAllUsers && (
+            <CardContent>
+              {loading ? (
+                <div className="flex items-center justify-center py-8">
+                  <Loader2 className="w-6 h-6 animate-spin text-primary" />
+                </div>
+              ) : allUsers.length === 0 ? (
+                <p className="text-sm text-muted-foreground text-center py-4">
+                  Nenhum usuário encontrado
+                </p>
+              ) : (
+                <div className="space-y-2">
+                  {allUsers.map((user) => (
+                    <div
+                      key={user.id}
+                      className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors"
+                    >
+                      <div className="flex-1">
+                        <p className="font-medium text-sm">{user.email}</p>
+                        <div className="flex items-center gap-2 mt-1">
+                          <Badge
+                            variant={user.has_lifetime_access ? 'default' : 'outline'}
+                            className="text-xs"
+                          >
+                            {user.has_lifetime_access ? 'Vitalício' : 'Trial'}
+                          </Badge>
+                          {!user.has_lifetime_access && (
+                            <span className="text-xs text-muted-foreground">
+                              {user.trial_analyses_limit - user.trial_analyses_used} restantes
+                            </span>
+                          )}
+                          <span className="text-xs text-muted-foreground">
+                            • {user.granted_by}
+                          </span>
+                        </div>
+                      </div>
+                      {!user.has_lifetime_access && (
+                        <Button
+                          onClick={() => {
+                            setEmail(user.email);
+                            handleUnlock();
+                          }}
+                          size="sm"
+                          variant="outline"
+                          className="gap-1"
+                        >
+                          <Unlock className="w-3 h-3" />
+                          Desbloquear
+                        </Button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          )}
         </Card>
       </div>
     </div>
