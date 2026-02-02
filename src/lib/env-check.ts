@@ -8,13 +8,15 @@ export function checkEnvironmentVariables() {
     },
     mercadoPago: {
       accessToken: !!import.meta.env.VITE_MERCADO_PAGO_ACCESS_TOKEN,
+      publicKey: !!import.meta.env.VITE_MERCADO_PAGO_PUBLIC_KEY,
     },
   };
 
   const allConfigured =
     checks.supabase.url &&
     checks.supabase.anonKey &&
-    checks.mercadoPago.accessToken;
+    checks.mercadoPago.accessToken &&
+    checks.mercadoPago.publicKey;
 
   if (import.meta.env.DEV) {
     console.log('🔍 Verificação de variáveis de ambiente:', checks);
@@ -26,8 +28,15 @@ export function checkEnvironmentVariables() {
         console.error('❌ VITE_MERCADO_PAGO_ACCESS_TOKEN não encontrado');
         console.info('💡 Verifique se o .env possui VITE_MERCADO_PAGO_ACCESS_TOKEN e reinicie o servidor');
       }
+
+      if (!checks.mercadoPago.publicKey) {
+        console.error('❌ VITE_MERCADO_PAGO_PUBLIC_KEY não encontrado');
+        console.info('💡 Verifique se o .env possui VITE_MERCADO_PAGO_PUBLIC_KEY e reinicie o servidor');
+      }
     } else {
       console.log('✅ Todas as variáveis de ambiente estão configuradas');
+      console.log('   • Supabase: Conectado');
+      console.log('   • Mercado Pago: Access Token + Public Key carregados');
     }
   }
 

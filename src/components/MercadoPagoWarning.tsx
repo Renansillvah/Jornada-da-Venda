@@ -8,12 +8,13 @@ export function MercadoPagoWarning() {
 
   useEffect(() => {
     // Verificar se o token do Mercado Pago está disponível
-    const hasToken = !!import.meta.env.VITE_MERCADO_PAGO_ACCESS_TOKEN;
+    const hasAccessToken = !!import.meta.env.VITE_MERCADO_PAGO_ACCESS_TOKEN;
+    const hasPublicKey = !!import.meta.env.VITE_MERCADO_PAGO_PUBLIC_KEY;
 
     // Verificar se já foi exibido antes nesta sessão
     const warningShown = sessionStorage.getItem('mp_warning_shown');
 
-    if (!hasToken && !warningShown) {
+    if ((!hasAccessToken || !hasPublicKey) && !warningShown) {
       setShowWarning(true);
       sessionStorage.setItem('mp_warning_shown', 'true');
     }
