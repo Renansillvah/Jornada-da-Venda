@@ -66,10 +66,10 @@ export const CONTEXT_OPTIONS = [
 
 export const getScoreLevel = (score: number): { level: string; color: string; bgColor: string } => {
   if (score === 0) return { level: 'Não avaliado', color: 'text-muted-foreground', bgColor: 'bg-muted' };
-  if (score <= 4) return { level: 'Crítico', color: 'text-red-700', bgColor: 'bg-red-50' };
-  if (score <= 6) return { level: 'Atenção', color: 'text-yellow-700', bgColor: 'bg-yellow-50' };
-  if (score <= 9) return { level: 'Adequado', color: 'text-blue-700', bgColor: 'bg-blue-50' };
-  return { level: 'Excelente', color: 'text-green-700', bgColor: 'bg-green-50' };
+  if (score <= 4) return { level: 'Crítico', color: 'text-destructive', bgColor: 'bg-destructive/10' };
+  if (score <= 6) return { level: 'Atenção', color: 'text-warning-foreground', bgColor: 'bg-warning/10' };
+  if (score <= 9) return { level: 'Adequado', color: 'text-info-foreground', bgColor: 'bg-info/10' };
+  return { level: 'Excelente', color: 'text-success-foreground', bgColor: 'bg-success/10' };
 };
 
 export const getActionableInsight = (pillarName: string, score: number): { issue: string; action: string } => {

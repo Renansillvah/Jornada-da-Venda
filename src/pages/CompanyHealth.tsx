@@ -4,20 +4,26 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { ArrowLeft, TrendingUp, TrendingDown, Minus, AlertCircle, CheckCircle2, Info } from 'lucide-react';
+import { ArrowLeft, TrendingUp, TrendingDown, Minus, AlertCircle, CheckCircle2, Info, BarChart3 } from 'lucide-react';
 import { getAnalyses } from '@/lib/storage';
 import { calculateCompanyHealth } from '@/lib/companyHealth';
 import { PILLARS_CONFIG, getLayerInfo, getScoreLevel } from '@/types/analysis';
 import type { CompanyHealth as CompanyHealthType } from '@/types/analysis';
+import EvolutionChart from '@/components/EvolutionChart';
+import PillarComparisonChart from '@/components/PillarComparisonChart';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export default function CompanyHealth() {
   const navigate = useNavigate();
   const [health, setHealth] = useState<CompanyHealthType | null>(null);
+  const [analyses, setAnalyses] = useState<any[]>([]);
 
   useEffect(() => {
-    const analyses = getAnalyses();
-    const companyHealth = calculateCompanyHealth(analyses);
+    const allAnalyses = getAnalyses();
+    const activeAnalyses = allAnalyses.filter(a => a.isActive);
+    const companyHealth = calculateCompanyHealth(allAnalyses);
     setHealth(companyHealth);
+    setAnalyses(activeAnalyses);
   }, []);
 
   if (!health) {
@@ -55,19 +61,19 @@ export default function CompanyHealth() {
   }
 
   const getTrendIcon = (trend: 'up' | 'stable' | 'down') => {
-    if (trend === 'up') return <TrendingUp className="h-4 w-4 text-green-600" />;
+    if (trend === 'up') return <TrendingUp className="h-4 w-4 text-success-foreground" />;
     if (trend === 'down') return <TrendingDown className="h-4 w-4 text-destructive" />;
     return <Minus className="h-4 w-4 text-muted-foreground" />;
   };
 
   const getConfidenceBadge = (confidence: 'high' | 'medium' | 'low', count: number) => {
     if (confidence === 'high') {
-      return <Badge className="bg-green-100 text-green-800 hover:bg-green-100 text-xs">Alta ({count} análises)</Badge>;
+      return <Badge variant="outline" className="bg-success/10 text-success-foreground border-success/30 hover:bg-success/10 text-xs">Alta ({count} análises)</Badge>;
     }
     if (confidence === 'medium') {
-      return <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100 text-xs">Média ({count} análises)</Badge>;
+      return <Badge variant="outline" className="bg-info/10 text-info-foreground border-info/30 hover:bg-info/10 text-xs">Média ({count} análises)</Badge>;
     }
-    return <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-100 text-xs">Baixa ({count} análises)</Badge>;
+    return <Badge variant="outline" className="bg-warning/10 text-warning-foreground border-warning/30 hover:bg-warning/10 text-xs">Baixa ({count} análises)</Badge>;
   };
 
   const pillarsByLayer = {
@@ -186,20 +192,55 @@ export default function CompanyHealth() {
         </Card>
 
         {/* Alerta de Confiança */}
-        <Alert className="mb-6 border-blue-200 bg-blue-50">
-          <Info className="h-4 w-4 text-blue-600" />
-          <AlertDescription className="text-sm text-blue-900">
+        <Alert className="mb-6 border-info/30 bg-info/10">
+          <Info className="h-4 w-4 text-info-foreground" />
+          <AlertDescription className="text-sm text-info-foreground">
             <strong>Como interpretar:</strong> Pilares com confiança "baixa" precisam de mais análises para diagnóstico preciso.
             Notas são calculadas com base apenas em dados reais, sem penalização por pilares não avaliados.
           </AlertDescription>
         </Alert>
 
-        {/* Pilares por Camada */}
-        <div className="space-y-6">
-          {renderLayer(pillarsByLayer.foundation, 'foundation')}
-          {renderLayer(pillarsByLayer.conversion, 'conversion')}
-          {renderLayer(pillarsByLayer.amplification, 'amplification')}
-        </div>
+        {/* Tabs: Visão Geral / Gráficos */}
+        <Tabs defaultValue="overview" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="overview">Visão Geral</TabsTrigger>
+            <TabsTrigger value="charts">
+              <BarChart3 className="h-4 w-4 mr-2" />
+              Gráficos
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="overview" className="space-y-6">
+            {/* Pilares por Camada */}
+            {renderLayer(pillarsByLayer.foundation, 'foundation')}
+            {renderLayer(pillarsByLayer.conversion, 'conversion')}
+            {renderLayer(pillarsByLayer.amplification, 'amplification')}
+          </TabsContent>
+
+          <TabsContent value="charts" className="space-y-6">
+            {/* Gráfico de Comparação de Pilares */}
+            <PillarComparisonChart
+              pillarScores={Object.entries(health.pillarScores).map(([id, data]) => ({
+                id,
+                name: PILLARS_CONFIG.find(p => p.id === id)?.name || id,
+                score: data.average
+              }))}
+              title="Comparação de Pilares Atuais"
+            />
+
+            {/* Gráfico de Evolução Geral */}
+            {analyses.length > 1 && (
+              <EvolutionChart
+                data={analyses.slice(0, 10).reverse().map(a => ({
+                  date: a.date,
+                  score: a.averageScore,
+                  context: a.context.join(', ')
+                }))}
+                title="Evolução da Nota Geral"
+              />
+            )}
+          </TabsContent>
+        </Tabs>
 
         {/* Ações */}
         <Card className="mt-6 bg-primary/5 border-primary/30">
