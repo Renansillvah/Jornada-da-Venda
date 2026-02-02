@@ -72,9 +72,9 @@ export function BarView({ pillars, onScoreChange }: BarViewProps) {
 
   const getBarColor = (score: number): string => {
     if (score === 0) return 'bg-muted-foreground/20';
-    if (score <= 4) return 'bg-red-500';
-    if (score <= 6) return 'bg-yellow-500';
-    return 'bg-green-500';
+    if (score <= 4) return 'bg-destructive';
+    if (score <= 6) return 'bg-warning';
+    return 'bg-success';
   };
 
   const pillarsByLayer = useMemo(() => {
@@ -177,22 +177,22 @@ export function BarView({ pillars, onScoreChange }: BarViewProps) {
                   <div className="mt-2 space-y-2">
                     <Alert className={`py-2 ${
                       currentScore <= 4
-                        ? 'border-red-200 bg-red-50'
-                        : 'border-yellow-200 bg-yellow-50'
+                        ? 'border-destructive/30 bg-destructive/10'
+                        : 'border-warning/30 bg-warning/10'
                     }`}>
                       <AlertCircle className={`h-3 w-3 ${
-                        currentScore <= 4 ? 'text-red-600' : 'text-yellow-600'
+                        currentScore <= 4 ? 'text-destructive' : 'text-warning-foreground'
                       }`} />
                       <AlertDescription className={`text-xs ${
-                        currentScore <= 4 ? 'text-red-900' : 'text-yellow-900'
+                        currentScore <= 4 ? 'text-destructive' : 'text-warning-foreground'
                       }`}>
                         <strong>{getActionableInsight(pillar.name, currentScore).issue}</strong>
                       </AlertDescription>
                     </Alert>
                     <div className={`p-2 rounded text-xs ${
                       currentScore <= 4
-                        ? 'bg-red-100 text-red-800'
-                        : 'bg-yellow-100 text-yellow-800'
+                        ? 'bg-destructive/10 text-destructive border border-destructive/30'
+                        : 'bg-warning/10 text-warning-foreground border border-warning/30'
                     }`}>
                       <strong>✓ Ação:</strong> {getActionableInsight(pillar.name, currentScore).action}
                     </div>
