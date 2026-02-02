@@ -31,7 +31,7 @@ import { useAnalyses } from '@/hooks/useAnalyses';
 
 export default function History() {
   const navigate = useNavigate();
-  const { analyses, loading, reload } = useAnalyses();
+  const { analyses, reload } = useAnalyses();
   const [selectedAnalysis, setSelectedAnalysis] = useState<Analysis | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterContext, setFilterContext] = useState<string>('all');

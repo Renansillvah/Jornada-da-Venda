@@ -205,7 +205,7 @@ Responda APENAS em formato JSON válido, seguindo EXATAMENTE esta estrutura (tod
 
   try {
     // Construir array de conteúdo com texto + todas as imagens
-    const content: Array<{type: string; text?: string; image_url?: {url: string; detail: string}}> = [
+    const messageContent: Array<{type: string; text?: string; image_url?: {url: string; detail: string}}> = [
       {
         type: 'text',
         text: prompt
@@ -214,7 +214,7 @@ Responda APENAS em formato JSON válido, seguindo EXATAMENTE esta estrutura (tod
 
     // Adicionar todas as imagens
     images.forEach(base64Image => {
-      content.push({
+      messageContent.push({
         type: 'image_url',
         image_url: {
           url: base64Image,
@@ -234,7 +234,7 @@ Responda APENAS em formato JSON válido, seguindo EXATAMENTE esta estrutura (tod
         messages: [
           {
             role: 'user',
-            content: content
+            content: messageContent
           }
         ],
         max_tokens: 16000,

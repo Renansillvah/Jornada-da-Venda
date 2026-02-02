@@ -1,8 +1,6 @@
 import { Card, CardContent } from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
-import { AlertCircle, CheckCircle2, TrendingUp } from 'lucide-react';
-import { PILLARS_CONFIG, getScoreLevel, getActionableInsight } from '@/types/analysis';
+import { CheckCircle2 } from 'lucide-react';
 import type { Pillar } from '@/types/analysis';
 
 interface StrategicSummaryProps {

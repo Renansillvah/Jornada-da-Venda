@@ -8,7 +8,7 @@ interface PillarExplanationProps {
   pillarName: string;
 }
 
-export function PillarExplanation({ explanation, pillarName }: PillarExplanationProps) {
+export function PillarExplanation({ explanation }: PillarExplanationProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
   if (!explanation || explanation === 'Sem dados') {
