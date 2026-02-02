@@ -65,42 +65,35 @@ export function StrategicSummary({ pillars, averageScore }: StrategicSummaryProp
   const bottleneckLevel = getScoreLevel(criticalBottleneck.score);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Diagnóstico Geral */}
       <Card className="border-2">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Target className="h-5 w-5 text-primary" />
-            Diagnóstico Estratégico
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          {/* Nota e Diagnóstico */}
-          <div className="flex items-start gap-4">
-            <div className="text-center min-w-24">
-              <div className="text-5xl font-bold text-primary">{averageScore}</div>
-              <div className="text-xs text-muted-foreground mt-1">de 10 pontos</div>
+        <CardContent className="pt-4 pb-4">
+          <div className="flex items-center gap-4 mb-3">
+            <div className="text-center min-w-16">
+              <div className="text-3xl font-bold text-primary">{averageScore}</div>
+              <div className="text-xs text-muted-foreground">de 10</div>
             </div>
             <div className="flex-1">
-              <div className="flex items-start gap-2">
-                <DiagnosisIcon className={`h-5 w-5 mt-0.5 ${diagnosis.iconColor}`} />
-                <p className={`text-sm font-medium ${diagnosis.color}`}>
+              <div className="flex items-center gap-2 mb-2">
+                <DiagnosisIcon className={`h-4 w-4 ${diagnosis.iconColor}`} />
+                <p className={`text-xs font-medium ${diagnosis.color}`}>
                   {diagnosis.text}
                 </p>
               </div>
-              <div className="flex gap-2 mt-3">
+              <div className="flex gap-1.5">
                 {criticalCount > 0 && (
-                  <Badge variant="destructive" className="text-xs">
+                  <Badge variant="destructive" className="text-xs py-0 h-5">
                     {criticalCount} crítico{criticalCount > 1 ? 's' : ''}
                   </Badge>
                 )}
                 {attentionCount > 0 && (
-                  <Badge className="text-xs bg-yellow-100 text-yellow-800 hover:bg-yellow-100">
+                  <Badge className="text-xs py-0 h-5 bg-yellow-100 text-yellow-800 hover:bg-yellow-100">
                     {attentionCount} atenção
                   </Badge>
                 )}
                 {adequateCount > 0 && (
-                  <Badge className="text-xs bg-green-100 text-green-800 hover:bg-green-100">
+                  <Badge className="text-xs py-0 h-5 bg-green-100 text-green-800 hover:bg-green-100">
                     {adequateCount} adequado{adequateCount > 1 ? 's' : ''}
                   </Badge>
                 )}
@@ -109,31 +102,31 @@ export function StrategicSummary({ pillars, averageScore }: StrategicSummaryProp
           </div>
 
           {/* Grid de Resumo */}
-          <div className="grid md:grid-cols-2 gap-4">
-            <div className="p-4 bg-green-50 rounded-lg border border-green-200">
-              <div className="flex items-center gap-2 mb-2">
-                <CheckCircle2 className="h-4 w-4 text-green-600" />
+          <div className="grid md:grid-cols-2 gap-3">
+            <div className="p-3 bg-green-50 rounded border border-green-200">
+              <div className="flex items-center gap-1.5 mb-1">
+                <CheckCircle2 className="h-3 w-3 text-green-600" />
                 <p className="text-xs font-semibold text-green-900">Ponto forte</p>
               </div>
-              <p className="text-sm font-medium text-green-800">{strongest.name}</p>
-              <p className="text-xs text-green-700 mt-1">Nota {strongest.score}/10</p>
+              <p className="text-xs font-medium text-green-800">{strongest.name}</p>
+              <p className="text-xs text-green-700 mt-0.5">Nota {strongest.score}/10</p>
             </div>
 
-            <div className={`p-4 rounded-lg border ${bottleneckLevel.bgColor} ${
+            <div className={`p-3 rounded border ${bottleneckLevel.bgColor} ${
               criticalBottleneck.score <= 4 ? 'border-red-200' : 'border-yellow-200'
             }`}>
-              <div className="flex items-center gap-2 mb-2">
-                <AlertCircle className={`h-4 w-4 ${
+              <div className="flex items-center gap-1.5 mb-1">
+                <AlertCircle className={`h-3 w-3 ${
                   criticalBottleneck.score <= 4 ? 'text-red-600' : 'text-yellow-600'
                 }`} />
                 <p className={`text-xs font-semibold ${
                   criticalBottleneck.score <= 4 ? 'text-red-900' : 'text-yellow-900'
                 }`}>Gargalo principal</p>
               </div>
-              <p className={`text-sm font-medium ${
+              <p className={`text-xs font-medium ${
                 criticalBottleneck.score <= 4 ? 'text-red-800' : 'text-yellow-800'
               }`}>{criticalBottleneck.name}</p>
-              <p className={`text-xs mt-1 ${
+              <p className={`text-xs mt-0.5 ${
                 criticalBottleneck.score <= 4 ? 'text-red-700' : 'text-yellow-700'
               }`}>Nota {criticalBottleneck.score}/10 - {bottleneckLevel.level}</p>
             </div>
@@ -143,34 +136,34 @@ export function StrategicSummary({ pillars, averageScore }: StrategicSummaryProp
 
       {/* Ação Prioritária */}
       {criticalBottleneck.score < 7 && (
-        <Alert className={`${
+        <Alert className={`py-3 ${
           criticalBottleneck.score <= 4 ? 'bg-red-50 border-red-200' : 'bg-yellow-50 border-yellow-200'
         }`}>
           <AlertCircle className={`h-4 w-4 ${
             criticalBottleneck.score <= 4 ? 'text-red-600' : 'text-yellow-600'
           }`} />
-          <AlertDescription className="space-y-3">
+          <AlertDescription className="space-y-2">
             <div>
-              <p className={`text-sm font-semibold ${
+              <p className={`text-xs font-semibold ${
                 criticalBottleneck.score <= 4 ? 'text-red-900' : 'text-yellow-900'
               }`}>
                 🎯 Comece por aqui:
               </p>
-              <p className={`text-sm mt-1 ${
+              <p className={`text-xs mt-1 ${
                 criticalBottleneck.score <= 4 ? 'text-red-800' : 'text-yellow-800'
               }`}>
                 <strong>Problema:</strong> {bottleneckInsight.issue}
               </p>
             </div>
-            <div className={`p-3 rounded-md ${
+            <div className={`p-2 rounded ${
               criticalBottleneck.score <= 4 ? 'bg-red-100' : 'bg-yellow-100'
             }`}>
-              <p className={`text-sm font-medium ${
+              <p className={`text-xs font-medium ${
                 criticalBottleneck.score <= 4 ? 'text-red-900' : 'text-yellow-900'
               }`}>
-                ✓ Próximo passo prático:
+                ✓ Próximo passo:
               </p>
-              <p className={`text-sm mt-1 ${
+              <p className={`text-xs mt-1 ${
                 criticalBottleneck.score <= 4 ? 'text-red-800' : 'text-yellow-800'
               }`}>
                 {bottleneckInsight.action}
