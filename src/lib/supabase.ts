@@ -25,8 +25,14 @@ export const saveAnalysisToSupabase = async (analysis: Analysis): Promise<void> 
     throw new Error('Supabase não está configurado');
   }
 
+  // Obter user_id da sessão atual
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) {
+    throw new Error('Usuário não autenticado');
+  }
+
   const { error } = await supabase.from('analyses').insert({
-    id: analysis.id,
     date: analysis.date,
     context: analysis.context,
     description: analysis.description,
@@ -34,12 +40,13 @@ export const saveAnalysisToSupabase = async (analysis: Analysis): Promise<void> 
     average_score: analysis.averageScore,
     strongest_pillar: analysis.strongestPillar,
     weakest_pillar: analysis.weakestPillar,
-    trend: analysis.trend,
-    changes: analysis.changes,
+    trend: analysis.trend || null,
+    changes: analysis.changes || null,
     type: analysis.type,
-    parent_id: analysis.parentId,
-    is_active: analysis.isActive,
-    tags: analysis.tags,
+    parent_id: analysis.parentId || null,
+    is_active: analysis.isActive ?? true,
+    tags: analysis.tags || [],
+    user_id: user.id,
   });
 
   if (error) {
