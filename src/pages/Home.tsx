@@ -3,23 +3,26 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { BarChart3, TrendingUp, History, Sparkles, ShoppingCart } from 'lucide-react';
-import { getCredits, giveWelcomeCredits } from '@/lib/credits';
+import { BarChart3, TrendingUp, History, Crown, ShoppingCart, Zap } from 'lucide-react';
+import { hasLifetimeAccess, getRemainingTrialAnalyses, giveFreeTrial } from '@/lib/access';
 
 export default function Home() {
   const navigate = useNavigate();
-  const [credits, setCredits] = useState(0);
+  const [hasAccess, setHasAccess] = useState(false);
+  const [trialRemaining, setTrialRemaining] = useState(0);
 
   useEffect(() => {
-    // Dar boas-vindas com créditos grátis no primeiro acesso
-    giveWelcomeCredits();
+    // Dar trial de 2 análises grátis no primeiro acesso
+    giveFreeTrial();
 
-    // Atualizar saldo de créditos
-    setCredits(getCredits());
+    // Verificar status de acesso
+    setHasAccess(hasLifetimeAccess());
+    setTrialRemaining(getRemainingTrialAnalyses());
 
-    // Atualizar créditos a cada 5 segundos (caso o usuário compre em outra aba)
+    // Atualizar status a cada 5 segundos (caso o usuário pague em outra aba)
     const interval = setInterval(() => {
-      setCredits(getCredits());
+      setHasAccess(hasLifetimeAccess());
+      setTrialRemaining(getRemainingTrialAnalyses());
     }, 5000);
 
     return () => clearInterval(interval);
@@ -40,31 +43,39 @@ export default function Home() {
             Este painel mede os pilares que influenciam essa decisão.
           </p>
 
-          {/* Indicador de Créditos */}
+          {/* Indicador de Acesso */}
           <div className="flex items-center justify-center gap-3 mt-6">
-            <Badge
-              variant="outline"
-              className={`text-sm px-4 py-2 gap-2 ${
-                credits === 0
-                  ? 'bg-destructive/10 text-destructive border-destructive/30'
-                  : credits <= 3
-                  ? 'bg-warning/10 text-warning border-warning/30'
-                  : 'bg-success/10 text-success border-success/30'
-              }`}
-            >
-              <Sparkles className="w-4 h-4" />
-              {credits} crédito{credits !== 1 ? 's' : ''} disponível{credits !== 1 ? 'eis' : ''}
-            </Badge>
-            {credits <= 5 && (
-              <Button
-                onClick={() => navigate('/buy-credits')}
-                size="sm"
-                variant={credits === 0 ? 'default' : 'outline'}
-                className="gap-2"
+            {hasAccess ? (
+              <Badge
+                variant="outline"
+                className="text-sm px-4 py-2 gap-2 bg-success/10 text-success border-success/30"
               >
-                <ShoppingCart className="w-4 h-4" />
-                {credits === 0 ? 'Comprar Créditos' : 'Comprar Mais'}
-              </Button>
+                <Crown className="w-4 h-4" />
+                Acesso Vitalício Ativo - Análises Ilimitadas
+              </Badge>
+            ) : (
+              <>
+                <Badge
+                  variant="outline"
+                  className={`text-sm px-4 py-2 gap-2 ${
+                    trialRemaining === 0
+                      ? 'bg-destructive/10 text-destructive border-destructive/30'
+                      : 'bg-warning/10 text-warning border-warning/30'
+                  }`}
+                >
+                  <Zap className="w-4 h-4" />
+                  Trial: {trialRemaining} análise{trialRemaining !== 1 ? 's' : ''} gratuita{trialRemaining !== 1 ? 's' : ''}
+                </Badge>
+                <Button
+                  onClick={() => navigate('/buy-credits')}
+                  size="sm"
+                  variant={trialRemaining === 0 ? 'default' : 'outline'}
+                  className="gap-2"
+                >
+                  <ShoppingCart className="w-4 h-4" />
+                  {trialRemaining === 0 ? 'Desbloquear Agora (R$ 9,99)' : 'Garantir Vitalício'}
+                </Button>
+              </>
             )}
           </div>
         </div>

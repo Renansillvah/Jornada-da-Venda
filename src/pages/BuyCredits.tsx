@@ -3,70 +3,47 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Sparkles, Check, Zap, TrendingUp } from 'lucide-react';
-import { getCredits } from '@/lib/credits';
+import { ArrowLeft, Sparkles, Check, Zap, TrendingUp, Crown, Shield } from 'lucide-react';
+import { hasLifetimeAccess } from '@/lib/access';
 import { toast } from 'sonner';
 
 export default function BuyCredits() {
   const navigate = useNavigate();
-  const currentCredits = getCredits();
+  const hasAccess = hasLifetimeAccess();
   const [loading, setLoading] = useState(false);
 
-  const packages = [
-    {
-      id: 'starter',
-      name: 'Pacote Inicial',
-      credits: 10,
-      price: 9.99,
-      priceOriginal: 29.90,
-      popular: true,
-      savings: '67% OFF',
-      features: [
-        '10 análises completas com IA',
-        'Diagnóstico dos 15 pilares',
-        'Ações práticas personalizadas',
-        'Exemplos prontos para copiar',
-        'Válido por 6 meses'
-      ],
-      cta: 'Começar Agora',
-      urgency: 'Oferta de lançamento - Vagas limitadas!'
-    },
-    {
-      id: 'pro',
-      name: 'Pacote Profissional',
-      credits: 30,
-      price: 24.99,
-      priceOriginal: 89.70,
-      popular: false,
-      savings: '72% OFF',
-      features: [
-        '30 análises completas com IA',
-        'Diagnóstico dos 15 pilares',
-        'Ações práticas personalizadas',
-        'Exemplos prontos para copiar',
-        'Válido por 12 meses',
-        'Suporte prioritário'
-      ],
-      cta: 'Economizar Mais',
-      urgency: 'Mais vendido entre consultores!'
-    }
-  ];
+  // Se já tem acesso vitalício, redirecionar
+  if (hasAccess) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Card className="max-w-md">
+          <CardContent className="pt-8 pb-8 text-center">
+            <div className="w-16 h-16 rounded-full bg-success/20 flex items-center justify-center mx-auto mb-4">
+              <Crown className="w-8 h-8 text-success" />
+            </div>
+            <h2 className="text-2xl font-bold mb-2">Você já tem Acesso Vitalício!</h2>
+            <p className="text-muted-foreground mb-6">
+              Aproveite suas análises ilimitadas
+            </p>
+            <Button onClick={() => navigate('/dashboard')} size="lg">
+              Ir para Dashboard
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
-  const handlePurchase = (packageId: string) => {
+  const handlePurchase = () => {
     setLoading(true);
 
-    const selectedPackage = packages.find(p => p.id === packageId);
-    if (!selectedPackage) return;
-
     // Aqui você vai integrar com Mercado Pago
-    // Por enquanto, vou simular o processo
     toast.info('Redirecionando para pagamento...', {
       description: 'Você será redirecionado para o Mercado Pago'
     });
 
-    // Simular redirect para Mercado Pago (você vai substituir isso pela URL real)
+    // Simular redirect para Mercado Pago
     setTimeout(() => {
-      // IMPORTANTE: Aqui você vai criar a preferência no Mercado Pago e redirecionar
       toast.error('Integração com Mercado Pago ainda não configurada', {
         description: 'Configure suas credenciais do Mercado Pago nas Settings',
         action: {
@@ -80,7 +57,7 @@ export default function BuyCredits() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8 max-w-6xl">
+      <div className="container mx-auto px-4 py-8 max-w-4xl">
         <Button
           variant="ghost"
           onClick={() => navigate('/dashboard')}
@@ -92,18 +69,18 @@ export default function BuyCredits() {
 
         {/* Header */}
         <div className="text-center mb-12">
-          <Badge className="mb-4 bg-primary/10 text-primary border-primary/30">
-            <Sparkles className="w-3 h-3 mr-1" />
-            Oferta de Lançamento
+          <Badge className="mb-4 bg-warning/10 text-warning border-warning/30 px-4 py-2">
+            <Zap className="w-4 h-4 mr-2" />
+            Oferta de Lançamento - Pagamento Único
           </Badge>
-          <h1 className="text-4xl font-bold mb-3">
-            Descubra Onde Você Está Perdendo Vendas
+          <h1 className="text-5xl font-bold mb-4">
+            Acesso Vitalício
           </h1>
           <p className="text-xl text-muted-foreground mb-2">
-            Análise completa da jornada do cliente em 5 minutos
+            Pague uma vez, use para sempre
           </p>
           <p className="text-sm text-muted-foreground">
-            Você tem <span className="font-bold text-primary">{currentCredits} crédito{currentCredits !== 1 ? 's' : ''}</span> disponível
+            Sem mensalidades. Sem taxas ocultas. Sem limite de análises.
           </p>
         </div>
 
@@ -128,101 +105,165 @@ export default function BuyCredits() {
           </CardContent>
         </Card>
 
-        {/* Pacotes */}
-        <div className="grid md:grid-cols-2 gap-8 mb-12">
-          {packages.map((pkg) => (
-            <Card
-              key={pkg.id}
-              className={`relative ${
-                pkg.popular
-                  ? 'border-2 border-primary shadow-lg scale-105'
-                  : 'border-border'
-              }`}
-            >
-              {pkg.popular && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                  <Badge className="bg-primary text-primary-foreground">
-                    Mais Escolhido
-                  </Badge>
-                </div>
-              )}
+        {/* Oferta Principal */}
+        <Card className="mb-12 border-2 border-primary shadow-xl">
+          <CardHeader className="text-center pb-4">
+            <div className="flex justify-center mb-4">
+              <Crown className="w-16 h-16 text-primary" />
+            </div>
+            <Badge className="mx-auto mb-4 bg-success/10 text-success border-success/30 px-4 py-2">
+              67% DE DESCONTO - Lançamento
+            </Badge>
+            <CardTitle className="text-3xl mb-2">Acesso Vitalício</CardTitle>
+            <CardDescription>
+              Análises ilimitadas. Para sempre.
+            </CardDescription>
+          </CardHeader>
 
-              <CardHeader>
-                <div className="flex items-center justify-between mb-2">
-                  <CardTitle className="text-2xl">{pkg.name}</CardTitle>
-                  <Badge variant="outline" className="bg-success/10 text-success border-success/30">
-                    {pkg.savings}
-                  </Badge>
-                </div>
-                <CardDescription className="text-xs text-warning">
-                  {pkg.urgency}
-                </CardDescription>
-              </CardHeader>
+          <CardContent className="space-y-6">
+            {/* Preço */}
+            <div className="text-center py-6 bg-muted/30 rounded-lg">
+              <div className="flex items-baseline justify-center gap-3 mb-2">
+                <span className="text-2xl text-muted-foreground line-through">R$ 29,90</span>
+                <Badge variant="outline" className="bg-success/10 text-success border-success/30">
+                  -67%
+                </Badge>
+              </div>
+              <div className="flex items-baseline justify-center gap-2 mb-2">
+                <span className="text-6xl font-bold text-primary">R$ 9,99</span>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Pagamento único • Sem mensalidade
+              </p>
+              <p className="text-xs text-warning mt-2">
+                ⚠️ Preço sobe para R$ 29,90 após primeiros 100 clientes
+              </p>
+            </div>
 
-              <CardContent className="space-y-6">
-                {/* Preço */}
+            {/* O que está incluído */}
+            <div className="space-y-3">
+              <h3 className="font-semibold text-center mb-4">O que você ganha:</h3>
+
+              <div className="flex items-start gap-3">
+                <Check className="w-5 h-5 text-success flex-shrink-0 mt-0.5" />
                 <div>
-                  <div className="flex items-baseline gap-2 mb-1">
-                    <span className="text-sm text-muted-foreground line-through">
-                      R$ {pkg.priceOriginal.toFixed(2)}
-                    </span>
-                  </div>
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-4xl font-bold">R$ {pkg.price.toFixed(2)}</span>
-                    <span className="text-muted-foreground">/ {pkg.credits} análises</span>
-                  </div>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Apenas R$ {(pkg.price / pkg.credits).toFixed(2)} por análise
+                  <p className="font-medium">Análises Ilimitadas com IA</p>
+                  <p className="text-sm text-muted-foreground">
+                    Quantas quiser, quando quiser. Para sempre.
                   </p>
                 </div>
+              </div>
 
-                {/* Features */}
-                <ul className="space-y-3">
-                  {pkg.features.map((feature, index) => (
-                    <li key={index} className="flex items-start gap-2">
-                      <Check className="w-5 h-5 text-success flex-shrink-0 mt-0.5" />
-                      <span className="text-sm">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
+              <div className="flex items-start gap-3">
+                <Check className="w-5 h-5 text-success flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-medium">Diagnóstico Completo dos 15 Pilares</p>
+                  <p className="text-sm text-muted-foreground">
+                    Fundamentos, Conversão e Potencialização
+                  </p>
+                </div>
+              </div>
 
-                {/* CTA */}
-                <Button
-                  onClick={() => handlePurchase(pkg.id)}
-                  disabled={loading}
-                  size="lg"
-                  className="w-full"
-                  variant={pkg.popular ? 'default' : 'outline'}
-                >
-                  {loading ? (
-                    'Processando...'
-                  ) : (
-                    <>
-                      <Zap className="w-4 h-4 mr-2" />
-                      {pkg.cta}
-                    </>
-                  )}
-                </Button>
+              <div className="flex items-start gap-3">
+                <Check className="w-5 h-5 text-success flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-medium">Ações Práticas Personalizadas</p>
+                  <p className="text-sm text-muted-foreground">
+                    O que mudar HOJE para vender mais
+                  </p>
+                </div>
+              </div>
 
-                <p className="text-xs text-center text-muted-foreground">
-                  Pagamento 100% seguro via Mercado Pago
-                </p>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+              <div className="flex items-start gap-3">
+                <Check className="w-5 h-5 text-success flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-medium">Scripts Prontos para Copiar</p>
+                  <p className="text-sm text-muted-foreground">
+                    Exemplos práticos antes/depois
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <Check className="w-5 h-5 text-success flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-medium">Atualizações Gratuitas</p>
+                  <p className="text-sm text-muted-foreground">
+                    Todas as melhorias futuras incluídas
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <Check className="w-5 h-5 text-success flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-medium">Suporte Prioritário</p>
+                  <p className="text-sm text-muted-foreground">
+                    Resposta em até 24h
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Comparação */}
+            <div className="bg-muted/30 rounded-lg p-4 space-y-2">
+              <p className="text-sm text-center font-medium mb-3">
+                💡 Compare o valor:
+              </p>
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div className="text-center">
+                  <p className="text-muted-foreground mb-1">1 Venda Perdida</p>
+                  <p className="font-bold text-destructive">~ R$ 500</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-muted-foreground mb-1">Acesso Vitalício</p>
+                  <p className="font-bold text-success">R$ 9,99</p>
+                </div>
+              </div>
+              <p className="text-xs text-center text-muted-foreground mt-2">
+                Identifique e corrija os erros que te fazem perder vendas
+              </p>
+            </div>
+
+            {/* CTA */}
+            <Button
+              onClick={handlePurchase}
+              disabled={loading}
+              size="lg"
+              className="w-full text-lg py-6 h-auto"
+            >
+              {loading ? (
+                'Processando...'
+              ) : (
+                <>
+                  <Crown className="w-5 h-5 mr-2" />
+                  Garantir Acesso Vitalício Agora
+                </>
+              )}
+            </Button>
+
+            <p className="text-xs text-center text-muted-foreground">
+              Pagamento 100% seguro via Mercado Pago
+            </p>
+
+            <div className="text-center text-sm text-warning">
+              <Sparkles className="w-4 h-4 inline mr-1" />
+              Apenas 47 vagas com este preço
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Garantia */}
         <Card className="bg-success/5 border-success/30">
-          <CardContent className="pt-6">
+          <CardContent className="pt-6 pb-6">
             <div className="flex items-center gap-4">
               <div className="w-16 h-16 rounded-full bg-success/20 flex items-center justify-center flex-shrink-0">
-                <Check className="w-8 h-8 text-success" />
+                <Shield className="w-8 h-8 text-success" />
               </div>
               <div>
-                <h3 className="font-semibold text-lg mb-1">Garantia de 7 dias</h3>
+                <h3 className="font-semibold text-lg mb-1">Garantia Incondicional de 7 Dias</h3>
                 <p className="text-sm text-muted-foreground">
-                  Se você não estiver satisfeito com a análise, devolvemos 100% do seu dinheiro. Sem perguntas. Sem burocracia.
+                  Se você não estiver satisfeito, devolvemos 100% do seu dinheiro. Sem perguntas. Sem burocracia. O risco é todo nosso.
                 </p>
               </div>
             </div>

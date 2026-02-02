@@ -8,10 +8,11 @@ import {
   X,
   TrendingUp,
   Zap,
-  Clock,
+  Crown,
   Shield,
   Target,
-  Users
+  Users,
+  Infinity
 } from 'lucide-react';
 
 export default function SalesLanding() {
@@ -23,8 +24,8 @@ export default function SalesLanding() {
       <div className="container mx-auto px-4 py-16 max-w-5xl">
         <div className="text-center mb-16">
           <Badge className="mb-6 bg-warning/10 text-warning border-warning/30 px-4 py-2">
-            <Clock className="w-4 h-4 mr-2" />
-            Oferta de Lançamento - Primeiros 100 Clientes
+            <Zap className="w-4 h-4 mr-2" />
+            Oferta de Lançamento - Pagamento Único
           </Badge>
 
           <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight">
@@ -44,23 +45,25 @@ export default function SalesLanding() {
               size="lg"
               className="text-lg px-8 py-6 h-auto"
             >
-              <Sparkles className="w-5 h-5 mr-2" />
-              Começar Minha Primeira Análise
+              <Crown className="w-5 h-5 mr-2" />
+              Garantir Acesso Vitalício
             </Button>
-            <p className="text-sm text-muted-foreground">
-              De <span className="line-through">R$ 29,90</span> por apenas{' '}
-              <span className="text-success font-bold text-lg">R$ 9,99</span>
-            </p>
+            <div className="text-center">
+              <p className="text-sm text-muted-foreground mb-1">
+                De <span className="line-through">R$ 29,90</span> por apenas
+              </p>
+              <p className="text-success font-bold text-2xl">R$ 9,99 Vitalício</p>
+            </div>
           </div>
 
-          <div className="flex items-center justify-center gap-6 text-sm text-muted-foreground">
+          <div className="flex items-center justify-center gap-6 text-sm text-muted-foreground flex-wrap">
             <div className="flex items-center gap-2">
-              <Check className="w-4 h-4 text-success" />
-              <span>Resultado em 5 minutos</span>
+              <Infinity className="w-4 h-4 text-success" />
+              <span>Análises ilimitadas</span>
             </div>
             <div className="flex items-center gap-2">
               <Check className="w-4 h-4 text-success" />
-              <span>Sem instalar nada</span>
+              <span>Pague 1x, use sempre</span>
             </div>
             <div className="flex items-center gap-2">
               <Check className="w-4 h-4 text-success" />
@@ -239,35 +242,39 @@ export default function SalesLanding() {
         <Card className="mb-16 border-2 border-primary">
           <CardContent className="pt-8 pb-8">
             <div className="text-center mb-8">
+              <div className="flex justify-center mb-4">
+                <Crown className="w-16 h-16 text-primary" />
+              </div>
+
               <Badge className="mb-4 bg-warning/10 text-warning border-warning/30 px-4 py-2">
                 <Zap className="w-4 h-4 mr-2" />
                 Oferta por Tempo Limitado
               </Badge>
 
-              <h2 className="text-3xl font-bold mb-4">
-                Comece Hoje por Apenas R$ 9,99
+              <h2 className="text-4xl font-bold mb-4">
+                Acesso Vitalício por Apenas R$ 9,99
               </h2>
 
-              <div className="flex items-center justify-center gap-4 mb-6">
+              <div className="flex items-center justify-center gap-4 mb-4">
                 <span className="text-2xl text-muted-foreground line-through">R$ 29,90</span>
                 <span className="text-5xl font-bold text-success">R$ 9,99</span>
               </div>
 
-              <p className="text-muted-foreground mb-2">
-                10 análises completas com IA
+              <p className="text-lg font-medium text-primary mb-2">
+                Pague uma vez. Use para sempre.
               </p>
               <p className="text-sm text-muted-foreground mb-6">
-                Menos que um café da Starbucks. Cada venda perdida custa R$ 500+
+                Análises ilimitadas • Sem mensalidade • Sem taxa oculta
               </p>
 
               <div className="max-w-md mx-auto space-y-3 mb-8">
                 <div className="flex items-center gap-2 text-sm">
                   <Check className="w-5 h-5 text-success" />
-                  <span>10 análises completas com IA</span>
+                  <span>Análises ilimitadas com IA</span>
                 </div>
                 <div className="flex items-center gap-2 text-sm">
                   <Check className="w-5 h-5 text-success" />
-                  <span>Diagnóstico dos 15 pilares</span>
+                  <span>Diagnóstico completo dos 15 pilares</span>
                 </div>
                 <div className="flex items-center gap-2 text-sm">
                   <Check className="w-5 h-5 text-success" />
@@ -275,7 +282,25 @@ export default function SalesLanding() {
                 </div>
                 <div className="flex items-center gap-2 text-sm">
                   <Check className="w-5 h-5 text-success" />
-                  <span>Válido por 6 meses</span>
+                  <span>Atualizações futuras incluídas</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm">
+                  <Check className="w-5 h-5 text-success" />
+                  <span>Suporte prioritário</span>
+                </div>
+              </div>
+
+              <div className="bg-muted/30 rounded-lg p-4 mb-6 max-w-md mx-auto">
+                <p className="text-sm font-medium mb-2">💡 Compare o valor:</p>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-xs text-muted-foreground">1 Venda Perdida</p>
+                    <p className="font-bold text-destructive">~ R$ 500</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground">Acesso Vitalício</p>
+                    <p className="font-bold text-success">R$ 9,99</p>
+                  </div>
                 </div>
               </div>
 
@@ -284,8 +309,8 @@ export default function SalesLanding() {
                 size="lg"
                 className="text-lg px-12 py-6 h-auto mb-4"
               >
-                <Sparkles className="w-5 h-5 mr-2" />
-                Começar Agora
+                <Crown className="w-5 h-5 mr-2" />
+                Garantir Acesso Vitalício Agora
               </Button>
 
               <p className="text-xs text-muted-foreground mb-4">
@@ -294,7 +319,7 @@ export default function SalesLanding() {
 
               <div className="flex items-center justify-center gap-2 text-sm text-warning">
                 <Users className="w-4 h-4" />
-                <span>Apenas 47 vagas restantes nesta oferta</span>
+                <span>Apenas 47 vagas com este preço</span>
               </div>
             </div>
           </CardContent>

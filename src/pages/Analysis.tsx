@@ -14,7 +14,7 @@ import { toast } from 'sonner';
 import { BarView } from '@/components/BarView';
 import { ImageUpload } from '@/components/ImageUpload';
 import { analyzeImageWithAI, getOpenAIKey } from '@/lib/openai';
-import { getCredits, useCredit, hasCredits } from '@/lib/credits';
+import { canAnalyze, hasLifetimeAccess, useTrialAnalysis, getRemainingTrialAnalyses, giveFreeTrial } from '@/lib/access';
 
 export default function Analysis() {
   const navigate = useNavigate();
@@ -94,13 +94,14 @@ export default function Analysis() {
       return;
     }
 
-    // Verificar se tem créditos disponíveis
-    if (!hasCredits()) {
-      toast.error('Você não tem créditos suficientes', {
-        description: `Você tem ${getCredits()} créditos. Compre mais para continuar analisando!`,
-        duration: 6000,
+    // Verificar se tem acesso (vitalício ou trial)
+    if (!canAnalyze()) {
+      const remaining = getRemainingTrialAnalyses();
+      toast.error('Trial de 2 análises gratuitas expirado', {
+        description: 'Adquira acesso vitalício por apenas R$ 9,99 para análises ilimitadas!',
+        duration: 8000,
         action: {
-          label: 'Comprar Créditos',
+          label: 'Comprar Agora (R$ 9,99)',
           onClick: () => navigate('/buy-credits')
         }
       });
@@ -166,14 +167,14 @@ export default function Analysis() {
       console.log('✨ Pilares atualizados:', updatedPillars);
       console.log('📈 Scores finais:', updatedPillars.map(p => ({ name: p.name, score: p.score })));
 
-      // Consumir 1 crédito pela análise bem-sucedida
-      const creditUsed = useCredit();
-      if (!creditUsed) {
-        toast.error('Erro ao consumir crédito. Tente novamente.');
-        return;
+      // Se não tem acesso vitalício, consumir análise do trial
+      if (!hasLifetimeAccess()) {
+        const trialUsed = useTrialAnalysis();
+        if (!trialUsed) {
+          toast.error('Trial expirado. Adquira acesso vitalício!');
+          return;
+        }
       }
-
-      const remainingCredits = getCredits();
 
       setPillars(updatedPillars);
 
@@ -185,9 +186,14 @@ export default function Analysis() {
       const lowConfidence = updatedPillars.filter(p => p.confidence === 'low').length;
       const notAnalyzed = updatedPillars.filter(p => p.confidence === 'none').length;
 
+      const remainingTrial = getRemainingTrialAnalyses();
+      const statusMessage = hasLifetimeAccess()
+        ? 'Análises ilimitadas com acesso vitalício!'
+        : `Restam ${remainingTrial} análise${remainingTrial !== 1 ? 's' : ''} gratuita${remainingTrial !== 1 ? 's' : ''}`;
+
       toast.success('Análise automática concluída! Revise os resultados abaixo.', {
         duration: 7000,
-        description: `${highConfidence} alta confiança • ${mediumConfidence} média • ${lowConfidence} baixa • ${notAnalyzed} não analisados | Você tem ${remainingCredits} crédito${remainingCredits !== 1 ? 's' : ''} restante${remainingCredits !== 1 ? 's' : ''}`
+        description: `${highConfidence} alta confiança • ${mediumConfidence} média • ${lowConfidence} baixa • ${notAnalyzed} não analisados | ${statusMessage}`
       });
 
       // Scroll suave para a seção de pilares
