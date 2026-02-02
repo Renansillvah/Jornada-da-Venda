@@ -29,7 +29,8 @@ export function App() {
 
         {/* Rotas de autenticação (públicas) */}
         <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
+        {/* Signup desabilitado - É necessário pagar primeiro */}
+        <Route path="/signup" element={<BuyCredits />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
 
         {/* Rotas de pagamento (públicas) */}

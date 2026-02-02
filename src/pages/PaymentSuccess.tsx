@@ -1,8 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { CheckCircle2, Crown, Sparkles, Mail } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { CheckCircle2, Crown, Sparkles, Mail, AlertCircle, UserPlus } from 'lucide-react';
 import { createAccountAfterPayment } from '@/lib/access';
 import { grantLifetimeAccessSupabase } from '@/lib/access-supabase';
 import { useAuth } from '@/contexts/AuthContext';
@@ -10,10 +13,19 @@ import { useAuth } from '@/contexts/AuthContext';
 export default function PaymentSuccess() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { user } = useAuth();
+  const { user, signUp } = useAuth();
   const [processing, setProcessing] = useState(true);
   const [accountCreated, setAccountCreated] = useState(false);
   const [userEmail, setUserEmail] = useState('');
+  const [showSignupForm, setShowSignupForm] = useState(false);
+  const [signupData, setSignupData] = useState({
+    fullName: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+  });
+  const [signupError, setSignupError] = useState('');
+  const [signupLoading, setSignupLoading] = useState(false);
 
   useEffect(() => {
     async function processPayment() {
@@ -70,10 +82,46 @@ export default function PaymentSuccess() {
       }
 
       setProcessing(false);
+
+      // Se não está logado, mostrar formulário de cadastro
+      if (!user && email) {
+        setShowSignupForm(true);
+        setSignupData(prev => ({ ...prev, email }));
+      }
     }
 
     setTimeout(() => processPayment(), 2000);
   }, [searchParams, user]);
+
+  const handleSignup = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSignupError('');
+
+    // Validações
+    if (signupData.password !== signupData.confirmPassword) {
+      setSignupError('As senhas não coincidem');
+      return;
+    }
+
+    if (signupData.password.length < 6) {
+      setSignupError('A senha deve ter no mínimo 6 caracteres');
+      return;
+    }
+
+    setSignupLoading(true);
+
+    const { error } = await signUp(signupData.email, signupData.password, signupData.fullName);
+
+    if (error) {
+      setSignupError(error.message || 'Erro ao criar conta');
+      setSignupLoading(false);
+    } else {
+      setAccountCreated(true);
+      setUserEmail(signupData.email);
+      setShowSignupForm(false);
+      setSignupLoading(false);
+    }
+  };
 
   if (processing) {
     return (
@@ -87,6 +135,112 @@ export default function PaymentSuccess() {
             <p className="text-muted-foreground">
               Aguarde enquanto confirmamos sua compra
             </p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Se precisa criar conta, mostrar formulário de cadastro
+  if (showSignupForm && !accountCreated) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <Card className="max-w-md w-full border-success/30">
+          <CardHeader className="text-center">
+            <div className="flex justify-center mb-4">
+              <div className="h-16 w-16 bg-success/10 rounded-full flex items-center justify-center">
+                <CheckCircle2 className="h-8 w-8 text-success" />
+              </div>
+            </div>
+            <CardTitle className="text-2xl font-bold text-success">
+              Pagamento Aprovado!
+            </CardTitle>
+            <p className="text-muted-foreground mt-2">
+              Agora crie sua conta para acessar
+            </p>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSignup} className="space-y-4">
+              {signupError && (
+                <Alert variant="destructive">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>{signupError}</AlertDescription>
+                </Alert>
+              )}
+
+              <div className="space-y-2">
+                <Label htmlFor="fullName">Nome completo</Label>
+                <Input
+                  id="fullName"
+                  type="text"
+                  placeholder="João Silva"
+                  value={signupData.fullName}
+                  onChange={(e) => setSignupData({ ...signupData, fullName: e.target.value })}
+                  required
+                  disabled={signupLoading}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="seu@email.com"
+                  value={signupData.email}
+                  onChange={(e) => setSignupData({ ...signupData, email: e.target.value })}
+                  required
+                  disabled={signupLoading}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="password">Senha</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="••••••••"
+                  value={signupData.password}
+                  onChange={(e) => setSignupData({ ...signupData, password: e.target.value })}
+                  required
+                  disabled={signupLoading}
+                  minLength={6}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Mínimo de 6 caracteres
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="confirmPassword">Confirmar senha</Label>
+                <Input
+                  id="confirmPassword"
+                  type="password"
+                  placeholder="••••••••"
+                  value={signupData.confirmPassword}
+                  onChange={(e) => setSignupData({ ...signupData, confirmPassword: e.target.value })}
+                  required
+                  disabled={signupLoading}
+                />
+              </div>
+
+              <Alert className="bg-success/5 border-success/30">
+                <Crown className="h-4 w-4 text-success" />
+                <AlertDescription className="text-sm">
+                  Sua conta já terá <strong>acesso vitalício ILIMITADO</strong> ativado!
+                </AlertDescription>
+              </Alert>
+
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={signupLoading}
+                size="lg"
+              >
+                <UserPlus className="w-4 h-4 mr-2" />
+                {signupLoading ? 'Criando conta...' : 'Criar Conta e Acessar'}
+              </Button>
+            </form>
           </CardContent>
         </Card>
       </div>

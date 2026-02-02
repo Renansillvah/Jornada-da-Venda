@@ -108,14 +108,19 @@ export default function Login() {
               {loading ? 'Entrando...' : 'Entrar'}
             </Button>
 
-            <div className="text-center text-sm text-muted-foreground">
-              Não tem uma conta?{' '}
-              <Link
-                to="/signup"
-                className="text-primary font-medium hover:underline"
+            <div className="text-center text-sm">
+              <p className="text-muted-foreground mb-2">Não tem uma conta?</p>
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full"
+                onClick={() => navigate('/buy-credits')}
               >
-                Criar conta
-              </Link>
+                Comprar Acesso Vitalício (R$ 9,99)
+              </Button>
+              <p className="text-xs text-muted-foreground mt-2">
+                Pague primeiro, depois crie sua conta
+              </p>
             </div>
           </form>
         </CardContent>
