@@ -1,4 +1,3 @@
-import { ThemeToggle } from '@/components/theme-toggle';
 import { Button } from '@/components/ui/button';
 import { BarChart3 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -45,7 +44,6 @@ export default function LandingPage() {
             >
               Garantir Acesso (R$ 9,99)
             </Button>
-            <ThemeToggle />
           </div>
         </div>
       </header>

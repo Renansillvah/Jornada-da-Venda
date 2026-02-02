@@ -1,11 +1,21 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="dark">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Lasy App</title>
-   
+    <script>
+      // Força dark mode permanente
+      document.documentElement.classList.add('dark');
+      // Previne remoção da classe dark
+      const observer = new MutationObserver(() => {
+        if (!document.documentElement.classList.contains('dark')) {
+          document.documentElement.classList.add('dark');
+        }
+      });
+      observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    </script>
   </head>
   <body>
     <div id="root"></div>
