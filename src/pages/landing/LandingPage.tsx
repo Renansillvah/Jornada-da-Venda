@@ -40,9 +40,9 @@ export default function LandingPage() {
               Entrar
             </Button>
             <Button
-              onClick={() => navigate('/signup')}
+              onClick={() => navigate('/venda')}
             >
-              Começar Grátis
+              Garantir Acesso (R$ 9,99)
             </Button>
             <ThemeToggle />
           </div>

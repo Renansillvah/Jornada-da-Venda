@@ -38,9 +38,9 @@ export function HeroSection() {
             <Button
               size="lg"
               className="group text-base"
-              onClick={() => navigate('/signup')}
+              onClick={() => navigate('/venda')}
             >
-              Começar Análise Gratuita
+              Garantir Acesso Vitalício (R$ 9,99)
               <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </Button>
             <Button
@@ -56,7 +56,7 @@ export function HeroSection() {
 
           {/* Texto de apoio */}
           <p className="text-sm text-muted-foreground">
-            ✓ Sem necessidade de cartão • ✓ Setup em 2 minutos • ✓ Dados seguros
+            ✓ Pague 1x, use sempre • ✓ Análises ilimitadas • ✓ Trial de 2 análises
           </p>
         </div>
 

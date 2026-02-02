@@ -4,10 +4,10 @@ import { ArrowRight, Check } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const benefits = [
-  'Sem limite de análises',
-  'Todos os recursos liberados',
-  'Dados seguros e privados',
-  'Suporte por email'
+  'Análises ilimitadas para sempre',
+  'Pague 1x, nunca mais paga',
+  'Trial de 2 análises',
+  'Suporte prioritário'
 ];
 
 export function CTASection() {
@@ -21,13 +21,13 @@ export function CTASection() {
 
             {/* Título */}
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground">
-              Pronto para Transformar Sua Forma de Vender?
+              Pronto para Parar de Perder Vendas?
             </h2>
 
             {/* Subtítulo */}
             <p className="text-lg sm:text-xl text-muted-foreground">
-              Comece hoje mesmo. Gratuito, sem cartão de crédito,
-              setup em menos de 2 minutos.
+              Acesso vitalício por apenas R$ 9,99. Pague uma vez, use para sempre.
+              Análises ilimitadas com IA.
             </p>
 
             {/* CTA Principal */}
@@ -35,11 +35,14 @@ export function CTASection() {
               <Button
                 size="lg"
                 className="group text-lg px-8 py-6 h-auto"
-                onClick={() => navigate('/signup')}
+                onClick={() => navigate('/venda')}
               >
-                Criar Minha Conta Grátis
+                Garantir Acesso Vitalício Agora
                 <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Button>
+              <p className="text-sm text-muted-foreground mt-3">
+                De <span className="line-through">R$ 29,90</span> por apenas <span className="font-bold text-success">R$ 9,99</span>
+              </p>
             </div>
 
             {/* Lista de benefícios */}
