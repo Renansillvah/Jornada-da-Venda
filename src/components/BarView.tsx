@@ -2,10 +2,11 @@ import { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Plus, RotateCcw, TrendingUp, TrendingDown, AlertCircle } from 'lucide-react';
+import { Plus, RotateCcw, AlertCircle } from 'lucide-react';
 import type { Pillar } from '@/types/analysis';
-import { PILLARS_CONFIG, getLayerInfo, getScoreLevel } from '@/types/analysis';
+import { PILLARS_CONFIG, getLayerInfo, getScoreLevel, getActionableInsight } from '@/types/analysis';
 import { cn } from '@/lib/utils';
+import { StrategicSummary } from './StrategicSummary';
 
 interface BarViewProps {
   pillars: Pillar[];
@@ -71,10 +72,8 @@ export function BarView({ pillars, onScoreChange }: BarViewProps) {
 
   const getBarColor = (score: number): string => {
     if (score === 0) return 'bg-muted-foreground/20';
-    if (score <= 3) return 'bg-red-500';
-    if (score <= 5) return 'bg-orange-500';
-    if (score <= 7) return 'bg-yellow-500';
-    if (score <= 9) return 'bg-blue-500';
+    if (score <= 4) return 'bg-red-500';
+    if (score <= 6) return 'bg-yellow-500';
     return 'bg-green-500';
   };
 
@@ -174,13 +173,30 @@ export function BarView({ pillars, onScoreChange }: BarViewProps) {
                   </p>
                 )}
 
-                {currentScore < 7 && onScoreChange && (
-                  <Alert className="mt-2 py-2 border-orange-200 bg-orange-50">
-                    <AlertCircle className="h-3 w-3 text-orange-600" />
-                    <AlertDescription className="text-xs text-orange-900">
-                      Gargalo ativo: Este pilar precisa de atenção prioritária
-                    </AlertDescription>
-                  </Alert>
+                {currentScore < 7 && currentScore > 0 && onScoreChange && (
+                  <div className="mt-2 space-y-2">
+                    <Alert className={`py-2 ${
+                      currentScore <= 4
+                        ? 'border-red-200 bg-red-50'
+                        : 'border-yellow-200 bg-yellow-50'
+                    }`}>
+                      <AlertCircle className={`h-3 w-3 ${
+                        currentScore <= 4 ? 'text-red-600' : 'text-yellow-600'
+                      }`} />
+                      <AlertDescription className={`text-xs ${
+                        currentScore <= 4 ? 'text-red-900' : 'text-yellow-900'
+                      }`}>
+                        <strong>{getActionableInsight(pillar.name, currentScore).issue}</strong>
+                      </AlertDescription>
+                    </Alert>
+                    <div className={`p-2 rounded text-xs ${
+                      currentScore <= 4
+                        ? 'bg-red-100 text-red-800'
+                        : 'bg-yellow-100 text-yellow-800'
+                    }`}>
+                      <strong>✓ Ação:</strong> {getActionableInsight(pillar.name, currentScore).action}
+                    </div>
+                  </div>
                 )}
               </CardContent>
             </Card>
@@ -200,32 +216,10 @@ export function BarView({ pillars, onScoreChange }: BarViewProps) {
         </Alert>
       )}
 
-      <div className="grid md:grid-cols-3 gap-4">
-        <Card className="border-2 border-primary/20">
-          <CardContent className="pt-6">
-            <p className="text-sm text-muted-foreground mb-1">Nota média ponderada</p>
-            <p className="text-4xl font-bold">{diagnostic.average}<span className="text-xl text-muted-foreground">/10</span></p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-6">
-            <p className="text-sm text-muted-foreground mb-1">Pilar mais forte</p>
-            <p className="font-semibold flex items-center gap-2 text-sm">
-              <TrendingUp className="h-4 w-4 text-green-600" />
-              {diagnostic.strongest}
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-6">
-            <p className="text-sm text-muted-foreground mb-1">Gargalo crítico</p>
-            <p className="font-semibold flex items-center gap-2 text-sm">
-              <TrendingDown className="h-4 w-4 text-destructive" />
-              {diagnostic.weakest}
-            </p>
-          </CardContent>
-        </Card>
-      </div>
+      {/* Resumo Estratégico */}
+      {onScoreChange && pillars.some(p => p.score > 0) && (
+        <StrategicSummary pillars={pillars} averageScore={diagnostic.average} />
+      )}
 
       {hasChanges && (
         <div className="flex justify-end">

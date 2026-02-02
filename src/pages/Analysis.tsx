@@ -159,14 +159,26 @@ export default function Analysis() {
         </div>
 
         {/* Actions */}
-        <div className="flex gap-4">
-          <Button onClick={handleSave} size="lg" className="flex-1">
-            Salvar análise
-          </Button>
-          <Button onClick={() => navigate('/')} variant="outline" size="lg">
-            Cancelar
-          </Button>
-        </div>
+        <Card className="bg-primary/5 border-primary/30">
+          <CardContent className="pt-6">
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex-1">
+                <p className="font-semibold text-sm mb-1">Pronto para salvar o diagnóstico?</p>
+                <p className="text-xs text-muted-foreground">
+                  Sua análise ficará salva no histórico para consulta e acompanhamento
+                </p>
+              </div>
+              <div className="flex gap-3">
+                <Button onClick={() => navigate('/')} variant="outline">
+                  Cancelar
+                </Button>
+                <Button onClick={handleSave} size="lg" className="min-w-48">
+                  Concluir análise
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

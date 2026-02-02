@@ -133,27 +133,18 @@ export default function History() {
                     {analysis.description}
                   </p>
 
-                  <div className="grid md:grid-cols-4 gap-4">
-                    <div className="p-3 bg-muted rounded-lg">
-                      <p className="text-xs text-muted-foreground mb-1">Média geral</p>
-                      <p className="text-2xl font-bold">{analysis.averageScore}/100</p>
+                  <div className="grid md:grid-cols-3 gap-3">
+                    <div className="p-3 bg-primary/10 rounded-lg border border-primary/20">
+                      <p className="text-xs text-muted-foreground mb-1">Nota geral</p>
+                      <p className="text-2xl font-bold text-primary">{analysis.averageScore}<span className="text-sm text-muted-foreground">/10</span></p>
                     </div>
-                    <div className="p-3 bg-muted rounded-lg">
-                      <p className="text-xs text-muted-foreground mb-1">Mais forte</p>
-                      <p className="text-sm font-semibold truncate">{analysis.strongestPillar}</p>
+                    <div className="p-3 bg-green-50 rounded-lg border border-green-200">
+                      <p className="text-xs text-green-700 mb-1">Ponto forte</p>
+                      <p className="text-sm font-semibold text-green-800 truncate">{analysis.strongestPillar}</p>
                     </div>
-                    <div className="p-3 bg-muted rounded-lg">
-                      <p className="text-xs text-muted-foreground mb-1">Mais fraco</p>
-                      <p className="text-sm font-semibold truncate">{analysis.weakestPillar}</p>
-                    </div>
-                    <div className="p-3 bg-muted rounded-lg">
-                      <p className="text-xs text-muted-foreground mb-1">Tendência</p>
-                      <div className="flex items-center gap-2">
-                        {getTrendIcon(analysis.trend)}
-                        <span className="text-sm font-semibold">
-                          {analysis.trend === 'up' ? 'Evolução' : analysis.trend === 'down' ? 'Queda' : 'Estável'}
-                        </span>
-                      </div>
+                    <div className="p-3 bg-red-50 rounded-lg border border-red-200">
+                      <p className="text-xs text-red-700 mb-1">Gargalo</p>
+                      <p className="text-sm font-semibold text-red-800 truncate">{analysis.weakestPillar}</p>
                     </div>
                   </div>
 
@@ -224,22 +215,6 @@ export default function History() {
                 {/* Bar View */}
                 <BarView pillars={selectedAnalysis.pillars} />
 
-                <div className="pt-4 border-t">
-                  <div className="grid md:grid-cols-3 gap-4">
-                    <div className="p-4 bg-primary/5 rounded-lg">
-                      <p className="text-sm text-muted-foreground mb-1">Média geral</p>
-                      <p className="text-3xl font-bold">{selectedAnalysis.averageScore}/100</p>
-                    </div>
-                    <div className="p-4 bg-muted rounded-lg">
-                      <p className="text-sm text-muted-foreground mb-1">Pilar mais forte</p>
-                      <p className="font-semibold">{selectedAnalysis.strongestPillar}</p>
-                    </div>
-                    <div className="p-4 bg-destructive/5 rounded-lg">
-                      <p className="text-sm text-muted-foreground mb-1">Pilar mais fraco</p>
-                      <p className="font-semibold text-destructive">{selectedAnalysis.weakestPillar}</p>
-                    </div>
-                  </div>
-                </div>
               </CardContent>
             </Card>
           </div>

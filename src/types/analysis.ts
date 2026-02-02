@@ -46,13 +46,63 @@ export const CONTEXT_OPTIONS = [
   'Outro',
 ];
 
-export const getScoreLevel = (score: number): { level: string; color: string } => {
-  if (score === 0) return { level: 'Não avaliado', color: 'text-muted-foreground' };
-  if (score <= 3) return { level: 'Bloqueio crítico', color: 'text-red-600' };
-  if (score <= 5) return { level: 'Gargalo ativo', color: 'text-orange-600' };
-  if (score <= 7) return { level: 'Precisa ajuste', color: 'text-yellow-600' };
-  if (score <= 9) return { level: 'Funcional', color: 'text-blue-600' };
-  return { level: 'Otimizado', color: 'text-green-600' };
+export const getScoreLevel = (score: number): { level: string; color: string; bgColor: string } => {
+  if (score === 0) return { level: 'Não avaliado', color: 'text-muted-foreground', bgColor: 'bg-muted' };
+  if (score <= 4) return { level: 'Crítico', color: 'text-red-700', bgColor: 'bg-red-50' };
+  if (score <= 6) return { level: 'Atenção', color: 'text-yellow-700', bgColor: 'bg-yellow-50' };
+  if (score <= 9) return { level: 'Adequado', color: 'text-blue-700', bgColor: 'bg-blue-50' };
+  return { level: 'Excelente', color: 'text-green-700', bgColor: 'bg-green-50' };
+};
+
+export const getActionableInsight = (pillarName: string, score: number): { issue: string; action: string } => {
+  const insights: Record<string, { issue: string; action: string }> = {
+    'technical-clarity': {
+      issue: 'Cliente não entendeu exatamente o que você entrega',
+      action: 'Reformule a descrição do serviço em 1 frase clara e envie exemplo visual do resultado final'
+    },
+    'professionalism': {
+      issue: 'Comunicação transmitindo informalidade ou desorganização',
+      action: 'Revise tom da mensagem, corrija erros de digitação e responda em até 2h no horário comercial'
+    },
+    'trust': {
+      issue: 'Cliente não tem segurança suficiente para fechar',
+      action: 'Adicione 1 depoimento recente com foto/vídeo real do cliente satisfeito'
+    },
+    'timing': {
+      issue: 'Oferta feita no momento errado da conversa',
+      action: 'Faça 2-3 perguntas qualificadoras antes de apresentar preço ou proposta'
+    },
+    'ease-closing': {
+      issue: 'Processo de fechamento complexo ou confuso',
+      action: 'Simplifique para 1 botão/link direto: "Fechar agora" com próximo passo óbvio'
+    },
+    'value-perception': {
+      issue: 'Cliente não percebeu o valor real do investimento',
+      action: 'Mostre resultado concreto em números: economia de tempo, aumento de receita ou redução de custo'
+    },
+    'differentiation': {
+      issue: 'Cliente não viu diferença entre você e concorrentes',
+      action: 'Destaque 1 elemento único: garantia exclusiva, método próprio ou benefício que só você entrega'
+    },
+    'charisma': {
+      issue: 'Comunicação sem conexão emocional ou engajamento',
+      action: 'Use storytelling: conte 1 caso real de transformação que seu cliente viveu'
+    },
+    'authority': {
+      issue: 'Cliente não te vê como referência no assunto',
+      action: 'Compartilhe 1 conteúdo educativo gratuito demonstrando expertise no problema dele'
+    },
+    'energy': {
+      issue: 'Conversa arrastada, sem momentum ou empolgação',
+      action: 'Reduza tempo de resposta pela metade e faça perguntas que criem curiosidade'
+    }
+  };
+
+  const pillarId = PILLARS_CONFIG.find(p => p.name === pillarName)?.id || '';
+  return insights[pillarId] || {
+    issue: 'Pilar abaixo do ideal para conversão',
+    action: 'Revise este ponto e identifique o que pode ser melhorado imediatamente'
+  };
 };
 
 export const getLayerInfo = (layer: string): { name: string; description: string; icon: string } => {
