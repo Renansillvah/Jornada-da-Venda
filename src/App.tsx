@@ -2,6 +2,7 @@ import { Routes, Route } from 'react-router-dom';
 import { Toaster } from '@/components/ui/sonner';
 import { AuthProvider } from '@/contexts/AuthContext';
 import ProtectedRoute from '@/components/ProtectedRoute';
+import AdminRoute from '@/components/AdminRoute';
 import AppLayout from '@/components/AppLayout';
 import LandingPage from '@/pages/landing/LandingPage';
 import SalesLanding from '@/pages/SalesLanding';
@@ -36,8 +37,15 @@ export function App() {
         <Route path="/payment/pending" element={<PaymentPending />} />
         <Route path="/payment/failure" element={<PaymentFailure />} />
 
-        {/* Rota de administração (acesso direto via URL) */}
-        <Route path="/admin/unlock" element={<AdminUnlock />} />
+        {/* Rota de administração (PROTEGIDA - apenas renan.wow.blizz@gmail.com) */}
+        <Route
+          path="/admin/unlock"
+          element={
+            <AdminRoute>
+              <AdminUnlock />
+            </AdminRoute>
+          }
+        />
 
         {/* Rotas do app (protegidas) */}
         <Route
