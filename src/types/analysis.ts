@@ -46,3 +46,10 @@ export const getScoreLevel = (score: number): { level: string; color: string } =
   if (score <= 80) return { level: 'Bom', color: 'text-blue-600' };
   return { level: 'Excelente', color: 'text-green-600' };
 };
+
+export const calculateTrend = (currentScore: number, previousScore: number): 'up' | 'stable' | 'down' => {
+  const diff = currentScore - previousScore;
+  if (diff > 5) return 'up';
+  if (diff < -5) return 'down';
+  return 'stable';
+};
