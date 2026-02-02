@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -22,6 +22,15 @@ export function BarView({ pillars, onScoreChange }: BarViewProps) {
     });
     return initial;
   });
+
+  // Atualizar scores quando os pilares mudarem (ex: análise com IA)
+  useEffect(() => {
+    const updated: Record<string, number> = {};
+    pillars.forEach(p => {
+      updated[p.id] = p.score;
+    });
+    setScores(updated);
+  }, [pillars]);
 
   const increaseScore = (id: string, amount: number) => {
     const newScore = Math.min(10, scores[id] + amount);
