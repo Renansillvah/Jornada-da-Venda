@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { ArrowRight, Sparkles, Brain, Instagram, MessageCircle, FileText, Handshake, CheckCircle2 } from 'lucide-react';
+import { ArrowRight, Sparkles, Brain, Instagram, MessageCircle, FileText, CheckCircle2, BarChart3 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export function HeroSection() {
