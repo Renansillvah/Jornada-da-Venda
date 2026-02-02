@@ -2,8 +2,9 @@ import { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Plus, RotateCcw, TrendingUp, TrendingDown } from 'lucide-react';
+import { Plus, RotateCcw, TrendingUp, TrendingDown, AlertCircle } from 'lucide-react';
 import type { Pillar } from '@/types/analysis';
+import { PILLARS_CONFIG, getLayerInfo, getScoreLevel } from '@/types/analysis';
 import { cn } from '@/lib/utils';
 
 interface BarViewProps {
@@ -12,7 +13,7 @@ interface BarViewProps {
 }
 
 export function BarView({ pillars, onScoreChange }: BarViewProps) {
-  const [simulatedScores, setSimulatedScores] = useState<Record<string, number>>(() => {
+  const [scores, setScores] = useState<Record<string, number>>(() => {
     const initial: Record<string, number> = {};
     pillars.forEach(p => {
       initial[p.id] = p.score;
@@ -21,64 +22,176 @@ export function BarView({ pillars, onScoreChange }: BarViewProps) {
   });
 
   const increaseScore = (id: string, amount: number) => {
-    const newScore = Math.min(100, simulatedScores[id] + amount);
-    setSimulatedScores(prev => ({
+    const newScore = Math.min(10, scores[id] + amount);
+    setScores(prev => ({
       ...prev,
       [id]: newScore,
     }));
-    // Se há callback, atualiza o estado pai (modo edição)
     if (onScoreChange) {
       onScoreChange(id, newScore);
     }
   };
 
-  const resetSimulation = () => {
+  const resetScores = () => {
     const reset: Record<string, number> = {};
     pillars.forEach(p => {
       reset[p.id] = p.score;
-      // Se há callback, reseta os valores no pai
       if (onScoreChange) {
         onScoreChange(p.id, p.score);
       }
     });
-    setSimulatedScores(reset);
+    setScores(reset);
   };
 
   const diagnostic = useMemo(() => {
-    const scores = Object.values(simulatedScores);
-    const average = Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
-    const maxScore = Math.max(...scores);
-    const minScore = Math.min(...scores);
+    const pillarScores = PILLARS_CONFIG.map(config => {
+      const score = scores[config.id] || 0;
+      const weight = config.weight || 1;
+      return score * weight;
+    });
+    const totalWeight = PILLARS_CONFIG.reduce((sum, config) => sum + (config.weight || 1), 0);
+    const weightedAverage = pillarScores.reduce((a, b) => a + b, 0) / totalWeight;
 
-    const strongest = pillars.find(p => simulatedScores[p.id] === maxScore)?.name || '';
-    const weakest = pillars.find(p => simulatedScores[p.id] === minScore)?.name || '';
+    const scoredPillars = pillars.map(p => ({ ...p, score: scores[p.id] }));
+    const maxScore = Math.max(...scoredPillars.map(p => p.score));
+    const minScore = Math.min(...scoredPillars.map(p => p.score));
+    const strongest = scoredPillars.find(p => p.score === maxScore)?.name || '';
+    const weakest = scoredPillars.find(p => p.score === minScore)?.name || '';
 
-    return { average, strongest, weakest };
-  }, [simulatedScores, pillars]);
+    return {
+      average: Math.round(weightedAverage * 10) / 10,
+      strongest,
+      weakest,
+    };
+  }, [scores, pillars]);
+
+  const hasChanges = useMemo(() => {
+    return pillars.some(p => scores[p.id] !== p.score);
+  }, [pillars, scores]);
 
   const getBarColor = (score: number): string => {
-    if (score <= 20) return 'bg-red-500';
-    if (score <= 40) return 'bg-orange-500';
-    if (score <= 60) return 'bg-yellow-500';
-    if (score <= 80) return 'bg-blue-500';
+    if (score === 0) return 'bg-muted-foreground/20';
+    if (score <= 3) return 'bg-red-500';
+    if (score <= 5) return 'bg-orange-500';
+    if (score <= 7) return 'bg-yellow-500';
+    if (score <= 9) return 'bg-blue-500';
     return 'bg-green-500';
   };
 
-  const getScoreLabel = (score: number): { label: string; color: string } => {
-    if (score <= 20) return { label: 'Crítico', color: 'text-red-600' };
-    if (score <= 40) return { label: 'Fraco', color: 'text-orange-600' };
-    if (score <= 60) return { label: 'Aceitável', color: 'text-yellow-600' };
-    if (score <= 80) return { label: 'Bom', color: 'text-blue-600' };
-    return { label: 'Excelente', color: 'text-green-600' };
-  };
+  const pillarsByLayer = useMemo(() => {
+    const foundation = PILLARS_CONFIG.filter(p => p.layer === 'foundation');
+    const conversion = PILLARS_CONFIG.filter(p => p.layer === 'conversion');
+    const amplification = PILLARS_CONFIG.filter(p => p.layer === 'amplification');
+    return { foundation, conversion, amplification };
+  }, []);
 
-  const hasSimulationChanges = useMemo(() => {
-    return pillars.some(p => simulatedScores[p.id] !== p.score);
-  }, [pillars, simulatedScores]);
+  const renderLayer = (layerPillars: typeof PILLARS_CONFIG, layerKey: string) => {
+    const layerInfo = getLayerInfo(layerKey);
+    const pillarData = layerPillars.map(config => {
+      const pillar = pillars.find(p => p.id === config.id);
+      return { ...config, ...pillar, score: scores[config.id] || 0 };
+    });
+
+    return (
+      <div key={layerKey} className="space-y-3">
+        <div className="flex items-center gap-3 mb-4">
+          <span className="text-2xl">{layerInfo.icon}</span>
+          <div>
+            <h3 className="font-semibold text-lg">{layerInfo.name}</h3>
+            <p className="text-xs text-muted-foreground">{layerInfo.description}</p>
+          </div>
+        </div>
+
+        {pillarData.map((pillar) => {
+          const currentScore = pillar.score;
+          const hasChanged = currentScore !== (pillars.find(p => p.id === pillar.id)?.score || 0);
+          const scoreInfo = getScoreLevel(currentScore);
+
+          return (
+            <Card key={pillar.id} className={cn(
+              "transition-all",
+              hasChanged && "border-primary/50 shadow-sm"
+            )}>
+              <CardHeader className="pb-3">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-sm font-semibold">
+                    {pillar.name}
+                  </CardTitle>
+                  <div className="flex items-center gap-2">
+                    <span className={cn("text-xs font-semibold", scoreInfo.color)}>
+                      {scoreInfo.level}
+                    </span>
+                    {hasChanged && (
+                      <span className="text-xs text-primary font-medium">
+                        +{currentScore - (pillars.find(p => p.id === pillar.id)?.score || 0)}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <div className="flex items-center gap-3">
+                  <div className="flex-1 h-6 bg-muted rounded-full overflow-hidden relative">
+                    <div
+                      className={cn(
+                        "h-full transition-all duration-500 ease-out",
+                        getBarColor(currentScore)
+                      )}
+                      style={{ width: `${(currentScore / 10) * 100}%` }}
+                    />
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <span className="text-xs font-bold text-foreground mix-blend-difference">
+                        {currentScore}/10
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-1">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => increaseScore(pillar.id, 1)}
+                      disabled={currentScore >= 10}
+                      className="h-7 w-7 p-0"
+                    >
+                      <Plus className="h-3 w-3" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => increaseScore(pillar.id, 2)}
+                      disabled={currentScore >= 10}
+                      className="h-7 px-2 text-xs"
+                    >
+                      +2
+                    </Button>
+                  </div>
+                </div>
+
+                {pillar.observation && (
+                  <p className="text-xs text-muted-foreground italic pt-1">
+                    {pillar.observation}
+                  </p>
+                )}
+
+                {currentScore < 7 && onScoreChange && (
+                  <Alert className="mt-2 py-2 border-orange-200 bg-orange-50">
+                    <AlertCircle className="h-3 w-3 text-orange-600" />
+                    <AlertDescription className="text-xs text-orange-900">
+                      Gargalo ativo: Este pilar precisa de atenção prioritária
+                    </AlertDescription>
+                  </Alert>
+                )}
+              </CardContent>
+            </Card>
+          );
+        })}
+      </div>
+    );
+  };
 
   return (
     <div className="space-y-6">
-      {/* Alert - only show in read-only mode */}
       {!onScoreChange && (
         <Alert className="border-primary/30 bg-primary/5">
           <AlertDescription className="text-sm">
@@ -87,18 +200,17 @@ export function BarView({ pillars, onScoreChange }: BarViewProps) {
         </Alert>
       )}
 
-      {/* Diagnostic Cards */}
       <div className="grid md:grid-cols-3 gap-4">
-        <Card className="border-2">
+        <Card className="border-2 border-primary/20">
           <CardContent className="pt-6">
-            <p className="text-sm text-muted-foreground mb-1">Média geral simulada</p>
-            <p className="text-4xl font-bold">{diagnostic.average}<span className="text-xl text-muted-foreground">/100</span></p>
+            <p className="text-sm text-muted-foreground mb-1">Nota média ponderada</p>
+            <p className="text-4xl font-bold">{diagnostic.average}<span className="text-xl text-muted-foreground">/10</span></p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-6">
             <p className="text-sm text-muted-foreground mb-1">Pilar mais forte</p>
-            <p className="font-semibold flex items-center gap-2">
+            <p className="font-semibold flex items-center gap-2 text-sm">
               <TrendingUp className="h-4 w-4 text-green-600" />
               {diagnostic.strongest}
             </p>
@@ -106,8 +218,8 @@ export function BarView({ pillars, onScoreChange }: BarViewProps) {
         </Card>
         <Card>
           <CardContent className="pt-6">
-            <p className="text-sm text-muted-foreground mb-1">Pilar mais fraco</p>
-            <p className="font-semibold flex items-center gap-2">
+            <p className="text-sm text-muted-foreground mb-1">Gargalo crítico</p>
+            <p className="font-semibold flex items-center gap-2 text-sm">
               <TrendingDown className="h-4 w-4 text-destructive" />
               {diagnostic.weakest}
             </p>
@@ -115,107 +227,23 @@ export function BarView({ pillars, onScoreChange }: BarViewProps) {
         </Card>
       </div>
 
-      {/* Reset Button */}
-      {hasSimulationChanges && (
+      {hasChanges && (
         <div className="flex justify-end">
-          <Button onClick={resetSimulation} variant="outline" size="sm">
+          <Button onClick={resetScores} variant="outline" size="sm">
             <RotateCcw className="h-4 w-4 mr-2" />
-            Resetar simulação
+            Resetar
           </Button>
         </div>
       )}
 
-      {/* Bars */}
-      <div className="space-y-4">
-        {pillars.map((pillar, index) => {
-          const currentScore = simulatedScores[pillar.id];
-          const originalScore = pillar.score;
-          const hasChanged = currentScore !== originalScore;
-          const scoreInfo = getScoreLabel(currentScore);
+      {renderLayer(pillarsByLayer.foundation, 'foundation')}
+      {renderLayer(pillarsByLayer.conversion, 'conversion')}
+      {renderLayer(pillarsByLayer.amplification, 'amplification')}
 
-          return (
-            <Card key={pillar.id} className={cn(
-              "transition-all",
-              hasChanged && "border-primary/50 shadow-md"
-            )}>
-              <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-base font-semibold">
-                    {index + 1}. {pillar.name}
-                  </CardTitle>
-                  <div className="flex items-center gap-3">
-                    <span className={cn("text-sm font-semibold", scoreInfo.color)}>
-                      {scoreInfo.label}
-                    </span>
-                    {hasChanged && (
-                      <span className="text-xs text-primary font-medium">
-                        +{currentScore - originalScore} pts
-                      </span>
-                    )}
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {/* Bar */}
-                <div className="flex items-center gap-3">
-                  <div className="flex-1 h-8 bg-muted rounded-full overflow-hidden relative">
-                    <div
-                      className={cn(
-                        "h-full transition-all duration-500 ease-out",
-                        getBarColor(currentScore)
-                      )}
-                      style={{ width: `${currentScore}%` }}
-                    />
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <span className="text-xs font-bold text-foreground mix-blend-difference">
-                        {currentScore}%
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Controls */}
-                  <div className="flex gap-2">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => increaseScore(pillar.id, 5)}
-                      disabled={currentScore >= 100}
-                      className="h-8 px-3"
-                    >
-                      <Plus className="h-3 w-3 mr-1" />
-                      5
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => increaseScore(pillar.id, 10)}
-                      disabled={currentScore >= 100}
-                      className="h-8 px-3"
-                    >
-                      <Plus className="h-3 w-3 mr-1" />
-                      10
-                    </Button>
-                  </div>
-                </div>
-
-                {/* Observation (if exists) */}
-                {pillar.observation && (
-                  <p className="text-xs text-muted-foreground italic">
-                    {pillar.observation}
-                  </p>
-                )}
-              </CardContent>
-            </Card>
-          );
-        })}
-      </div>
-
-      {/* Bottom Summary */}
-      {!onScoreChange && hasSimulationChanges && (
+      {!onScoreChange && hasChanges && (
         <Alert className="bg-primary/10 border-primary/50">
           <AlertDescription className="text-sm">
-            <strong>Simulação ativa:</strong> Você aumentou pontos em um ou mais pilares.
-            Use esta visualização para decidir onde focar suas melhorias reais.
+            <strong>Simulação ativa:</strong> Use esta visualização para decidir onde focar melhorias reais.
           </AlertDescription>
         </Alert>
       )}

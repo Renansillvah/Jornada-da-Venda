@@ -20,14 +20,21 @@ export interface Analysis {
 }
 
 export const PILLARS_CONFIG = [
-  { id: 'professionalism', name: 'Profissionalismo' },
-  { id: 'technical-clarity', name: 'Clareza técnica' },
-  { id: 'charisma', name: 'Carisma / Comunicação' },
-  { id: 'authority', name: 'Autoridade' },
-  { id: 'differentiation', name: 'Diferenciação' },
-  { id: 'value-perception', name: 'Sensação de valor' },
-  { id: 'trust', name: 'Confiança / Segurança' },
-  { id: 'ease-closing', name: 'Facilidade de fechar' },
+  // CAMADA 1 - FUNDAMENTOS (peso: crítico)
+  { id: 'technical-clarity', name: 'Clareza Técnica', layer: 'foundation', weight: 3 },
+  { id: 'professionalism', name: 'Profissionalismo', layer: 'foundation', weight: 3 },
+  { id: 'trust', name: 'Confiança / Segurança', layer: 'foundation', weight: 3 },
+  { id: 'timing', name: 'Timing da Conversa', layer: 'foundation', weight: 3 },
+
+  // CAMADA 2 - CONVERSÃO (peso: alto)
+  { id: 'ease-closing', name: 'Facilidade de Fechar', layer: 'conversion', weight: 2 },
+  { id: 'value-perception', name: 'Sensação de Valor', layer: 'conversion', weight: 2 },
+  { id: 'differentiation', name: 'Diferenciação', layer: 'conversion', weight: 2 },
+
+  // CAMADA 3 - POTENCIALIZAÇÃO (peso: normal)
+  { id: 'charisma', name: 'Carisma / Comunicação', layer: 'amplification', weight: 1 },
+  { id: 'authority', name: 'Autoridade', layer: 'amplification', weight: 1 },
+  { id: 'energy', name: 'Energia / Fluxo da Conversa', layer: 'amplification', weight: 1 },
 ];
 
 export const CONTEXT_OPTIONS = [
@@ -40,11 +47,37 @@ export const CONTEXT_OPTIONS = [
 ];
 
 export const getScoreLevel = (score: number): { level: string; color: string } => {
-  if (score <= 20) return { level: 'Crítico', color: 'text-destructive' };
-  if (score <= 40) return { level: 'Fraco', color: 'text-orange-600' };
-  if (score <= 60) return { level: 'Aceitável', color: 'text-yellow-600' };
-  if (score <= 80) return { level: 'Bom', color: 'text-blue-600' };
-  return { level: 'Excelente', color: 'text-green-600' };
+  if (score === 0) return { level: 'Não avaliado', color: 'text-muted-foreground' };
+  if (score <= 3) return { level: 'Bloqueio crítico', color: 'text-red-600' };
+  if (score <= 5) return { level: 'Gargalo ativo', color: 'text-orange-600' };
+  if (score <= 7) return { level: 'Precisa ajuste', color: 'text-yellow-600' };
+  if (score <= 9) return { level: 'Funcional', color: 'text-blue-600' };
+  return { level: 'Otimizado', color: 'text-green-600' };
+};
+
+export const getLayerInfo = (layer: string): { name: string; description: string; icon: string } => {
+  switch (layer) {
+    case 'foundation':
+      return {
+        name: 'Fundamentos',
+        description: 'Sem isso, não existe venda',
+        icon: '🎯',
+      };
+    case 'conversion':
+      return {
+        name: 'Conversão',
+        description: 'Acelera o SIM',
+        icon: '⚡',
+      };
+    case 'amplification':
+      return {
+        name: 'Potencialização',
+        description: 'Escala e impacto',
+        icon: '🚀',
+      };
+    default:
+      return { name: '', description: '', icon: '' };
+  }
 };
 
 export const calculateTrend = (currentScore: number, previousScore: number): 'up' | 'stable' | 'down' => {

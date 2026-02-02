@@ -41,15 +41,22 @@ export default function Analysis() {
   };
 
   const calculateDiagnostic = () => {
-    const scores = pillars.map(p => p.score);
-    const average = scores.reduce((a, b) => a + b, 0) / scores.length;
-    const maxScore = Math.max(...scores);
-    const minScore = Math.min(...scores);
+    const pillarScores = PILLARS_CONFIG.map(config => {
+      const pillar = pillars.find(p => p.id === config.id);
+      const score = pillar?.score || 0;
+      const weight = config.weight || 1;
+      return score * weight;
+    });
+    const totalWeight = PILLARS_CONFIG.reduce((sum, config) => sum + (config.weight || 1), 0);
+    const weightedAverage = pillarScores.reduce((a, b) => a + b, 0) / totalWeight;
+
+    const maxScore = Math.max(...pillars.map(p => p.score));
+    const minScore = Math.min(...pillars.map(p => p.score));
     const strongest = pillars.find(p => p.score === maxScore);
     const weakest = pillars.find(p => p.score === minScore);
 
     return {
-      average: Math.round(average),
+      average: Math.round(weightedAverage * 10) / 10,
       strongest: strongest?.name || '',
       weakest: weakest?.name || '',
     };
