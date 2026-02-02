@@ -1,4 +1,5 @@
-import { Analysis, calculateTrend } from '@/types/analysis';
+import type { Analysis } from '@/types/analysis';
+import { calculateTrend } from '@/types/analysis';
 
 const STORAGE_KEY = 'sales-journey-analyses';
 
