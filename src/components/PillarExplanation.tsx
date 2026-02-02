@@ -1,14 +1,16 @@
 import { useState } from 'react';
-import { ChevronDown, ChevronUp, Lightbulb, Eye, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { ChevronDown, ChevronUp, Lightbulb, Eye, AlertCircle, CheckCircle2, Copy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
 
 interface PillarExplanationProps {
   explanation: string;
   pillarName: string;
+  example?: string;
 }
 
-export function PillarExplanation({ explanation }: PillarExplanationProps) {
+export function PillarExplanation({ explanation, example }: PillarExplanationProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
   if (!explanation || explanation === 'Sem dados') {
@@ -36,6 +38,15 @@ export function PillarExplanation({ explanation }: PillarExplanationProps) {
 
   // Se não encontrou o formato estruturado, usa o texto inteiro
   const hasStructure = sections.seen || sections.impact || sections.actions;
+
+  const handleCopyExample = () => {
+    if (example) {
+      navigator.clipboard.writeText(example);
+      toast.success('Exemplo copiado!', {
+        description: 'Cole no seu WhatsApp ou onde preferir'
+      });
+    }
+  };
 
   return (
     <div className="mt-2">
@@ -103,6 +114,35 @@ export function PillarExplanation({ explanation }: PillarExplanationProps) {
                   </div>
                   <div className="text-xs text-foreground leading-relaxed pl-6 whitespace-pre-line">
                     {sections.actions}
+                  </div>
+                </div>
+              )}
+
+              {example && (
+                <div className="mt-4 pt-4 border-t border-primary/20">
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <Copy className="w-4 h-4 text-primary" />
+                        <h4 className="text-xs font-bold text-primary uppercase tracking-wide">
+                          🎯 Exemplo Prático - Pronto para Usar
+                        </h4>
+                      </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleCopyExample}
+                        className="h-7 text-xs"
+                      >
+                        <Copy className="w-3 h-3 mr-1" />
+                        Copiar
+                      </Button>
+                    </div>
+                    <div className="bg-background/50 p-3 rounded border border-primary/20">
+                      <pre className="text-xs text-foreground leading-relaxed whitespace-pre-wrap font-mono">
+                        {example}
+                      </pre>
+                    </div>
                   </div>
                 </div>
               )}

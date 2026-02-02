@@ -5,6 +5,7 @@ export interface Pillar {
   observation: string;
   action: string;
   confidence?: 'high' | 'medium' | 'low' | 'none'; // Nível de confiança da análise
+  example?: string; // Exemplo prático pronto para copiar
 }
 
 export interface Analysis {
@@ -18,6 +19,7 @@ export interface Analysis {
   weakestPillar: string;
   trend?: 'up' | 'stable' | 'down';
   changes?: string;
+  conclusion?: string; // Conclusão geral da análise da IA
   // Novos campos para versionamento
   type: 'single' | 'update'; // single = nova análise, update = atualização de análise existente
   parentId?: string; // ID da análise que está sendo atualizada

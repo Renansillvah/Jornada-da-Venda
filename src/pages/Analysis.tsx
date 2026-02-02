@@ -5,7 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
-import { ArrowLeft, Sparkles, Loader2 } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { ArrowLeft, Sparkles, Loader2, Lightbulb } from 'lucide-react';
 import { PILLARS_CONFIG, CONTEXT_OPTIONS } from '@/types/analysis';
 import { saveAnalysis } from '@/lib/storage';
 import type { Pillar, Analysis as AnalysisType } from '@/types/analysis';
@@ -30,6 +31,7 @@ export default function Analysis() {
   const [showAIUpload, setShowAIUpload] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
+  const [aiConclusion, setAiConclusion] = useState<string>('');
 
   const toggleContext = (option: string) => {
     setContext(prev =>
@@ -97,10 +99,16 @@ export default function Analysis() {
       // Preencher contexto automaticamente
       setDescription(result.context + ' - ' + result.summary);
 
-      // Preencher pilares com as notas, observações, explicações e confiança da IA
+      // Armazenar a conclusão da IA
+      if (result.conclusion) {
+        setAiConclusion(result.conclusion);
+      }
+
+      // Preencher pilares com as notas, observações, explicações, exemplos e confiança da IA
       const updatedPillars = PILLARS_CONFIG.map(p => {
         const score = result.scores[p.id];
         const explanation = result.explanations[p.id];
+        const example = result.examples?.[p.id];
         const confidence = result.confidence?.[p.id] || 'none';
 
         console.log(`Processando pilar ${p.name}:`, {
@@ -108,7 +116,8 @@ export default function Analysis() {
           scoreRecebido: score,
           scoreUsado: score || 0,
           confidence: confidence,
-          hasExplanation: !!explanation
+          hasExplanation: !!explanation,
+          hasExample: !!example
         });
 
         return {
@@ -118,6 +127,7 @@ export default function Analysis() {
           observation: explanation || result.observations[p.id] || 'Não avaliado',
           action: '',
           confidence: confidence,
+          example: example,
         };
       });
 
@@ -187,6 +197,7 @@ export default function Analysis() {
       averageScore: diagnostic.average,
       strongestPillar: diagnostic.strongest,
       weakestPillar: diagnostic.weakest,
+      conclusion: aiConclusion || undefined,
       type: 'single',
       isActive: true,
     };
@@ -201,7 +212,7 @@ export default function Analysis() {
       <div className="container mx-auto px-4 py-8 max-w-6xl">
         <Button
           variant="ghost"
-          onClick={() => navigate('/')}
+          onClick={() => navigate('/home')}
           className="mb-6"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
@@ -320,6 +331,26 @@ export default function Analysis() {
           <BarView pillars={pillars} onScoreChange={updatePillarScore} />
         </div>
 
+        {/* Conclusão Geral da IA */}
+        {aiConclusion && (
+          <Card className="mb-8 border-primary/50 bg-gradient-to-br from-primary/10 to-primary/5">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-primary">
+                <Lightbulb className="w-5 h-5" />
+                Conclusão Geral e Recomendação Estratégica
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Alert className="bg-background/50 border-primary/30">
+                <Lightbulb className="h-4 w-4 text-primary" />
+                <AlertDescription className="text-sm leading-relaxed whitespace-pre-line">
+                  {aiConclusion}
+                </AlertDescription>
+              </Alert>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Actions */}
         <Card className="bg-primary/5 border-primary/30">
           <CardContent className="pt-6">
@@ -331,7 +362,7 @@ export default function Analysis() {
                 </p>
               </div>
               <div className="flex gap-3">
-                <Button onClick={() => navigate('/')} variant="outline">
+                <Button onClick={() => navigate('/home')} variant="outline">
                   Cancelar
                 </Button>
                 <Button onClick={handleSave} size="lg" className="min-w-48">

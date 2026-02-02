@@ -230,6 +230,7 @@ export function BarView({ pillars, onScoreChange }: BarViewProps) {
                     <PillarExplanation
                       explanation={pillar.observation}
                       pillarName={pillar.name}
+                      example={pillar.example}
                     />
                   </>
                 )}

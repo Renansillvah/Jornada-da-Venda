@@ -5,8 +5,10 @@ export interface AIAnalysisResult {
   observations: Record<string, string>;
   explanations: Record<string, string>; // Explicação detalhada do que foi visto
   confidence: Record<string, 'high' | 'medium' | 'low' | 'none'>; // Nível de confiança da análise
+  examples: Record<string, string>; // Exemplos práticos prontos para copiar
   summary: string;
   context: string;
+  conclusion: string; // Conclusão geral da análise
 }
 
 export async function analyzeImageWithAI(
@@ -132,11 +134,38 @@ REGRAS PARA PILARES SEM DADOS (confidence: "none"):
 - Na explicação, escreva apenas: "Não foi possível avaliar este pilar com base na imagem fornecida. Este contexto não apresenta elementos suficientes para análise."
 - Não invente análises para pilares que não podem ser avaliados na imagem
 
+ATENÇÃO - EXEMPLOS PRÁTICOS PRONTOS PARA COPIAR:
+Para CADA pilar analisado, você DEVE criar exemplos CONCRETOS e PRONTOS para o usuário copiar e usar IMEDIATAMENTE. Esses exemplos devem ser:
+- Scripts de mensagem prontos (antes/depois)
+- Templates formatados
+- Textos completos que podem ser copiados e colados
+- Exemplos de como reescrever trechos problemáticos
+
+Formato dos exemplos:
+🎯 EXEMPLO PRÁTICO - PRONTO PARA USAR:
+
+[Forneça 2-3 exemplos práticos completos que o usuário pode copiar]
+
+Exemplo: Se o problema é linguagem informal, mostre:
+
+ANTES (❌ Evite):
+"oi blz, vi seu perfil e achei top, bora conversar sobre aquele projeto?"
+
+DEPOIS (✅ Use assim):
+"Olá [Nome]! Tudo bem?
+
+Vi que você atua com [área] e acredito que posso agregar valor ao seu projeto de [tema].
+
+Podemos agendar 15min esta semana para eu entender melhor sua necessidade?
+
+[Sua Assinatura Profissional]"
+
 Responda APENAS em formato JSON válido, seguindo EXATAMENTE esta estrutura (todos os 15 pilares são obrigatórios):
 
 {
   "context": "Descrição breve do contexto (ex: 'Conversa de Instagram DM')",
   "summary": "Resumo geral da análise em 2-3 frases",
+  "conclusion": "CONCLUSÃO GERAL E RECOMENDAÇÃO ESTRATÉGICA: Faça uma análise final integrando todos os pilares avaliados. Identifique o padrão geral (ex: 'jornada com fundamentos sólidos mas baixa conversão', 'excelente relacionamento mas falta estrutura comercial', 'alta energia mas baixa credibilidade'). Dê a principal recomendação estratégica: qual deve ser o foco de melhoria IMEDIATO para gerar maior impacto nas vendas? Seja específico e actionable. 150-200 palavras.",
   "scores": {
     "professionalism": 8,
     "technical-clarity": 7,
@@ -170,20 +199,36 @@ Responda APENAS em formato JSON válido, seguindo EXATAMENTE esta estrutura (tod
     "energy-flow": "Resumo curto da energia"
   },
   "explanations": {
-    "professionalism": "O QUE FOI VISTO: Na análise da conversa do WhatsApp Business, identifiquei diversos elementos que impactam diretamente a percepção de profissionalismo. Primeiro, o perfil utiliza foto pessoal informal ao invés de logo empresarial, o que já estabelece um tom não-corporativo desde o primeiro contato. Nas 8 mensagens trocadas, detectei uso recorrente de gírias e abreviações inadequadas para contexto B2B: 'blz' (2x), 'tmj' (1x), 'vlw' (1x), além de emojis excessivamente casuais (👍 usado 3x em propostas comerciais). A ausência total de assinatura profissional nas mensagens - sem nome completo, cargo, empresa ou informações de contato - agrava ainda mais essa impressão. O timing das respostas também chama atenção: mensagens enviadas às 23h47 e 00h15, sugerindo operação sem horário comercial definido. Por fim, a formatação das mensagens é completamente informal, com texto corrido sem parágrafos, ausência de pontuação adequada e linguagem que parece chat pessoal ao invés de comunicação empresarial estruturada. IMPACTO: Esses elementos combinados criam uma percepção devastadora de falta de profissionalismo que impacta diretamente na jornada de decisão do cliente de múltiplas formas. Primeiro, o uso de gírias e linguagem casual em contexto B2B faz o prospect questionar imediatamente se está lidando com uma empresa estruturada ou apenas um freelancer informal operando de forma amadora. Essa dúvida aumenta significativamente a percepção de risco sobre aspectos críticos como: suporte pós-venda (será que terei assistência adequada?), cumprimento de prazos (empresa sem estrutura consegue entregar?), e profissionalismo na execução do projeto (o resultado final terá qualidade enterprise?). Segundo, a ausência de assinatura profissional e identidade visual corporativa dificulta que o cliente 'visualize' a empresa como entidade sólida e confiável - há uma desconexão cognitiva entre o discurso de vendas e a experiência real de comunicação, gerando inconsistência que aumenta hesitação. Terceiro, mensagens fora do horário comercial e sem formatação adequada reforçam a imagem de operação 'one-man show' sem processos definidos, o que é particularmente problemático para clientes corporativos que precisam de fornecedores previsíveis e escaláveis. O resultado prático é que, mesmo que o produto/serviço oferecido seja tecnicamente excelente, o cliente corporativo hesita fortemente no fechamento pensando: 'Posso confiar meu projeto/orçamento a essa empresa? E se algo der errado, terei suporte adequado? Esta é uma empresa que meus superiores aprovarão como fornecedor?'. Estudos de psicologia de vendas B2B mostram que essa insegurança gerada por falta de profissionalismo percebido aumenta em até 60% o ciclo de decisão e reduz em 40% a taxa de conversão final, especialmente em vendas de ticket médio-alto (+R$5k) onde o risco percebido é maior. O QUE FAZER: 1. URGENTE - Migre HOJE para WhatsApp Business e configure identidade profissional completa (Impacto: +40% credibilidade imediata) - Ação específica: Baixe WhatsApp Business (gratuito), crie conta empresarial verificada, adicione logo da empresa como foto de perfil (300x300px, PNG com fundo transparente), configure nome empresarial exato (razão social), preencha todos os campos: descrição da empresa (50-100 palavras sobre o que faz), endereço físico se houver, horário de atendimento (ex: Seg-Sex 9h-18h), site, email corporativo, categorias de negócio. Por quê funciona: No primeiro contato, cliente vê imediatamente selo verde de verificação + logo profissional + informações estruturadas = percepção instantânea de empresa estabelecida ao invés de pessoa física. Resultado: Cliente pensa 'Ok, é uma empresa de verdade'. 2. Elimine 100% das gírias e implemente glossário de linguagem profissional-acessível (Impacto: +35% percepção de seriedade) - Crie documento interno com substituições: 'blz' → 'perfeito' ou 'entendido' | 'tmj' → 'conte conosco' | 'vlw' → 'obrigado pelo contato' | 'top' → 'excelente' | 'fechou?' → 'podemos prosseguir?' - Mantenha tom acessível mas corporativo: 'Entendi perfeitamente sua necessidade!' ao invés de 'saquei tudo blz' - Treine toda equipe comercial: envie o glossário, faça role-play de conversas antes/depois - Por quê funciona: Linguagem profissional = empresa séria aos olhos do cliente corporativo. Você pode ser acessível sem ser informal demais. Exemplo: 'Perfeito, vou preparar a proposta e envio ainda hoje!' comunica o mesmo que 'blz mando isso hj' mas com 300% mais profissionalismo percebido. 3. Implemente assinatura automática padronizada em TODAS as mensagens comerciais (Impacto: +30% autoridade e credibilidade) - Template obrigatório: [Nome Completo] | [Cargo] | [Nome da Empresa] | [Telefone com DDD] | [Email corporativo] | [Site opcional] - Exemplo: 'João Silva | Consultor de Projetos | TechSolutions Ltda | (11) 98765-4321 | joao@techsolutions.com.br' - Configure no WhatsApp Business como resposta rápida '/ass' para inserir rapidamente - Use SEMPRE ao: finalizar proposta, confirmar reunião, enviar qualquer documento importante - Por quê funciona: Cliente associa imediatamente a conversa a uma pessoa real com cargo definido dentro de estrutura organizacional. Aumenta accountability (responsabilização) e confiança. Bônus: facilita que cliente salve seu contato corretamente e repasse para outras pessoas da empresa dele. 4. Transforme TODA comunicação em blocos estruturados e formatados (Impacto: +25% clareza e percepção de organização) - Regra de ouro: NUNCA envie texto corrido de +3 linhas. Sempre use: quebras de linha, tópicos numerados, negrito para destaque (*texto em negrito*), emojis profissionais apenas para marcar seções (⚠️ atenção, ✅ confirmado, 📅 prazo) - Antes (ERRADO): 'oi td bem entao sobre o projeto vou te mandar proposta ate amanha e ai depois a gente ve os detalhes do cronograma e alinha os proximos passos blz qualquer coisa me chama' - Depois (CORRETO): 'Olá, [Nome]! Tudo bem?\n\nSobre o projeto [Nome do Projeto], seguem os próximos passos:\n\n1️⃣ *Proposta comercial*: envio até amanhã (15/03) às 17h\n2️⃣ *Reunião de alinhamento*: sugestão para quinta-feira 10h (aguardo sua confirmação)\n3️⃣ *Definição de cronograma*: após aprovação comercial\n\nAlguma dúvida sobre o processo?\n\n[Assinatura]' - Crie templates para situações recorrentes: primeiro contato, envio de proposta, follow-up, confirmação de reunião, encerramento - Por quê funciona: Formatação adequada = processos definidos = empresa organizada. Cliente vê que você tem método e clareza, não está 'improvisando' a conversa. Facilita leitura e tomada de decisão. Continue para mais 6 ações práticas...",
-    "technical-clarity": "[Mesmo formato se houver dados, ou 'Não foi possível avaliar...' se confidence: none]",
-    "trust-security": "[Mesmo formato]",
-    "risk-reduction": "[Mesmo formato]",
-    "timing": "[Mesmo formato]",
-    "positioning": "[Mesmo formato]",
-    "expectation-alignment": "[Mesmo formato]",
-    "differentiation": "[Mesmo formato]",
-    "value-perception": "[Mesmo formato]",
-    "ease-closing": "[Mesmo formato]",
-    "client-control": "[Mesmo formato]",
-    "charisma": "[Mesmo formato]",
-    "authority-behavioral": "[Mesmo formato]",
-    "energy-flow": "[Mesmo formato]"
+    "professionalism": "O QUE FOI VISTO: [4-6 frases detalhadas] IMPACTO: [4-5 frases explicativas] O QUE FAZER: [6-10 ações práticas detalhadas]",
+    "technical-clarity": "O QUE FOI VISTO: [...] IMPACTO: [...] O QUE FAZER: [...]",
+    "trust-security": "O QUE FOI VISTO: [...] IMPACTO: [...] O QUE FAZER: [...]",
+    "risk-reduction": "O QUE FOI VISTO: [...] IMPACTO: [...] O QUE FAZER: [...]",
+    "timing": "O QUE FOI VISTO: [...] IMPACTO: [...] O QUE FAZER: [...]",
+    "positioning": "O QUE FOI VISTO: [...] IMPACTO: [...] O QUE FAZER: [...]",
+    "expectation-alignment": "O QUE FOI VISTO: [...] IMPACTO: [...] O QUE FAZER: [...]",
+    "differentiation": "O QUE FOI VISTO: [...] IMPACTO: [...] O QUE FAZER: [...]",
+    "value-perception": "O QUE FOI VISTO: [...] IMPACTO: [...] O QUE FAZER: [...]",
+    "ease-closing": "O QUE FOI VISTO: [...] IMPACTO: [...] O QUE FAZER: [...]",
+    "client-control": "O QUE FOI VISTO: [...] IMPACTO: [...] O QUE FAZER: [...]",
+    "charisma": "O QUE FOI VISTO: [...] IMPACTO: [...] O QUE FAZER: [...]",
+    "authority-behavioral": "O QUE FOI VISTO: [...] IMPACTO: [...] O QUE FAZER: [...]",
+    "energy-flow": "O QUE FOI VISTO: [...] IMPACTO: [...] O QUE FAZER: [...]"
+  },
+  "examples": {
+    "professionalism": "🎯 EXEMPLO PRÁTICO - COPIE E USE:\n\nANTES (❌):\n'oi blz vi seu perfil achei top bora conversar sobre aquele projeto'\n\nDEPOIS (✅):\n'Olá [Nome]! Tudo bem?\n\nVi que você atua com [área] e acredito que posso agregar ao projeto de [tema].\n\nPodemos agendar 15min esta semana?\n\n[Nome] | [Cargo] | [Empresa] | [Telefone]'",
+    "technical-clarity": "[Exemplos práticos com antes/depois se houver dados]",
+    "trust-security": "[Exemplos práticos]",
+    "risk-reduction": "[Exemplos práticos]",
+    "timing": "[Exemplos práticos]",
+    "positioning": "[Exemplos práticos]",
+    "expectation-alignment": "[Exemplos práticos]",
+    "differentiation": "[Exemplos práticos]",
+    "value-perception": "[Exemplos práticos]",
+    "ease-closing": "[Exemplos práticos]",
+    "client-control": "[Exemplos práticos]",
+    "charisma": "[Exemplos práticos]",
+    "authority-behavioral": "[Exemplos práticos]",
+    "energy-flow": "[Exemplos práticos]"
   },
   "confidence": {
     "professionalism": "high",
