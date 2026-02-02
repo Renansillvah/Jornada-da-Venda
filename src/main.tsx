@@ -6,6 +6,7 @@ import { ThemeProvider } from "next-themes"
 import "./index.css"
 import { ErrorBoundary } from "./components/error-boundary"
 import { Spinner } from "@/components/ui/spinner"
+import "./lib/env-check"
 
 // --- Captura de Erros do Vite (HMR) ---
 // Ouve erros de compilação vindos do servidor Vite via WebSocket

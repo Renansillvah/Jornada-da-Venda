@@ -73,9 +73,21 @@ export default function BuyCredits() {
 
     } catch (error) {
       console.error('Erro ao criar pagamento:', error);
-      toast.error('Erro ao processar pagamento', {
-        description: error instanceof Error ? error.message : 'Tente novamente em alguns instantes'
-      });
+
+      const errorMessage = error instanceof Error ? error.message : 'Tente novamente em alguns instantes';
+
+      // Se for erro de configuração, mostrar mensagem específica
+      if (errorMessage.includes('VITE_MERCADO_PAGO_ACCESS_TOKEN')) {
+        toast.error('Configuração pendente', {
+          description: 'O Mercado Pago está sendo configurado. Aguarde alguns instantes e tente novamente.',
+          duration: 6000
+        });
+      } else {
+        toast.error('Erro ao processar pagamento', {
+          description: errorMessage
+        });
+      }
+
       setLoading(false);
     }
   };

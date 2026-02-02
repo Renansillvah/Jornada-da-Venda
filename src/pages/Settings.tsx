@@ -4,7 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { ArrowLeft, Key, Sparkles, Eye, EyeOff, CheckCircle2 } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { ArrowLeft, Key, Sparkles, Eye, EyeOff, CheckCircle2, Settings2, XCircle } from 'lucide-react';
 import { getOpenAIKey, saveOpenAIKey } from '@/lib/openai';
 import { toast } from 'sonner';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -143,6 +144,83 @@ export default function Settings() {
                 <AlertDescription className="text-success">
                   <strong>Configuração ativa!</strong> Você já pode usar a análise automática
                   na página de Nova Análise.
+                </AlertDescription>
+              </Alert>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Environment Variables Status */}
+        <Card className="mb-6">
+          <CardHeader>
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center flex-shrink-0">
+                <Settings2 className="w-5 h-5 text-muted-foreground" />
+              </div>
+              <div className="flex-1">
+                <CardTitle>Status do Sistema</CardTitle>
+                <CardDescription className="mt-1">
+                  Verificação das integrações configuradas
+                </CardDescription>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30">
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium">Supabase (Banco de Dados)</span>
+              </div>
+              {import.meta.env.VITE_SUPABASE_URL && import.meta.env.VITE_SUPABASE_ANON_KEY ? (
+                <Badge variant="outline" className="bg-success/10 text-success border-success/30">
+                  <CheckCircle2 className="w-3 h-3 mr-1" />
+                  Configurado
+                </Badge>
+              ) : (
+                <Badge variant="outline" className="bg-destructive/10 text-destructive border-destructive/30">
+                  <XCircle className="w-3 h-3 mr-1" />
+                  Não configurado
+                </Badge>
+              )}
+            </div>
+
+            <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30">
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium">Mercado Pago (Pagamentos)</span>
+              </div>
+              {import.meta.env.VITE_MERCADO_PAGO_ACCESS_TOKEN ? (
+                <Badge variant="outline" className="bg-success/10 text-success border-success/30">
+                  <CheckCircle2 className="w-3 h-3 mr-1" />
+                  Configurado
+                </Badge>
+              ) : (
+                <Badge variant="outline" className="bg-destructive/10 text-destructive border-destructive/30">
+                  <XCircle className="w-3 h-3 mr-1" />
+                  Não configurado
+                </Badge>
+              )}
+            </div>
+
+            <div className="flex items-center justify-between p-3 rounded-lg bg-muted/30">
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium">OpenAI (IA)</span>
+              </div>
+              {isSaved ? (
+                <Badge variant="outline" className="bg-success/10 text-success border-success/30">
+                  <CheckCircle2 className="w-3 h-3 mr-1" />
+                  Configurado
+                </Badge>
+              ) : (
+                <Badge variant="outline" className="bg-warning/10 text-warning border-warning/30">
+                  <XCircle className="w-3 h-3 mr-1" />
+                  Configure acima
+                </Badge>
+              )}
+            </div>
+
+            {!import.meta.env.VITE_MERCADO_PAGO_ACCESS_TOKEN && (
+              <Alert className="bg-warning/10 border-warning/30">
+                <AlertDescription className="text-sm">
+                  ⚠️ <strong>Mercado Pago não configurado.</strong> Se você acabou de adicionar a variável VITE_MERCADO_PAGO_ACCESS_TOKEN no .env, reinicie o servidor de desenvolvimento para que ela seja carregada.
                 </AlertDescription>
               </Alert>
             )}

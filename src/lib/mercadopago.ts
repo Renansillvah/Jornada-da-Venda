@@ -2,6 +2,11 @@
 
 const MERCADO_PAGO_ACCESS_TOKEN = import.meta.env.VITE_MERCADO_PAGO_ACCESS_TOKEN;
 
+// Log para debug (apenas em desenvolvimento)
+if (!MERCADO_PAGO_ACCESS_TOKEN && import.meta.env.DEV) {
+  console.warn('⚠️ VITE_MERCADO_PAGO_ACCESS_TOKEN não encontrado no .env');
+}
+
 export interface PaymentPreference {
   id: string;
   init_point: string; // URL para redirecionar o usuário
@@ -18,7 +23,7 @@ export async function createPaymentPreference(
   userData: CreatePreferenceData = {}
 ): Promise<PaymentPreference> {
   if (!MERCADO_PAGO_ACCESS_TOKEN) {
-    throw new Error('Token do Mercado Pago não configurado');
+    throw new Error('ERRO: Variável de ambiente VITE_MERCADO_PAGO_ACCESS_TOKEN não está definida. Configure o arquivo .env e reinicie o servidor.');
   }
 
   const preference = {
