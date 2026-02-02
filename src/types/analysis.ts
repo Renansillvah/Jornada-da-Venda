@@ -17,6 +17,24 @@ export interface Analysis {
   weakestPillar: string;
   trend?: 'up' | 'stable' | 'down';
   changes?: string;
+  // Novos campos para versionamento
+  type: 'single' | 'update'; // single = nova análise, update = atualização de análise existente
+  parentId?: string; // ID da análise que está sendo atualizada
+  isActive: boolean; // Se esta análise deve contar no painel geral
+  tags?: string[]; // Tags para agrupar análises relacionadas (ex: "orçamento-cliente-X")
+}
+
+export interface CompanyHealth {
+  pillarScores: Record<string, {
+    average: number;
+    count: number;
+    confidence: 'high' | 'medium' | 'low';
+    trend: 'up' | 'stable' | 'down';
+    lastUpdated: string;
+  }>;
+  overallScore: number;
+  totalAnalyses: number;
+  lastAnalysisDate: string;
 }
 
 export const PILLARS_CONFIG = [

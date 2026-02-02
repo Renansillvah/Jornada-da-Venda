@@ -89,6 +89,8 @@ export default function Analysis() {
       averageScore: diagnostic.average,
       strongestPillar: diagnostic.strongest,
       weakestPillar: diagnostic.weakest,
+      type: 'single',
+      isActive: true,
     };
 
     saveAnalysis(analysis);
