@@ -23,17 +23,38 @@ export async function analyzeImageWithAI(
     return `- ${p.name} (ID: ${p.id}) - ${layerName}`;
   }).join('\n');
 
-  const prompt = `Você é um especialista em análise de vendas. Analise esta imagem (pode ser uma conversa de Instagram, WhatsApp, proposta comercial, etc.) e avalie a jornada mental do cliente nos seguintes 15 pilares:
+  const prompt = `Você é um especialista em análise de vendas consultivo. Analise esta imagem (pode ser uma conversa de Instagram, WhatsApp, proposta comercial, etc.) e avalie a jornada mental do cliente nos seguintes 15 pilares:
 
 ${pillarsDescription}
 
-IMPORTANTE:
-- Para cada pilar, dê uma nota de 0 a 10
-- Crie uma EXPLICAÇÃO DETALHADA (2-3 frases) do que você viu na imagem que justifica a nota
-- Crie uma OBSERVAÇÃO CURTA (1 frase) resumindo o ponto principal
-- Se a imagem não mostrar informação relevante para algum pilar, dê nota 5 (neutro)
-- Analise o contexto: é Instagram? WhatsApp? Proposta? Email? Identifique isso
-- Seja específico: cite trechos ou elementos da imagem
+ESTRUTURA DA ANÁLISE DE CADA PILAR:
+
+Para cada pilar, você DEVE criar uma explicação COMPLETA e ACIONÁVEL seguindo este formato:
+
+📊 O QUE FOI VISTO (2-3 frases):
+- Descreva ESPECIFICAMENTE o que você identificou na imagem
+- Cite trechos, elementos visuais, tom de linguagem, etc.
+- Exemplo: "Na conversa, o vendedor respondeu em 2 minutos mas usou gírias ('blz', 'tmj') em contexto B2B"
+
+⚠️ IMPACTO NA PERCEPÇÃO DO CLIENTE (1-2 frases):
+- Explique COMO isso afeta a decisão de compra do cliente
+- Foque na jornada mental: o que o cliente está pensando/sentindo
+- Exemplo: "Isso gera insegurança: cliente pode pensar 'será que essa empresa é profissional?' e hesitar no fechamento"
+
+✅ O QUE FAZER PARA MELHORAR (2-3 ações práticas):
+- Liste ações ESPECÍFICAS e PRÁTICAS que podem ser implementadas IMEDIATAMENTE
+- Seja direto e objetivo
+- Exemplo:
+  1. Evite gírias em contextos B2B - use linguagem profissional mas acessível
+  2. Adicione assinatura com cargo e empresa nas respostas
+  3. Responda em até 5min (manter rapidez) mas com texto formatado e sem abreviações
+
+INSTRUÇÕES CRÍTICAS:
+- Para cada pilar, dê uma nota de 0 a 10 baseada no que VIU na imagem
+- A explicação DEVE ter as 3 partes: O QUE VIU + IMPACTO + O QUE FAZER
+- Use quebras de linha e formatação clara (mas mantenha como string, não markdown)
+- Se a imagem não mostrar informação relevante para algum pilar, dê nota 5 e explique que não há dados
+- Analise o contexto: é Instagram? WhatsApp? Proposta? Email?
 - Foque na PERCEPÇÃO do cliente, não na intenção do vendedor
 
 Responda APENAS em formato JSON válido, seguindo EXATAMENTE esta estrutura (todos os 15 pilares são obrigatórios):
@@ -74,20 +95,20 @@ Responda APENAS em formato JSON válido, seguindo EXATAMENTE esta estrutura (tod
     "energy-flow": "Resumo curto da energia"
   },
   "explanations": {
-    "professionalism": "Explicação detalhada de 2-3 frases sobre o que foi visto na imagem relacionado ao profissionalismo",
-    "technical-clarity": "Explicação detalhada sobre clareza técnica",
-    "trust-security": "Explicação detalhada sobre confiança",
-    "risk-reduction": "Explicação detalhada sobre redução de risco",
-    "timing": "Explicação detalhada sobre timing",
-    "positioning": "Explicação detalhada sobre posicionamento",
-    "expectation-alignment": "Explicação detalhada sobre alinhamento",
-    "differentiation": "Explicação detalhada sobre diferenciação",
-    "value-perception": "Explicação detalhada sobre valor",
-    "ease-closing": "Explicação detalhada sobre facilidade de fechar",
-    "client-control": "Explicação detalhada sobre controle do cliente",
-    "charisma": "Explicação detalhada sobre carisma",
-    "authority-behavioral": "Explicação detalhada sobre autoridade",
-    "energy-flow": "Explicação detalhada sobre energia e fluxo"
+    "professionalism": "O QUE FOI VISTO: Na conversa do WhatsApp, o vendedor usou foto de perfil pessoal (não corporativa), respondeu 'blz' e 'tmj', e não assinou as mensagens com nome/cargo. IMPACTO: Cliente pode questionar se está falando com empresa estruturada ou apenas um freelancer informal, gerando dúvida sobre suporte pós-venda. O QUE FAZER: 1) Use foto profissional/logo da empresa no WhatsApp Business, 2) Evite gírias - escreva 'certo' ao invés de 'blz', 3) Adicione assinatura automática: 'João Silva - Consultor Comercial | Nome da Empresa'",
+    "technical-clarity": "[Mesmo formato: O QUE FOI VISTO + IMPACTO + O QUE FAZER com ações práticas numeradas]",
+    "trust-security": "[Mesmo formato]",
+    "risk-reduction": "[Mesmo formato]",
+    "timing": "[Mesmo formato]",
+    "positioning": "[Mesmo formato]",
+    "expectation-alignment": "[Mesmo formato]",
+    "differentiation": "[Mesmo formato]",
+    "value-perception": "[Mesmo formato]",
+    "ease-closing": "[Mesmo formato]",
+    "client-control": "[Mesmo formato]",
+    "charisma": "[Mesmo formato]",
+    "authority-behavioral": "[Mesmo formato]",
+    "energy-flow": "[Mesmo formato]"
   }
 }`;
 
@@ -118,7 +139,7 @@ Responda APENAS em formato JSON válido, seguindo EXATAMENTE esta estrutura (tod
             ]
           }
         ],
-        max_tokens: 4000,
+        max_tokens: 6000,
         temperature: 0.7
       })
     });
