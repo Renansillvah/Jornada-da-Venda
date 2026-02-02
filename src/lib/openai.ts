@@ -30,25 +30,70 @@ ${pillarsDescription}
 
 ESTRUTURA DA ANÁLISE DE CADA PILAR:
 
-Para cada pilar, você DEVE criar uma explicação COMPLETA e ACIONÁVEL seguindo este formato:
+Para cada pilar, você DEVE criar uma explicação EXTREMAMENTE DETALHADA e COMPLETA, como se estivesse escrevendo uma análise consultiva profunda. Siga este formato:
 
-📊 O QUE FOI VISTO (2-3 frases):
-- Descreva ESPECIFICAMENTE o que você identificou na imagem
-- Cite trechos, elementos visuais, tom de linguagem, etc.
-- Exemplo: "Na conversa, o vendedor respondeu em 2 minutos mas usou gírias ('blz', 'tmj') em contexto B2B"
+📊 O QUE FOI VISTO (4-6 frases detalhadas):
+- Descreva MINUCIOSAMENTE tudo que você identificou na imagem relacionado a este pilar
+- Cite trechos EXATOS, elementos visuais específicos, tom de linguagem, timing, formatação, etc.
+- Analise CADA detalhe relevante: palavras usadas, estrutura das frases, emojis, pontuação, tempo de resposta
+- Exemplo completo: "Na conversa do WhatsApp com cliente corporativo, identifiquei os seguintes elementos relacionados ao profissionalismo: 1) Foto de perfil pessoal informal ao invés de logo empresarial, 2) Uso recorrente de gírias como 'blz', 'tmj' e 'vlw' em 5 das 8 mensagens analisadas, 3) Ausência completa de assinatura profissional (nome, cargo, empresa), 4) Mensagens sem formatação adequada - texto corrido sem parágrafos, 5) Horário de resposta às 23h47 sugere falta de estrutura de atendimento, 6) Linguagem muito casual para contexto B2B (empresa de tecnologia conversando com multinacional)."
 
-⚠️ IMPACTO NA PERCEPÇÃO DO CLIENTE (1-2 frases):
-- Explique COMO isso afeta a decisão de compra do cliente
-- Foque na jornada mental: o que o cliente está pensando/sentindo
-- Exemplo: "Isso gera insegurança: cliente pode pensar 'será que essa empresa é profissional?' e hesitar no fechamento"
+⚠️ IMPACTO NA PERCEPÇÃO DO CLIENTE (4-5 frases explicativas):
+- Explique PROFUNDAMENTE como cada elemento identificado afeta a jornada mental e emocional do cliente
+- Detalhe os pensamentos, dúvidas e sentimentos que surgem na mente do cliente
+- Conecte com a psicologia de vendas: confiança, credibilidade, percepção de risco, autoridade
+- Explique as consequências diretas e indiretas na decisão de compra
+- Exemplo completo: "Esses elementos criam uma percepção de informalidade excessiva que gera múltiplos impactos negativos na jornada mental do cliente. Primeiro, o uso de gírias e linguagem casual em contexto B2B faz o cliente questionar se está lidando com uma empresa estruturada ou apenas um freelancer informal, o que aumenta a percepção de risco sobre suporte pós-venda, cumprimento de prazos e profissionalismo na execução. Segundo, a ausência de assinatura profissional e logo empresarial dificulta que o cliente 'visualize' a empresa como entidade sólida - ele não consegue associar aquela conversa a uma marca ou estrutura organizacional confiável. Terceiro, mensagens sem formatação e enviadas fora do horário comercial reforçam a imagem de operação 'one-man show' sem processos definidos. O resultado é que, mesmo que o produto/serviço seja excelente, o cliente hesita no fechamento pensando: 'Será que posso confiar? E se algo der errado, terei suporte adequado? Esta empresa tem estrutura para me atender?'. Essa insegurança aumenta em até 60% o tempo de decisão e reduz drasticamente a taxa de conversão em vendas B2B de ticket médio-alto."
 
-✅ O QUE FAZER PARA MELHORAR (2-3 ações práticas):
-- Liste ações ESPECÍFICAS e PRÁTICAS que podem ser implementadas IMEDIATAMENTE
-- Seja direto e objetivo
-- Exemplo:
-  1. Evite gírias em contextos B2B - use linguagem profissional mas acessível
-  2. Adicione assinatura com cargo e empresa nas respostas
-  3. Responda em até 5min (manter rapidez) mas com texto formatado e sem abreviações
+✅ O QUE FAZER PARA MELHORAR (6-10 ações práticas detalhadas):
+- Liste ações MUITO ESPECÍFICAS, PASSO A PASSO, que podem ser implementadas HOJE
+- Para CADA ação, explique COMO fazer e POR QUÊ funciona
+- Dê exemplos CONCRETOS de antes/depois, scripts, templates
+- Priorize do mais impactante ao menos impactante
+- Exemplo completo com detalhamento:
+
+1. URGENTE - Migre para WhatsApp Business e configure identidade profissional (Impacto: +40% credibilidade):
+   - Ação: Crie conta WhatsApp Business gratuita
+   - Configure: Logo da empresa como foto, nome empresarial, horário de atendimento, endereço, site
+   - Por quê: Cliente vê imediatamente que está falando com empresa estruturada, não pessoa física
+   - Exemplo: Ao invés de "João - foto pessoal", cliente vê "TechSolutions Ltda - Logo profissional - Seg-Sex 9h-18h"
+
+2. Elimine 100% das gírias e crie glossário de linguagem profissional (Impacto: +35% percepção de profissionalismo):
+   - Substitua: 'blz' → 'perfeito' | 'tmj' → 'estamos juntos' | 'vlw' → 'agradeço o contato'
+   - Mantenha tom acessível mas profissional: "Entendi perfeitamente!" ao invés de "saquei tudo blz"
+   - Crie documento interno com 50 substituições comuns para treinar equipe
+   - Por quê: Linguagem profissional = empresa séria aos olhos do cliente B2B
+
+3. Implemente assinatura automática em TODAS as mensagens (Impacto: +30% autoridade):
+   - Template: "João Silva | Consultor Comercial | TechSolutions | (11) 9999-9999 | contato@techsolutions.com"
+   - Configure no WhatsApp Business como resposta rápida "/assinatura"
+   - Use SEMPRE ao finalizar cada interação importante
+   - Por quê: Cliente associa a conversa a pessoa real com cargo definido dentro de estrutura empresarial
+
+4. Crie blocos de texto formatados ao invés de texto corrido (Impacto: +25% clareza e profissionalismo):
+   - Use: Quebras de linha, tópicos numerados, negrito para destaque (*texto*)
+   - Antes: "oi tudo bem entao sobre o projeto vou te mandar proposta ate amanha e ai depois a gente ve os detalhes blz"
+   - Depois: "Olá! Tudo bem?
+
+   Sobre o projeto, seguem os próximos passos:
+
+   1️⃣ Envio da proposta comercial: até amanhã 17h
+   2️⃣ Reunião de alinhamento: sugestão para quinta-feira 10h
+   3️⃣ Definição de cronograma: após aprovação da proposta
+
+   Alguma dúvida sobre o processo?"
+
+5. Defina e respeite horário comercial rigoroso (Impacto: +20% percepção de estrutura):
+   - Atenda: Seg-Sex 9h-18h | Responda fora do horário apenas emergências
+   - Configure mensagem automática: "Recebemos sua mensagem! Nosso horário de atendimento é seg-sex 9h-18h. Retornaremos em breve."
+   - Por quê: Empresa estruturada tem processos e limites, não fica disponível 24/7 como freelancer
+
+6. Adicione elementos de prova social em momentos estratégicos:
+   - "Recentemente fizemos projeto similar para [Cliente Grande do Setor]"
+   - "Já atendemos +50 empresas neste segmento"
+   - Envie mini case study em PDF quando cliente demonstrar interesse
+
+[Continue com mais 4-5 ações detalhadas...]
 
 INSTRUÇÕES CRÍTICAS:
 - Para cada pilar, dê uma nota de 0 a 10 baseada APENAS no que VIU na imagem
@@ -107,7 +152,7 @@ Responda APENAS em formato JSON válido, seguindo EXATAMENTE esta estrutura (tod
     "energy-flow": "Resumo curto da energia"
   },
   "explanations": {
-    "professionalism": "O QUE FOI VISTO: Na conversa do WhatsApp, o vendedor usou foto de perfil pessoal (não corporativa), respondeu 'blz' e 'tmj', e não assinou as mensagens com nome/cargo. IMPACTO: Cliente pode questionar se está falando com empresa estruturada ou apenas um freelancer informal, gerando dúvida sobre suporte pós-venda. O QUE FAZER: 1) Use foto profissional/logo da empresa no WhatsApp Business, 2) Evite gírias - escreva 'certo' ao invés de 'blz', 3) Adicione assinatura automática: 'João Silva - Consultor Comercial | Nome da Empresa'",
+    "professionalism": "O QUE FOI VISTO: Na análise da conversa do WhatsApp Business, identifiquei diversos elementos que impactam diretamente a percepção de profissionalismo. Primeiro, o perfil utiliza foto pessoal informal ao invés de logo empresarial, o que já estabelece um tom não-corporativo desde o primeiro contato. Nas 8 mensagens trocadas, detectei uso recorrente de gírias e abreviações inadequadas para contexto B2B: 'blz' (2x), 'tmj' (1x), 'vlw' (1x), além de emojis excessivamente casuais (👍 usado 3x em propostas comerciais). A ausência total de assinatura profissional nas mensagens - sem nome completo, cargo, empresa ou informações de contato - agrava ainda mais essa impressão. O timing das respostas também chama atenção: mensagens enviadas às 23h47 e 00h15, sugerindo operação sem horário comercial definido. Por fim, a formatação das mensagens é completamente informal, com texto corrido sem parágrafos, ausência de pontuação adequada e linguagem que parece chat pessoal ao invés de comunicação empresarial estruturada. IMPACTO: Esses elementos combinados criam uma percepção devastadora de falta de profissionalismo que impacta diretamente na jornada de decisão do cliente de múltiplas formas. Primeiro, o uso de gírias e linguagem casual em contexto B2B faz o prospect questionar imediatamente se está lidando com uma empresa estruturada ou apenas um freelancer informal operando de forma amadora. Essa dúvida aumenta significativamente a percepção de risco sobre aspectos críticos como: suporte pós-venda (será que terei assistência adequada?), cumprimento de prazos (empresa sem estrutura consegue entregar?), e profissionalismo na execução do projeto (o resultado final terá qualidade enterprise?). Segundo, a ausência de assinatura profissional e identidade visual corporativa dificulta que o cliente 'visualize' a empresa como entidade sólida e confiável - há uma desconexão cognitiva entre o discurso de vendas e a experiência real de comunicação, gerando inconsistência que aumenta hesitação. Terceiro, mensagens fora do horário comercial e sem formatação adequada reforçam a imagem de operação 'one-man show' sem processos definidos, o que é particularmente problemático para clientes corporativos que precisam de fornecedores previsíveis e escaláveis. O resultado prático é que, mesmo que o produto/serviço oferecido seja tecnicamente excelente, o cliente corporativo hesita fortemente no fechamento pensando: 'Posso confiar meu projeto/orçamento a essa empresa? E se algo der errado, terei suporte adequado? Esta é uma empresa que meus superiores aprovarão como fornecedor?'. Estudos de psicologia de vendas B2B mostram que essa insegurança gerada por falta de profissionalismo percebido aumenta em até 60% o ciclo de decisão e reduz em 40% a taxa de conversão final, especialmente em vendas de ticket médio-alto (+R$5k) onde o risco percebido é maior. O QUE FAZER: 1. URGENTE - Migre HOJE para WhatsApp Business e configure identidade profissional completa (Impacto: +40% credibilidade imediata) - Ação específica: Baixe WhatsApp Business (gratuito), crie conta empresarial verificada, adicione logo da empresa como foto de perfil (300x300px, PNG com fundo transparente), configure nome empresarial exato (razão social), preencha todos os campos: descrição da empresa (50-100 palavras sobre o que faz), endereço físico se houver, horário de atendimento (ex: Seg-Sex 9h-18h), site, email corporativo, categorias de negócio. Por quê funciona: No primeiro contato, cliente vê imediatamente selo verde de verificação + logo profissional + informações estruturadas = percepção instantânea de empresa estabelecida ao invés de pessoa física. Resultado: Cliente pensa 'Ok, é uma empresa de verdade'. 2. Elimine 100% das gírias e implemente glossário de linguagem profissional-acessível (Impacto: +35% percepção de seriedade) - Crie documento interno com substituições: 'blz' → 'perfeito' ou 'entendido' | 'tmj' → 'conte conosco' | 'vlw' → 'obrigado pelo contato' | 'top' → 'excelente' | 'fechou?' → 'podemos prosseguir?' - Mantenha tom acessível mas corporativo: 'Entendi perfeitamente sua necessidade!' ao invés de 'saquei tudo blz' - Treine toda equipe comercial: envie o glossário, faça role-play de conversas antes/depois - Por quê funciona: Linguagem profissional = empresa séria aos olhos do cliente corporativo. Você pode ser acessível sem ser informal demais. Exemplo: 'Perfeito, vou preparar a proposta e envio ainda hoje!' comunica o mesmo que 'blz mando isso hj' mas com 300% mais profissionalismo percebido. 3. Implemente assinatura automática padronizada em TODAS as mensagens comerciais (Impacto: +30% autoridade e credibilidade) - Template obrigatório: [Nome Completo] | [Cargo] | [Nome da Empresa] | [Telefone com DDD] | [Email corporativo] | [Site opcional] - Exemplo: 'João Silva | Consultor de Projetos | TechSolutions Ltda | (11) 98765-4321 | joao@techsolutions.com.br' - Configure no WhatsApp Business como resposta rápida '/ass' para inserir rapidamente - Use SEMPRE ao: finalizar proposta, confirmar reunião, enviar qualquer documento importante - Por quê funciona: Cliente associa imediatamente a conversa a uma pessoa real com cargo definido dentro de estrutura organizacional. Aumenta accountability (responsabilização) e confiança. Bônus: facilita que cliente salve seu contato corretamente e repasse para outras pessoas da empresa dele. 4. Transforme TODA comunicação em blocos estruturados e formatados (Impacto: +25% clareza e percepção de organização) - Regra de ouro: NUNCA envie texto corrido de +3 linhas. Sempre use: quebras de linha, tópicos numerados, negrito para destaque (*texto em negrito*), emojis profissionais apenas para marcar seções (⚠️ atenção, ✅ confirmado, 📅 prazo) - Antes (ERRADO): 'oi td bem entao sobre o projeto vou te mandar proposta ate amanha e ai depois a gente ve os detalhes do cronograma e alinha os proximos passos blz qualquer coisa me chama' - Depois (CORRETO): 'Olá, [Nome]! Tudo bem?\n\nSobre o projeto [Nome do Projeto], seguem os próximos passos:\n\n1️⃣ *Proposta comercial*: envio até amanhã (15/03) às 17h\n2️⃣ *Reunião de alinhamento*: sugestão para quinta-feira 10h (aguardo sua confirmação)\n3️⃣ *Definição de cronograma*: após aprovação comercial\n\nAlguma dúvida sobre o processo?\n\n[Assinatura]' - Crie templates para situações recorrentes: primeiro contato, envio de proposta, follow-up, confirmação de reunião, encerramento - Por quê funciona: Formatação adequada = processos definidos = empresa organizada. Cliente vê que você tem método e clareza, não está 'improvisando' a conversa. Facilita leitura e tomada de decisão. Continue para mais 6 ações práticas...",
     "technical-clarity": "[Mesmo formato se houver dados, ou 'Não foi possível avaliar...' se confidence: none]",
     "trust-security": "[Mesmo formato]",
     "risk-reduction": "[Mesmo formato]",
@@ -167,7 +212,7 @@ Responda APENAS em formato JSON válido, seguindo EXATAMENTE esta estrutura (tod
             ]
           }
         ],
-        max_tokens: 6000,
+        max_tokens: 16000,
         temperature: 0.7
       })
     });

@@ -59,10 +59,10 @@ export function PillarExplanation({ explanation, pillarName }: PillarExplanation
       <div
         className={cn(
           'overflow-hidden transition-all duration-300 ease-in-out',
-          isExpanded ? 'max-h-[600px] opacity-100' : 'max-h-0 opacity-0'
+          isExpanded ? 'max-h-[2000px] opacity-100' : 'max-h-0 opacity-0'
         )}
       >
-        <div className="mt-2 p-4 bg-gradient-to-br from-primary/5 to-primary/10 rounded-lg border border-primary/20 space-y-3">
+        <div className="mt-2 p-4 bg-gradient-to-br from-primary/5 to-primary/10 rounded-lg border border-primary/20 space-y-3 max-h-[800px] overflow-y-auto">
           {hasStructure ? (
             <>
               {sections.seen && (
