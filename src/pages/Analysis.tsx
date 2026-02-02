@@ -170,9 +170,10 @@ export default function Analysis() {
       return;
     }
 
-    const hasEmptyScores = pillars.some(p => p.score === 0);
-    if (hasEmptyScores) {
-      toast.error('Preencha a pontuação de todos os pilares');
+    // Validar se pelo menos 1 pilar foi avaliado
+    const evaluatedPillars = pillars.filter(p => p.score > 0);
+    if (evaluatedPillars.length === 0) {
+      toast.error('Avalie pelo menos um pilar antes de salvar');
       return;
     }
 
