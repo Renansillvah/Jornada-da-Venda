@@ -14,7 +14,7 @@ import { toast } from 'sonner';
 import { BarView } from '@/components/BarView';
 import { ImageUpload } from '@/components/ImageUpload';
 import { analyzeImageWithAI, getOpenAIKey } from '@/lib/openai';
-import { canAnalyze, hasLifetimeAccess, useTrialAnalysis, getRemainingTrialAnalyses, giveFreeTrial } from '@/lib/access';
+import { canAnalyze, hasLifetimeAccess, useTrialAnalysis, getRemainingTrialAnalyses } from '@/lib/access';
 
 export default function Analysis() {
   const navigate = useNavigate();
@@ -96,7 +96,6 @@ export default function Analysis() {
 
     // Verificar se tem acesso (vitalício ou trial)
     if (!canAnalyze()) {
-      const remaining = getRemainingTrialAnalyses();
       toast.error('Trial de 2 análises gratuitas expirado', {
         description: 'Adquira acesso vitalício por apenas R$ 9,99 para análises ilimitadas!',
         duration: 8000,

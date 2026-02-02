@@ -45,7 +45,7 @@ export default function PaymentSuccess() {
       } else {
         // Se não tiver email nos params, ainda assim ativar acesso
         // O email será pedido ou recuperado depois
-        const result = createAccountAfterPayment('comprador@jornadadavenda.com', paymentId, 9.99);
+        createAccountAfterPayment('comprador@jornadadavenda.com', paymentId, 9.99);
         setAccountCreated(true);
         setUserEmail('');
       }
