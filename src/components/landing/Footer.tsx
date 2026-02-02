@@ -1,5 +1,5 @@
 import { Separator } from '@/components/ui/separator';
-import { JDVLogo } from '@/components/JDVLogo';
+import { BarChart3 } from 'lucide-react';
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
@@ -12,14 +12,16 @@ export function Footer() {
           {/* Coluna 1: Logo e descrição */}
           <div className="space-y-4">
             <div className="flex items-center gap-2">
-              <JDVLogo className="w-8 h-8 text-primary" />
+              <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
+                <BarChart3 className="w-5 h-5 text-primary-foreground" />
+              </div>
               <span className="text-xl font-bold text-foreground">
                 Jornada da Venda
               </span>
             </div>
             <p className="text-sm text-muted-foreground">
-              Mapeie a jornada mental do seu cliente e transforme
-              conversas em vendas fechadas.
+              Transforme suas reuniões de venda em insights acionáveis
+              com análises baseadas em dados.
             </p>
           </div>
 
@@ -34,7 +36,7 @@ export function Footer() {
               </li>
               <li>
                 <a href="#pilares" className="hover:text-foreground transition-colors">
-                  15 Pilares
+                  4 Pilares
                 </a>
               </li>
               <li>
