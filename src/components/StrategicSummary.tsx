@@ -1,7 +1,7 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
-import { AlertCircle, CheckCircle2, TrendingUp, Target } from 'lucide-react';
+import { AlertCircle, CheckCircle2, TrendingUp } from 'lucide-react';
 import { PILLARS_CONFIG, getScoreLevel, getActionableInsight } from '@/types/analysis';
 import type { Pillar } from '@/types/analysis';
 

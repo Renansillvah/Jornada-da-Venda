@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, TrendingUp, TrendingDown, Minus, Trash2, Eye, Calendar, FileText, Search, Filter, X, Download, Copy, FileDown } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { ArrowLeft, Trash2, Eye, Calendar, FileText, Search, Filter, X, Download, Copy, FileDown } from 'lucide-react';
 import { BarView } from '@/components/BarView';
 import { getAnalyses, deleteAnalysis } from '@/lib/storage';
 import type { Analysis } from '@/types/analysis';
@@ -76,11 +77,6 @@ export default function History() {
     toast.success('Análise excluída');
   };
 
-  const getTrendIcon = (trend?: 'up' | 'stable' | 'down') => {
-    if (trend === 'up') return <TrendingUp className="h-4 w-4 text-success-foreground" />;
-    if (trend === 'down') return <TrendingDown className="h-4 w-4 text-destructive" />;
-    return <Minus className="h-4 w-4 text-muted-foreground" />;
-  };
 
   return (
     <div className="min-h-screen bg-background">

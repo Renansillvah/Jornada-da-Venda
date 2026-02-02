@@ -72,7 +72,7 @@ export const getScoreLevel = (score: number): { level: string; color: string; bg
   return { level: 'Excelente', color: 'text-success-foreground', bgColor: 'bg-success/10' };
 };
 
-export const getActionableInsight = (pillarName: string, score: number): { issue: string; action: string } => {
+export const getActionableInsight = (pillarName: string, _score: number): { issue: string; action: string } => {
   const insights: Record<string, { issue: string; action: string }> = {
     'technical-clarity': {
       issue: 'Cliente não entendeu exatamente o que você entrega',

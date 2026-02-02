@@ -16,7 +16,7 @@ interface EvolutionChartProps {
 }
 
 export default function EvolutionChart({ data, title = 'Evolução das Análises', pillarName }: EvolutionChartProps) {
-  if (data.length === 0) {
+  if (!data || data.length === 0) {
     return (
       <Card>
         <CardContent className="py-8 text-center text-muted-foreground">
@@ -26,7 +26,20 @@ export default function EvolutionChart({ data, title = 'Evolução das Análises
     );
   }
 
-  const chartData = data.map(item => ({
+  // Validar e filtrar dados inválidos
+  const validData = data.filter(item => item && item.date && typeof item.score === 'number');
+
+  if (validData.length === 0) {
+    return (
+      <Card>
+        <CardContent className="py-8 text-center text-muted-foreground">
+          Dados inválidos para exibir gráfico
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const chartData = validData.map(item => ({
     ...item,
     dateFormatted: format(new Date(item.date), 'dd/MM', { locale: ptBR }),
   }));

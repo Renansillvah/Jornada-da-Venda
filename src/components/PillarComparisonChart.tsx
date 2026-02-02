@@ -14,11 +14,24 @@ interface PillarComparisonChartProps {
 }
 
 export default function PillarComparisonChart({ pillarScores, title = 'Comparação de Pilares' }: PillarComparisonChartProps) {
-  if (pillarScores.length === 0) {
+  if (!pillarScores || pillarScores.length === 0) {
     return (
       <Card>
         <CardContent className="py-8 text-center text-muted-foreground">
           Nenhum pilar avaliado
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Validar dados
+  const validScores = pillarScores.filter(p => p && typeof p.score === 'number' && p.name);
+
+  if (validScores.length === 0) {
+    return (
+      <Card>
+        <CardContent className="py-8 text-center text-muted-foreground">
+          Dados inválidos para comparação
         </CardContent>
       </Card>
     );
@@ -31,7 +44,7 @@ export default function PillarComparisonChart({ pillarScores, title = 'Comparaç
     return 'hsl(var(--destructive))';
   };
 
-  const chartData = pillarScores.map(p => ({
+  const chartData = validScores.map(p => ({
     name: p.name.length > 20 ? p.name.substring(0, 18) + '...' : p.name,
     fullName: p.name,
     score: p.score,
@@ -67,7 +80,7 @@ export default function PillarComparisonChart({ pillarScores, title = 'Comparaç
                 borderRadius: '8px',
                 color: 'hsl(var(--card-foreground))',
               }}
-              formatter={(value: number, name: string, props: any) => [
+              formatter={(value: number, _name: string, props: any) => [
                 `Nota: ${value}`,
                 props.payload.fullName
               ]}
